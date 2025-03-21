@@ -1,0 +1,6 @@
+.hideText {
+    display: none;
+}
+.unclickableButton {
+    pointer-events: none;
+}
