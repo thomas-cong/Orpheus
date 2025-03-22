@@ -2,7 +2,7 @@ import TTSAudioComponent from "../AudioComponents/TTSAudioComponent";
 import GenerateWordsButton from "../TestGeneration/GenerateWordsButton";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
-import RecordingAudioButton from "../AudioComponents/RecordingAudioButton";
+import AudioRecorder from "../AudioComponents/AudioRecorder";
 import { useState } from "react";
 const RAVLTTest = () => {
     const [wordArray, setWordArray] = useState<string[]>([]);
@@ -47,16 +47,23 @@ const RAVLTTest = () => {
                     />
                     <TTSAudioComponent
                         wordArray={wordArray}
-                        onStart={() => setTestStage(3)}
                         countdown={3}
-                        rate={0.4}
+                        delay={1}
                         onEnd={() => setTestStage(4)}
+                        onStart={() => setTestStage(3)}
                     />
                 </>
             )}
             {testStage === 4 && (
                 <>
                     <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
+                    <AudioRecorder />
+                </>
+            )}
+            {testStage === 5 && (
+                <>
+                    <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
+                    <AudioRecorder />
                 </>
             )}
         </>

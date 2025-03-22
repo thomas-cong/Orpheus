@@ -1,49 +1,53 @@
-import { TextToSpeech } from "tts-react";
-import "./TTSAudioComponent.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const TTSAudioComponent = (props: {
+// takes in a word array, and a length of countdown (int), an delay between words (seconds)
+// returns a button that, when clicked, plays the words in the word array.
+const TTSAudioComponent = ({
+    wordArray,
+    countdown,
+    delay,
+    onEnd,
+    onStart,
+}: {
     wordArray: string[];
-    onStart: () => void;
     countdown: number;
-    rate: number;
-    onEnd: () => void;
+    delay: number;
 }) => {
-    const [beenClicked, setBeenClicked] = useState(false);
-    const onTTSStart = () => {
-        setBeenClicked(true);
-        props.onStart();
-        console.log("TTS started");
-    };
-    const onTTSEnd = () => {
-        setBeenClicked(false);
-        console.log("TTS ended");
-        props.onEnd();
-    };
-    let countDown = [];
-    for (let i = props.countdown; i > 0; i--) {
-        countDown.push(i);
+    const [started, setStarted] = useState(false);
+    const [spokenWord, setSpokenWord] = useState<number | null>(null);
+    let finalArray = [];
+    for (let i = countdown; i > 0; i--) {
+        finalArray.push(i.toString());
     }
-    const finalTTSArray = [...countDown, ...props.wordArray];
+    finalArray.push(...wordArray);
+    useEffect(() => {
+        if (spokenWord === null) return;
+        console.log("spoken word: ", finalArray[spokenWord]);
+        const synth = window.speechSynthesis;
+        const u = new SpeechSynthesisUtterance(finalArray[spokenWord]);
+        synth.speak(u);
+        if (spokenWord < finalArray.length - 1) {
+            setTimeout(() => {
+                setSpokenWord((prev) => prev + 1);
+            }, delay * 1000);
+        }
+        if (spokenWord === finalArray.length - 1 && onEnd) {
+            onEnd();
+        }
+        return () => {};
+    }, [spokenWord]);
+    const startTTS = () => {
+        setStarted(true);
+        window.speechSynthesis.cancel();
+        setSpokenWord(0);
+        onStart();
+    };
     return (
-        <>
-            <div className={beenClicked ? "unclickableButton" : ""}>
-                <TextToSpeech
-                    markTextAsSpoken
-                    rate={props.rate}
-                    align="horizontal"
-                    onStart={onTTSStart}
-                    onEnd={onTTSEnd}
-                >
-                    {finalTTSArray.map((word) => (
-                        <p className="hideText" key={word}>
-                            {word + ",,"}
-                        </p>
-                    ))}
-                </TextToSpeech>
-            </div>
-        </>
+        <div>
+            <button disabled={started} onClick={startTTS}>
+                Play
+            </button>
+        </div>
     );
 };
-
 export default TTSAudioComponent;
