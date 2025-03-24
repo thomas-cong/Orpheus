@@ -97,7 +97,7 @@ const RAVLTTest = (patientID: string, trialID: string) => {
                         setTrialStage("Listening");
                     }
                 )}
-            {testStage === 7 && (<p> end of ravlt for now :D</p>)
+            {testStage === 7 && <p> end of ravlt for now :D</p>}
         </>
     );
 };
