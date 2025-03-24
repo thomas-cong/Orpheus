@@ -57,7 +57,7 @@ const RAVLTTest = (patientID: string, trialID: string) => {
                     trialStage,
                     setTrialStage,
                     () => {
-                        setTestStage(3);
+                        setTestStage(4);
                         setTrialStage("Listening");
                     }
                 )}
@@ -69,7 +69,7 @@ const RAVLTTest = (patientID: string, trialID: string) => {
                     trialStage,
                     setTrialStage,
                     () => {
-                        setTestStage(3);
+                        setTestStage(5);
                         setTrialStage("Listening");
                     }
                 )}
@@ -81,7 +81,7 @@ const RAVLTTest = (patientID: string, trialID: string) => {
                     trialStage,
                     setTrialStage,
                     () => {
-                        setTestStage(3);
+                        setTestStage(6);
                         setTrialStage("Listening");
                     }
                 )}
@@ -93,10 +93,11 @@ const RAVLTTest = (patientID: string, trialID: string) => {
                     trialStage,
                     setTrialStage,
                     () => {
-                        setTestStage(3);
+                        setTestStage(7);
                         setTrialStage("Listening");
                     }
                 )}
+            {testStage === 7 && (<p> end of ravlt for now :D</p>)
         </>
     );
 };
