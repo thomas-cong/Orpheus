@@ -1,12 +1,13 @@
-import TTSAudioComponent from "../AudioComponents/TTSAudioComponent";
 import GenerateWordsButton from "../TestGeneration/GenerateWordsButton";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
-import AudioRecorder from "../AudioComponents/AudioRecorder";
+import RAVLTestTrial from "./RAVLTTrial";
 import { useState } from "react";
-const RAVLTTest = () => {
+
+const RAVLTTest = (patientID: string, trialID: string) => {
     const [wordArray, setWordArray] = useState<string[]>([]);
     const [testStage, setTestStage] = useState(0);
+    const [trialStage, setTrialStage] = useState("Listening");
     return (
         <>
             {testStage === 0 && (
@@ -36,36 +37,66 @@ const RAVLTTest = () => {
                     />
                 </>
             )}
-            {(testStage === 2 || testStage === 3) && (
-                <>
-                    <InstructionDisplay
-                        instructions={
-                            testStage === 2
-                                ? "Press the button below to hear the words. You will hear a countdown, then the words will play. Remember, after pressing this button you will not be able to hear them again."
-                                : "Listen to the words, and try to remember as many as possible."
-                        }
-                    />
-                    <TTSAudioComponent
-                        wordArray={wordArray}
-                        countdown={3}
-                        delay={1}
-                        onEnd={() => setTestStage(4)}
-                        onStart={() => setTestStage(3)}
-                    />
-                </>
-            )}
-            {testStage === 4 && (
-                <>
-                    <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
-                    <AudioRecorder />
-                </>
-            )}
-            {testStage === 5 && (
-                <>
-                    <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
-                    <AudioRecorder />
-                </>
-            )}
+            {testStage === 2 &&
+                RAVLTestTrial(
+                    wordArray,
+                    patientID,
+                    trialID,
+                    trialStage,
+                    setTrialStage,
+                    () => {
+                        setTestStage(3);
+                        setTrialStage("Listening");
+                    }
+                )}
+            {testStage === 3 &&
+                RAVLTestTrial(
+                    wordArray,
+                    patientID,
+                    trialID,
+                    trialStage,
+                    setTrialStage,
+                    () => {
+                        setTestStage(3);
+                        setTrialStage("Listening");
+                    }
+                )}
+            {testStage === 4 &&
+                RAVLTestTrial(
+                    wordArray,
+                    patientID,
+                    trialID,
+                    trialStage,
+                    setTrialStage,
+                    () => {
+                        setTestStage(3);
+                        setTrialStage("Listening");
+                    }
+                )}
+            {testStage === 5 &&
+                RAVLTestTrial(
+                    wordArray,
+                    patientID,
+                    trialID,
+                    trialStage,
+                    setTrialStage,
+                    () => {
+                        setTestStage(3);
+                        setTrialStage("Listening");
+                    }
+                )}
+            {testStage === 6 &&
+                RAVLTestTrial(
+                    wordArray,
+                    patientID,
+                    trialID,
+                    trialStage,
+                    setTrialStage,
+                    () => {
+                        setTestStage(3);
+                        setTrialStage("Listening");
+                    }
+                )}
         </>
     );
 };

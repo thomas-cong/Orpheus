@@ -12,10 +12,12 @@ const TTSAudioComponent = ({
     wordArray: string[];
     countdown: number;
     delay: number;
+    onEnd?: () => void;
+    onStart?: () => void;
 }) => {
     const [started, setStarted] = useState(false);
     const [spokenWord, setSpokenWord] = useState<number | null>(null);
-    let finalArray = [];
+    const finalArray: string[] = [];
     for (let i = countdown; i > 0; i--) {
         finalArray.push(i.toString());
     }
@@ -28,7 +30,7 @@ const TTSAudioComponent = ({
         synth.speak(u);
         if (spokenWord < finalArray.length - 1) {
             setTimeout(() => {
-                setSpokenWord((prev) => prev + 1);
+                setSpokenWord((prev) => (prev !== null ? prev + 1 : 0));
             }, delay * 1000);
         }
         if (spokenWord === finalArray.length - 1 && onEnd) {
@@ -40,7 +42,7 @@ const TTSAudioComponent = ({
         setStarted(true);
         window.speechSynthesis.cancel();
         setSpokenWord(0);
-        onStart();
+        onStart?.();
     };
     return (
         <div>
