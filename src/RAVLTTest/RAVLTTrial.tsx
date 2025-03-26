@@ -17,7 +17,7 @@ const RAVLTestTrial = (
         console.log("filler function");
     };
     return (
-        <>
+        <div>
             {(trialStage === "Listening" || trialStage === "Listening p2") && (
                 <>
                     <InstructionDisplay
@@ -43,7 +43,7 @@ const RAVLTestTrial = (
                     <button onClick={fillerFunction}>Finished Recording</button>
                 </>
             )}
-        </>
+        </div>
     );
 };
 export default RAVLTestTrial;

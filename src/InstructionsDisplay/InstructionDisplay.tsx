@@ -1,5 +1,7 @@
 const InstructionDisplay = (props: { instructions: string }) => {
-    return <div>{props.instructions}</div>;
+    return (
+        <div className="text-eblack text-center m-4">{props.instructions}</div>
+    );
 };
 
 export default InstructionDisplay;
