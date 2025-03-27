@@ -10,7 +10,7 @@ const RAVLTTest = (patientID: string, trialID: string) => {
     const [testStage, setTestStage] = useState(0);
     const [trialStage, setTrialStage] = useState("Listening");
     return (
-        <div className="max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-honeydew flex items-center justify-center">
+        <div className="max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-honeydew flex items-center justify-center slideIn">
             {testStage === 0 && (
                 <div className="flex flex-col items-center">
                     <InstructionDisplay
@@ -28,7 +28,7 @@ const RAVLTTest = (patientID: string, trialID: string) => {
             )}
 
             {testStage === 1 && (
-                <div className="flex flex-col items-center m-10">
+                <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Press the button below to generate the words. Only press this when you are ready." />
                     <GenerateWordsButton
                         numWords={15}

@@ -213,6 +213,12 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
   .block {
     display: block;
   }
@@ -240,11 +246,26 @@
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
+  .h-15\/100 {
+    height: calc(15/100 * 100%);
+  }
   .min-h-screen {
     min-height: 100vh;
   }
   .w-15 {
     width: calc(var(--spacing) * 15);
+  }
+  .w-45\/100 {
+    width: calc(45/100 * 100%);
+  }
+  .w-50\/100 {
+    width: calc(50/100 * 100%);
+  }
+  .w-90\/100 {
+    width: calc(90/100 * 100%);
+  }
+  .w-full {
+    width: 100%;
   }
   .max-w-xl {
     max-width: var(--container-xl);
@@ -263,6 +284,9 @@
   }
   .items-center {
     align-items: center;
+  }
+  .justify-between {
+    justify-content: space-between;
   }
   .justify-center {
     justify-content: center;
@@ -331,9 +355,53 @@
     transform: scale(1);
   }
 }
+button {
+  animation: var(--button-pulse-size);
+  border-radius: var(--radius-lg);
+}
 :root {
   --button-pulse-size: button-pulse-size 2s cubic-bezier(0.4, 0, 0.6, 0.5)
         infinite;
+}
+input {
+  border-radius: var(--radius-lg);
+  background-color: var(--color-floralwhite);
+  padding: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 1);
+  margin-right: calc(var(--spacing) * 4);
+  margin-bottom: calc(var(--spacing) * 1);
+  margin-left: calc(var(--spacing) * 4);
+}
+select {
+  border-radius: var(--radius-lg);
+  background-color: var(--color-floralwhite);
+  padding: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 1);
+  margin-right: calc(var(--spacing) * 4);
+  margin-bottom: calc(var(--spacing) * 1);
+  margin-left: calc(var(--spacing) * 4);
+}
+.slideIn {
+  animation: slideInAnimation 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes slideInAnimation {
+  from {
+    transform: translateX(-200%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.fadeIn {
+  animation: fadeInAnimation 1.5s;
+}
+@keyframes fadeInAnimation {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @property --tw-rotate-x {
   syntax: "*";

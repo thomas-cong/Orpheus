@@ -19,7 +19,11 @@ const GenerateWordsButton = (props: {
         generateWords();
         props.onClick();
     };
-    return <button onClick={onClicked}>Generate Words</button>;
+    return (
+        <button className="bg-cerulean text-eblack" onClick={onClicked}>
+            Generate Words
+        </button>
+    );
 };
 
 export default GenerateWordsButton;

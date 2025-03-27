@@ -19,8 +19,43 @@
         transform: scale(1);
     }
 }
-
+button {
+    @apply animate-[var(--button-pulse-size)];
+    @apply rounded-lg;
+}
 :root {
     --button-pulse-size: button-pulse-size 2s cubic-bezier(0.4, 0, 0.6, 0.5)
         infinite;
+}
+input {
+    @apply bg-floralwhite rounded-lg p-2;
+    @apply mr-4 ml-4 mt-1 mb-1;
+}
+select {
+    @apply bg-floralwhite rounded-lg p-2;
+    @apply mr-4 ml-4 mt-1 mb-1;
+}
+.slideIn {
+    animation: slideInAnimation 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInAnimation {
+    from {
+        transform: translateX(-200%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+.fadeIn {
+    animation: fadeInAnimation 1.5s;
+}
+
+@keyframes fadeInAnimation {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

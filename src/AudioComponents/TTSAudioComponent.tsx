@@ -45,11 +45,13 @@ const TTSAudioComponent = ({
         onStart?.();
     };
     return (
-        <div>
-            <button disabled={started} onClick={startTTS}>
-                Play
-            </button>
-        </div>
+        <button
+            className="bg-cerulean text-eblack h-10 w-15"
+            disabled={started}
+            onClick={startTTS}
+        >
+            Play
+        </button>
     );
 };
 export default TTSAudioComponent;
