@@ -1,3 +1,5 @@
+import { get } from "../utilities";
+
 const GenerateWordsButton = (props: {
     numWords: number;
     words: string[];
@@ -6,11 +8,10 @@ const GenerateWordsButton = (props: {
 }) => {
     const generateWords = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:3000/api/generateWords?numWords=${props.numWords}`
-            );
-            const data = await response.json();
-            props.setWords(data.words);
+            const { words } = await get("/api/generateWords", {
+                numWords: props.numWords,
+            });
+            props.setWords(words);
         } catch (error) {
             console.error(error);
         }
