@@ -7,7 +7,33 @@ function formatParams(params: Record<string, any>): string {
         .map((key) => key + "=" + encodeURIComponent(params[key]))
         .join("&");
 }
+/**
+ * Converts a string to a deterministic number by hashing
+ * @param {string} inputString - The input string to encode
+ * @returns {number} - A deterministic number representation of the string
+ */
+function stringToNumber(inputString: string): number {
+    // Strip and trim the string
+    const cleanedString = inputString.trim().replace(/\s+/g, "");
 
+    // Use a simple hash function for deterministic encoding
+    let hash = 0;
+
+    // Return 0 for empty strings
+    if (cleanedString.length === 0) return hash;
+
+    // Calculate hash value using character codes
+    for (let i = 0; i < cleanedString.length; i++) {
+        const char = cleanedString.charCodeAt(i);
+        // Multiply by 31 (common in hash functions) and add the character code
+        hash = (hash << 5) - hash + char;
+        // Convert to 32-bit integer
+        hash = hash & hash;
+    }
+
+    // Ensure the result is positive
+    return Math.abs(hash);
+}
 // convert a fetch result to a JSON object with error handling for fetch and json errors
 function convertToJSON(res: Response): Promise<any> {
     if (!res.ok) {
@@ -60,5 +86,5 @@ export function post(
 
 // Remove the incorrect export default utilities; line
 // Instead, create a utilities object if you want to export it as default
-const utilities = { get, post };
+const utilities = { get, post, stringToNumber };
 export default utilities;

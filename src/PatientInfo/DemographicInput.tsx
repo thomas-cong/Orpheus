@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { get, post } from "../utilities";
 const DemographicInput = ({
     setDemographicsCollected,
 }: {
@@ -6,42 +7,130 @@ const DemographicInput = ({
 }) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [age, setAge] = useState("");
+    const [DOB, setDOB] = useState("");
     const [education, setEducation] = useState("");
     const [ethnicity, setEthnicity] = useState("");
-    const submit = () => {
-        console.log("Submitted");
-        const json = {
-            firstName,
-            lastName,
-            age,
-            education,
-            ethnicity,
-        };
-        console.log(json);
+
+    // Validation states
+    const [firstNameError, setFirstNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    // Validation function for names - only letters allowed
+    const validateName = (name: string): boolean => {
+        return /^[A-Za-z]+$/.test(name);
+    };
+
+    // Update form validity whenever inputs change
+    useEffect(() => {
+        const isValid =
+            firstName.trim() !== "" &&
+            lastName.trim() !== "" &&
+            DOB !== "" &&
+            education !== "" &&
+            ethnicity !== "" &&
+            !firstNameError &&
+            !lastNameError;
+
+        setIsFormValid(isValid);
+    }, [
+        firstName,
+        lastName,
+        DOB,
+        education,
+        ethnicity,
+        firstNameError,
+        lastNameError,
+    ]);
+    const submit = async () => {
+        // Generate patient ID using Hashing
+        const { patientID } = await get("/api/genPatientID", {
+            firstName: firstName,
+            lastName: lastName,
+            DOB: DOB,
+        });
+        // Check if patient has already been collected for demographics
+        await get("/api/getPatientInfo", { patientID: patientID }).then(
+            (result) => {
+                if (result.patientID) {
+                    // Patient already exists
+                    setDemographicsCollected(true);
+                } else {
+                    // Patient does not exist, add new patient
+                    post("/api/addPatient", {
+                        patientID: patientID,
+                        firstName: firstName,
+                        lastName: lastName,
+                        DOB: DOB,
+                        educationLevel: education,
+                        ethnicity: ethnicity,
+                    });
+                }
+            }
+        );
         setDemographicsCollected(true);
     };
     return (
         <div className="max-w-xl aspect-[3/2] drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-honeydew flex flex-col items-center">
             <div className="flex w-full justify-between mb-4 mt-4">
-                <input
-                    className="w-45/100"
-                    type="text"
-                    placeholder="First Name"
-                    onChange={(e) => setFirstName(e.target.value)}
-                />
-                <input
-                    className="w-45/100"
-                    type="text"
-                    placeholder="Last Name"
-                    onChange={(e) => setLastName(e.target.value)}
-                />
+                <div className="flex flex-col w-45/100">
+                    <input
+                        className={`w-full ${
+                            firstNameError ? "border-red-500 border-2" : ""
+                        }`}
+                        type="text"
+                        placeholder="First Name"
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setFirstName(value);
+                            if (value && !validateName(value)) {
+                                setFirstNameError(
+                                    "First name should only contain letters"
+                                );
+                            } else {
+                                setFirstNameError("");
+                            }
+                        }}
+                        value={firstName}
+                    />
+                    {firstNameError && (
+                        <span className="text-red-500 text-xs mt-1">
+                            {firstNameError}
+                        </span>
+                    )}
+                </div>
+                <div className="flex flex-col w-45/100">
+                    <input
+                        className={`w-full ${
+                            lastNameError ? "border-red-500 border-2" : ""
+                        }`}
+                        type="text"
+                        placeholder="Last Name"
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setLastName(value);
+                            if (value && !validateName(value)) {
+                                setLastNameError(
+                                    "Last name should only contain letters"
+                                );
+                            } else {
+                                setLastNameError("");
+                            }
+                        }}
+                        value={lastName}
+                    />
+                    {lastNameError && (
+                        <span className="text-red-500 text-xs mt-1">
+                            {lastNameError}
+                        </span>
+                    )}
+                </div>
             </div>
             <input
                 className="w-90/100"
-                type="number"
-                placeholder="Age"
-                onChange={(e) => setAge(e.target.value)}
+                type="date"
+                placeholder="Date of Birth"
+                onChange={(e) => setDOB(e.target.value)}
             />
             <select
                 className="w-90/100"
@@ -63,8 +152,11 @@ const DemographicInput = ({
                 <option value="Non-Hispanic">Non-Hispanic</option>
             </select>
             <button
-                className="bg-cerulean text-eblack h-15/100 w-50/100 rounded-lg p-2 text-center mt-4"
+                className={`${
+                    isFormValid ? "bg-cerulean" : "bg-gray-400"
+                } text-eblack h-15/100 w-50/100 rounded-lg p-2 text-center mt-4`}
                 onClick={submit}
+                disabled={!isFormValid}
             >
                 Submit
             </button>
