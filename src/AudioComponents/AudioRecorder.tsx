@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
+import { usePatient } from "../context/PatientContext";
 const AudioRecorder = () => {
+    const { patientID, trialID } = usePatient();
     const [isRecording, setIsRecording] = useState(false);
     const [recordedURL, setRecordedURL] = useState("");
     const [timer, setTimer] = useState(0);
@@ -35,6 +37,7 @@ const AudioRecorder = () => {
                     type: "audio/wav",
                 });
                 const audioUrl = URL.createObjectURL(audioBlob);
+
                 setRecordedURL(audioUrl);
                 chunks.current = [];
             };

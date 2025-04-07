@@ -1,19 +1,30 @@
 import TTSAudioComponent from "../AudioComponents/TTSAudioComponent";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import AudioRecorder from "../AudioComponents/AudioRecorder";
+import { usePatient } from "../context/PatientContext";
 const RAVLTestTrial = (
     wordArray: string[],
-    patientID: string,
-    trialID: string,
     trialStage: string,
     setTrialStage: (stage: string) => void,
-    onEnd: () => void
+    recordingID: number,
+    setRecordingID: (id: number) => void,
+    testStage: number,
+    setTestStage: (stage: number) => void
 ) => {
-    const fillerFunction = () => {
+    const { patientID, trialID } = usePatient();
+    const finishingFunction = () => {
         console.log(
-            "Patient " + patientID + " trial " + trialID + " completed"
+            "Patient " +
+                patientID +
+                " trial " +
+                trialID +
+                " recording " +
+                recordingID +
+                " completed"
         );
-        onEnd();
+        setRecordingID(recordingID + 1);
+        setTestStage(testStage + 1);
+        setTrialStage("Listening");
         console.log("filler function");
     };
     return (
@@ -40,8 +51,10 @@ const RAVLTestTrial = (
             {trialStage === "Recording" && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
-                    <AudioRecorder />
-                    <button onClick={fillerFunction}>Finished Recording</button>
+                    <AudioRecorder patientID={patientID} trialID={trialID} />
+                    <button onClick={finishingFunction}>
+                        Finished Recording
+                    </button>
                 </div>
             )}
         </div>

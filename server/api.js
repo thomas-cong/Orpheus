@@ -6,6 +6,7 @@ const router = express.Router();
 const wordsContent = fs.readFileSync("./Data/words.txt", "utf-8");
 const wordArray = wordsContent.split("\n");
 router.get("/", (req, res) => {
+    // Returns API status
     res.send("API is running");
 });
 // Generate words, req.query.numWords is the number of words to generate
@@ -31,8 +32,10 @@ router.get("/genPatientID", (req, res) => {
 });
 // Get patient info from ID
 router.get("/getPatientInfo", (req, res) => {
+    // Queries patient info from MongoDB
     PatientInfo.findOne({ patientID: req.query.patientID })
         .then((patient) => {
+            // Returns patient info if found
             if (patient) {
                 res.json(patient);
             } else {
@@ -40,13 +43,14 @@ router.get("/getPatientInfo", (req, res) => {
             }
         })
         .catch((error) => {
+            // Returns error if patient not found
             console.error("Error getting patient info:", error);
             res.status(500).send({ msg: "Error getting patient info" });
         });
 });
 // Add a new patient
 router.post("/addPatient", (req, res) => {
-    console.log("Adding patient: ", req.body);
+    // Validates all fields exist
     if (
         !req.body.patientID ||
         !req.body.DOB ||
@@ -69,6 +73,7 @@ router.post("/addPatient", (req, res) => {
             res.status(500).send({ msg: "Error adding patient" });
         });
 });
+// Post audio files to Azure
 // Catch-all
 router.all("*", (req, res) => {
     console.log(`API route not found: ${req.method} ${req.url}`);

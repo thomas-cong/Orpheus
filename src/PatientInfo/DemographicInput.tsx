@@ -148,8 +148,12 @@ const DemographicInput = ({
                 onChange={(e) => setEthnicity(e.target.value)}
             >
                 <option value="">Select Ethnicity</option>
+                <option value="African-American">African-American</option>
                 <option value="Hispanic">Hispanic</option>
-                <option value="Non-Hispanic">Non-Hispanic</option>
+                <option value="East Asian">East Asian</option>
+                <option value="South Asian">South Asian</option>
+                <option value="Caucasian">Caucasian</option>
+                <option value="Other">Other</option>
             </select>
             <button
                 className={`${
