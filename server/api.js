@@ -39,7 +39,7 @@ router.get("/getPatientInfo", (req, res) => {
             if (patient) {
                 res.json(patient);
             } else {
-                res.status(404).send({ msg: "Patient not found" });
+                res.json({ msg: "Patient not found" });
             }
         })
         .catch((error) => {

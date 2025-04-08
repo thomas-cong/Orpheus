@@ -52,10 +52,7 @@ const DemographicInput = ({
         // Check if patient has already been collected for demographics
         await get("/api/getPatientInfo", { patientID: patientID }).then(
             (result) => {
-                if (result.patientID) {
-                    // Patient already exists
-                    setDemographicsCollected(true);
-                } else {
+                if (result.msg === "Patient not found") {
                     // Patient does not exist, add new patient
                     post("/api/addPatient", {
                         patientID: patientID,
