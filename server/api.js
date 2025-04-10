@@ -137,14 +137,17 @@ router.get("/audioStorage/getContainer", (req, res) => {
     }
     const cleanedName = sanitizeContainerName(req.query.containerName);
     async function getContainer(containerName) {
-        const containerClient =
-            blobServiceClient.getContainerClient(containerName);
-        return containerClient;
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const exists = await containerClient.exists();
+        return { containerClient, exists };
     }
     getContainer(cleanedName)
-        .then((containerClient) => {
-            console.log("Container client:", containerClient);
-            res.send({ containerClient });
+        .then(({ containerClient, exists }) => {
+            if (exists) {
+                res.send({ containerName: cleanedName });
+            } else {
+                res.send({ msg: "Container not found" });
+            }
         })
         .catch((error) => {
             console.error("Error getting container:", error);
@@ -212,8 +215,7 @@ router.post("/audioStorage/createContainer", (req, res) => {
         .then((containerClient) => {
             res.send({
                 msg: "Container created",
-                containerName: cleanedName,
-                containerClient,
+                containerName: cleanedName
             });
         })
         .catch((error) => {
