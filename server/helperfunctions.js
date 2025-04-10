@@ -3,7 +3,7 @@
  * @param {string} inputString - The input string to encode
  * @returns {number} - A deterministic number representation of the string
  */
-function stringToNumber(inputString) {
+const stringToNumber = (inputString) => {
     // Strip and trim the string
     const cleanedString = inputString.trim().replace(/\s+/g, "");
 
@@ -24,6 +24,11 @@ function stringToNumber(inputString) {
 
     // Ensure the result is positive
     return Math.abs(hash);
-}
+};
+const sanitizeContainerName = (name) => {
+    // Convert to lowercase (Azure requirement)
+    let sanitized = name.toLowerCase();
 
-export { stringToNumber };
+    return sanitized;
+};
+export { stringToNumber, sanitizeContainerName };

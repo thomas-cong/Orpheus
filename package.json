@@ -13,6 +13,8 @@
         "start": "node server/server.js"
     },
     "dependencies": {
+        "@azure/identity": "^4.8.0",
+        "@azure/storage-blob": "^12.27.0",
         "@tailwindcss/cli": "^4.0.16",
         "@tailwindcss/vite": "^4.0.16",
         "cors": "^2.8.5",

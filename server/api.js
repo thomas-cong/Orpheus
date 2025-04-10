@@ -1,16 +1,24 @@
 import express from "express";
 import fs from "fs";
 import PatientInfo from "./Models/PatientInfo.js";
-import { stringToNumber } from "./helperfunctions.js";
+import { stringToNumber, sanitizeContainerName } from "./helperfunctions.js";
 const router = express.Router();
+
 const wordsContent = fs.readFileSync("./Data/words.txt", "utf-8");
 const wordArray = wordsContent.split("\n");
+
+import dotenv from "dotenv";
+dotenv.config();
+import { BlobServiceClient } from "@azure/storage-blob";
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+    process.env.STORAGE_CONNECTION_STRING
+);
 router.get("/", (req, res) => {
     // Returns API status
     res.send("API is running");
 });
 // Generate words, req.query.numWords is the number of words to generate
-router.get("/generateWords", (req, res) => {
+router.get("/testhelper/generateWords", (req, res) => {
     console.log("Num words to generate: ", req.query.numWords);
     let wordsToReturn = [];
     for (let i = 0; i < req.query.numWords; i++) {
@@ -22,7 +30,7 @@ router.get("/generateWords", (req, res) => {
 });
 
 // Get patient ID pseudo-randomly
-router.get("/genPatientID", (req, res) => {
+router.get("/patients/genPatientID", (req, res) => {
     let patientID =
         "P-" +
         stringToNumber(
@@ -31,7 +39,7 @@ router.get("/genPatientID", (req, res) => {
     res.json({ patientID: patientID });
 });
 // Get patient info from ID
-router.get("/getPatientInfo", (req, res) => {
+router.get("/patients/getPatientInfo", (req, res) => {
     // Queries patient info from MongoDB
     PatientInfo.findOne({ patientID: req.query.patientID })
         .then((patient) => {
@@ -49,7 +57,7 @@ router.get("/getPatientInfo", (req, res) => {
         });
 });
 // Add a new patient
-router.post("/addPatient", (req, res) => {
+router.post("/patients/addPatient", (req, res) => {
     // Validates all fields exist
     if (
         !req.body.patientID ||
@@ -73,7 +81,52 @@ router.post("/addPatient", (req, res) => {
             res.status(500).send({ msg: "Error adding patient" });
         });
 });
-// Post audio files to Azure
+// Get Patient Container
+router.get("/audioStorage/getContainer", (req, res) => {
+    if (!req.query.containerName) {
+        return res.status(400).send({ msg: "Container name is required" });
+    }
+    const cleanedName = sanitizeContainerName(req.query.containerName);
+    async function getContainerClient(containerName) {
+        const containerClient =
+            blobServiceClient.getContainerClient(containerName);
+        return containerClient;
+    }
+    getContainerClient(cleanedName)
+        .then((containerClient) => {
+            res.send({ containerClient });
+        })
+        .catch((error) => {
+            console.error("Error getting container:", error);
+            res.status(500).send({ msg: "Error getting container" });
+        });
+});
+
+// Create Patient Container
+router.post("/audioStorage/createContainer", (req, res) => {
+    if (!req.body.containerName) {
+        return res.status(400).send({ msg: "Container name is required" });
+    }
+    const cleanedName = sanitizeContainerName(req.body.containerName);
+    async function createContainer(blobServiceClient, containerName) {
+        const containerClient = await blobServiceClient.createContainer(
+            containerName
+        );
+        return containerClient;
+    }
+    createContainer(blobServiceClient, cleanedName)
+        .then((containerClient) => {
+            res.send({
+                msg: "Container created",
+                containerName: cleanedName,
+                containerClient,
+            });
+        })
+        .catch((error) => {
+            console.error("Error creating container:", error);
+            res.status(500).send({ msg: "Error creating container" });
+        });
+});
 // Catch-all
 router.all("*", (req, res) => {
     console.log(`API route not found: ${req.method} ${req.url}`);
