@@ -1,15 +1,30 @@
 import { useState, useEffect } from "react";
 import { get, post } from "../utilities";
+import { usePatient } from "../context/PatientContext";
+
 const DemographicInput = ({
     setDemographicsCollected,
 }: {
     setDemographicsCollected: (demographicsCollected: boolean) => void;
 }) => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [DOB, setDOB] = useState("");
-    const [education, setEducation] = useState("");
-    const [ethnicity, setEthnicity] = useState("");
+    const { 
+        setPatientID,
+        firstName,
+        setFirstName,
+        lastName,
+        setLastName,
+        DOB,
+        setDOB,
+        educationLevel,
+        setEducationLevel,
+        ethnicity,
+        setEthnicity 
+    } = usePatient();
+    // const [firstName, setFirstName] = useState("");
+    // const [lastName, setLastName] = useState("");
+    // const [DOB, setDOB] = useState("");
+    // const [education, setEducation] = useState("");
+    // const [ethnicity, setEthnicity] = useState("");
 
     // Validation states
     const [firstNameError, setFirstNameError] = useState("");
@@ -27,7 +42,7 @@ const DemographicInput = ({
             firstName.trim() !== "" &&
             lastName.trim() !== "" &&
             DOB !== "" &&
-            education !== "" &&
+            educationLevel !== "" &&
             ethnicity !== "" &&
             !firstNameError &&
             !lastNameError;
@@ -37,7 +52,7 @@ const DemographicInput = ({
         firstName,
         lastName,
         DOB,
-        education,
+        educationLevel,
         ethnicity,
         firstNameError,
         lastNameError,
@@ -59,12 +74,19 @@ const DemographicInput = ({
                         firstName: firstName,
                         lastName: lastName,
                         DOB: DOB,
-                        educationLevel: education,
+                        educationLevel: educationLevel,
                         ethnicity: ethnicity,
                     });
                 }
             }
         );
+        // Initialize the patient context with form data
+        setPatientID(patientID);
+        setFirstName(firstName);
+        setLastName(lastName);
+        setDOB(DOB);
+        setEducationLevel(educationLevel);
+        setEthnicity(ethnicity);
         setDemographicsCollected(true);
     };
     return (
@@ -131,7 +153,7 @@ const DemographicInput = ({
             />
             <select
                 className="w-90/100"
-                onChange={(e) => setEducation(e.target.value)}
+                onChange={(e) => setEducationLevel(e.target.value)}
             >
                 <option value="">Select Education Level</option>
                 <option value="Primary">Primary/Middle School</option>

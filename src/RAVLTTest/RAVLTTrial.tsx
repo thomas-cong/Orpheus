@@ -51,7 +51,7 @@ const RAVLTestTrial = (
             {trialStage === "Recording" && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
-                    <AudioRecorder patientID={patientID} trialID={trialID} />
+                    <AudioRecorder patientID={patientID} trialID={trialID} testStage={testStage} />
                     <button onClick={finishingFunction}>
                         Finished Recording
                     </button>

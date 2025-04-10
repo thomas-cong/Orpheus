@@ -66,7 +66,7 @@ const RAVLTTest = () => {
                     />
                 </>
             )}
-            {testStage === 8 && RAVLTTrial}
+            {testStage === 7 && RAVLTTrial}
         </div>
     );
 };
