@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
+import { post, get } from "../utilities";
 // import { usePatient } from "../context/PatientContext";
 interface AudioRecorderProps {
     patientID: string;

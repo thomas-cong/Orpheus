@@ -59,17 +59,17 @@ const DemographicInput = ({
     ]);
     const submit = async () => {
         // Generate patient ID using Hashing
-        const { patientID } = await get("/api/genPatientID", {
+        const { patientID } = await get("/api/patients/genPatientID", {
             firstName: firstName,
             lastName: lastName,
             DOB: DOB,
         });
         // Check if patient has already been collected for demographics
-        await get("/api/getPatientInfo", { patientID: patientID }).then(
+        await get("/api/patients/getPatientInfo", { patientID: patientID }).then(
             (result) => {
                 if (result.msg === "Patient not found") {
                     // Patient does not exist, add new patient
-                    post("/api/addPatient", {
+                    post("/api/patients/addPatient", {
                         patientID: patientID,
                         firstName: firstName,
                         lastName: lastName,
@@ -80,6 +80,12 @@ const DemographicInput = ({
                 }
             }
         );
+        await get("/api/audioStorage/getContainer", { containerName: patientID }).then((result) => {
+            if (result.msg === "Error getting container") {
+                post("/api/audioStorage/createContainer", { containerName: patientID });
+            }
+            console.log(result);
+        });
         // Initialize the patient context with form data
         setPatientID(patientID);
         setFirstName(firstName);
