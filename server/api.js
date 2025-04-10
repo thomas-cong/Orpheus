@@ -9,15 +9,28 @@ const wordArray = wordsContent.split("\n");
 
 import dotenv from "dotenv";
 dotenv.config();
+
 import { BlobServiceClient } from "@azure/storage-blob";
 const blobServiceClient = BlobServiceClient.fromConnectionString(
     process.env.STORAGE_CONNECTION_STRING
 );
+/**
+ * @route GET /api
+ * @description Check if the API is running
+ * @access Public
+ * @returns {string} - Simple text message indicating the API is running
+ */
 router.get("/", (req, res) => {
-    // Returns API status
     res.send("API is running");
 });
-// Generate words, req.query.numWords is the number of words to generate
+/**
+ * @route GET /api/testhelper/generateWords
+ * @description Generate a list of random words for testing purposes
+ * @access Public
+ * @param {number} req.query.numWords - Number of random words to generate
+ * @returns {Object} - JSON object containing an array of random words
+ * @returns {string[]} words - Array of randomly selected words
+ */
 router.get("/testhelper/generateWords", (req, res) => {
     console.log("Num words to generate: ", req.query.numWords);
     let wordsToReturn = [];
@@ -29,7 +42,16 @@ router.get("/testhelper/generateWords", (req, res) => {
     res.json({ words: wordsToReturn });
 });
 
-// Get patient ID pseudo-randomly
+/**
+ * @route GET /api/patients/genPatientID
+ * @description Generate a deterministic patient ID based on patient information
+ * @access Public
+ * @param {string} req.query.firstName - Patient's first name
+ * @param {string} req.query.lastName - Patient's last name
+ * @param {string} req.query.DOB - Patient's date of birth
+ * @returns {Object} - JSON object containing the generated patient ID
+ * @returns {string} patientID - The generated patient ID with format "P-[hash]"
+ */
 router.get("/patients/genPatientID", (req, res) => {
     let patientID =
         "P-" +
@@ -38,7 +60,14 @@ router.get("/patients/genPatientID", (req, res) => {
         );
     res.json({ patientID: patientID });
 });
-// Get patient info from ID
+/**
+ * @route GET /api/patients/getPatientInfo
+ * @description Retrieve patient information from the database by patient ID
+ * @access Public
+ * @param {string} req.query.patientID - The patient ID to look up
+ * @returns {Object} - Either the patient information object or an error message
+ * @returns {string} [msg] - Error message if patient not found or server error
+ */
 router.get("/patients/getPatientInfo", (req, res) => {
     // Queries patient info from MongoDB
     PatientInfo.findOne({ patientID: req.query.patientID })
@@ -51,12 +80,24 @@ router.get("/patients/getPatientInfo", (req, res) => {
             }
         })
         .catch((error) => {
-            // Returns error if patient not found
             console.error("Error getting patient info:", error);
             res.status(500).send({ msg: "Error getting patient info" });
         });
 });
-// Add a new patient
+/**
+ * @route POST /api/patients/addPatient
+ * @description Add a new patient to the database
+ * @access Public
+ * @param {Object} req.body - The patient information
+ * @param {string} req.body.patientID - Unique identifier for the patient
+ * @param {string} req.body.firstName - Patient's first name
+ * @param {string} req.body.lastName - Patient's last name
+ * @param {string} req.body.DOB - Patient's date of birth
+ * @param {string} req.body.educationLevel - Patient's education level
+ * @param {string} req.body.ethnicity - Patient's ethnicity
+ * @returns {Object} - JSON object with success or error message
+ * @returns {string} msg - Success or error message
+ */
 router.post("/patients/addPatient", (req, res) => {
     // Validates all fields exist
     if (
@@ -81,19 +122,28 @@ router.post("/patients/addPatient", (req, res) => {
             res.status(500).send({ msg: "Error adding patient" });
         });
 });
-// Get Patient Container
+/**
+ * @route GET /api/audioStorage/getContainer
+ * @description Get a reference to an Azure Blob Storage container
+ * @access Public
+ * @param {string} req.query.containerName - Name of the container to retrieve
+ * @returns {Object} - JSON object with container client or error message
+ * @returns {Object} containerClient - Azure Blob Storage container client
+ * @returns {string} [msg] - Error message if container retrieval fails
+ */
 router.get("/audioStorage/getContainer", (req, res) => {
     if (!req.query.containerName) {
         return res.status(400).send({ msg: "Container name is required" });
     }
     const cleanedName = sanitizeContainerName(req.query.containerName);
-    async function getContainerClient(containerName) {
+    async function getContainer(containerName) {
         const containerClient =
             blobServiceClient.getContainerClient(containerName);
         return containerClient;
     }
-    getContainerClient(cleanedName)
+    getContainer(cleanedName)
         .then((containerClient) => {
+            console.log("Container client:", containerClient);
             res.send({ containerClient });
         })
         .catch((error) => {
@@ -101,19 +151,63 @@ router.get("/audioStorage/getContainer", (req, res) => {
             res.status(500).send({ msg: "Error getting container" });
         });
 });
-
-// Create Patient Container
+/**
+ * @route DELETE /api/audioStorage/deleteContainer
+ * @description Delete an Azure Blob Storage container
+ * @access Public
+ * @param {string} req.query.containerName - Name of the container to delete
+ * @returns {Object} - JSON object with success or error message
+ * @returns {string} msg - Success or error message
+ */
+router.delete("/audioStorage/deleteContainer", (req, res) => {
+    // Validate container name
+    if (!req.query.containerName) {
+        return res.status(400).send({ msg: "Container name is required" });
+    }
+    // Sanitize container name
+    const cleanedName = sanitizeContainerName(req.query.containerName);
+    // Delete container
+    async function deleteContainer(blobServiceClient, containerName) {
+        const containerClient =
+            blobServiceClient.deleteContainer(containerName);
+        return containerClient;
+    }
+    // Delete container and return response
+    deleteContainer(blobServiceClient, cleanedName)
+        .then(() => {
+            res.send({ msg: "Container deleted" });
+        })
+        .catch((error) => {
+            console.error("Error deleting container:", error);
+            res.status(500).send({ msg: "Error deleting container" });
+        });
+});
+/**
+ * @route POST /api/audioStorage/createContainer
+ * @description Create a new Azure Blob Storage container for storing audio files
+ * @access Public
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.containerName - Name for the new container (will be sanitized)
+ * @returns {Object} - JSON object with container information or error message
+ * @returns {string} msg - Success or error message
+ * @returns {string} containerName - The sanitized container name used
+ * @returns {Object} containerClient - Azure Blob Storage container client
+ */
 router.post("/audioStorage/createContainer", (req, res) => {
+    // Validate container name
     if (!req.body.containerName) {
         return res.status(400).send({ msg: "Container name is required" });
     }
+    // Sanitize container name
     const cleanedName = sanitizeContainerName(req.body.containerName);
+    // Create container and return response
     async function createContainer(blobServiceClient, containerName) {
         const containerClient = await blobServiceClient.createContainer(
             containerName
         );
         return containerClient;
     }
+    // Create container and return response
     createContainer(blobServiceClient, cleanedName)
         .then((containerClient) => {
             res.send({
@@ -127,7 +221,14 @@ router.post("/audioStorage/createContainer", (req, res) => {
             res.status(500).send({ msg: "Error creating container" });
         });
 });
-// Catch-all
+
+/**
+ * @route ALL *
+ * @description Catch-all route for undefined endpoints
+ * @access Public
+ * @returns {Object} - JSON object with error message
+ * @returns {string} msg - Error message indicating route not found
+ */
 router.all("*", (req, res) => {
     console.log(`API route not found: ${req.method} ${req.url}`);
     res.status(404).send({ msg: "API route not found" });
