@@ -10,21 +10,21 @@ const RAVLT = () => {
     const {} = usePatient();
     const [wordArray, setWordArray] = useState<string[]>([]);
     const [interferenceArray, setInterferenceArray] = useState<string[]>([]);
-    const [testStage, setTestStage] = useState(0);
-    const [trialStage, setTrialStage] = useState("Listening");
+    const [trialCycle, setTrialCycle] = useState(0);
+    const [trialStatus, setTrialStatus] = useState("Listening");
     const [recordingID, setRecordingID] = useState(0);
     const RAVLTCycleComponent = RAVLTCycle(
         wordArray,
-        trialStage,
-        setTrialStage,
+        trialStatus,
+        setTrialStatus,
         recordingID,
         setRecordingID,
-        testStage,
-        setTestStage
+        trialCycle,
+        setTrialCycle
     );
     return (
         <div className="max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-honeydew flex items-center justify-center slideIn">
-            {testStage === 0 && (
+            {trialCycle === 0 && (
                 <div className="flex flex-col items-center">
                     <InstructionDisplay
                         instructions="You will hear a list of words. 
@@ -34,39 +34,39 @@ const RAVLT = () => {
                         Are you ready?"
                     />
                     <TestProgressionButton
-                        onClick={() => setTestStage(1)}
+                        onClick={() => setTrialCycle(1)}
                         text="Start"
                     />
                 </div>
             )}
 
-            {testStage === 1 && (
+            {trialCycle === 1 && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Press the button below to generate the words. Only press this when you are ready." />
                     <GenerateWordsButton
                         numWords={15}
                         words={wordArray}
                         setWords={setWordArray}
-                        onClick={() => setTestStage(2)}
+                        onClick={() => setTrialCycle(2)}
                     />
                 </div>
             )}
-            {testStage === 2 && RAVLTCycleComponent}
-            {testStage === 3 && RAVLTCycleComponent}
-            {testStage === 4 && RAVLTCycleComponent}
-            {testStage === 5 && RAVLTCycleComponent}
-            {testStage === 6 && (
+            {trialCycle === 2 && RAVLTCycleComponent}
+            {trialCycle === 3 && RAVLTCycleComponent}
+            {trialCycle === 4 && RAVLTCycleComponent}
+            {trialCycle === 5 && RAVLTCycleComponent}
+            {trialCycle === 6 && (
                 <>
                     <InstructionDisplay instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember." />
                     <GenerateWordsButton
                         numWords={15}
                         words={interferenceArray}
                         setWords={setInterferenceArray}
-                        onClick={() => setTestStage(8)}
+                        onClick={() => setTrialCycle(8)}
                     />
                 </>
             )}
-            {testStage === 7 && RAVLTCycleComponent}
+            {trialCycle === 7 && RAVLTCycleComponent}
         </div>
     );
 };

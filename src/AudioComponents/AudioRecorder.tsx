@@ -5,10 +5,10 @@ import { post } from "../utilities";
 interface AudioRecorderProps {
     patientID: string;
     trialID: string;
-    testStage: number;
+    trialCycle: number;
 }
 
-const AudioRecorder = ({ patientID, trialID, testStage }: AudioRecorderProps) => {
+const AudioRecorder = ({ patientID, trialID, trialCycle }: AudioRecorderProps) => {
     const [isRecording, setIsRecording] = useState(false);
     const [recordedURL, setRecordedURL] = useState("");
     const [timer, setTimer] = useState(0);
@@ -43,7 +43,7 @@ const AudioRecorder = ({ patientID, trialID, testStage }: AudioRecorderProps) =>
                     type: "audio/wav",
                 });
                 const audioUrl = URL.createObjectURL(audioBlob);
-                const fileName = `${patientID}_${trialID}_${testStage}.wav`;
+                const fileName = `${patientID}_${trialID}_${trialCycle}.wav`;
                 const file = new File([audioBlob], fileName, {
                     type: "audio/wav",
                 });

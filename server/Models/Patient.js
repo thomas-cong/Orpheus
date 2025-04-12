@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const patientInfoSchema = new mongoose.Schema({
+const patientSchema = new mongoose.Schema({
     patientID: String,
     DOB: String,
     educationLevel: String,
@@ -8,4 +8,4 @@ const patientInfoSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
 });
-export default mongoose.model("Patient", patientInfoSchema);
+export default mongoose.model("Patient", patientSchema);
