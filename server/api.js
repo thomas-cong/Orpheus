@@ -225,6 +225,51 @@ router.post("/audioStorage/createContainer", (req, res) => {
 });
 
 /**
+ * @route POST /api/audioStorage/uploadBlob
+ * @description Upload a blob to Azure Blob Storage
+ * @access Public
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.containerName - Name of the container to upload to
+ * @param {string} req.body.blobName - Name to give the blob in storage
+ * @param {ArrayBuffer} req.body.data - The blob data as an ArrayBuffer
+ * @returns {Object} - JSON object with success or error message
+ */
+router.post("/audioStorage/uploadBlob", async (req, res) => {
+    if (!req.body.containerName || !req.body.blobName || !req.body.data) {
+        return res.status(400).send({ msg: "Missing required fields" });
+    }
+
+    const cleanedName = sanitizeContainerName(req.body.containerName);
+    async function getContainer(containerName) {
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const exists = await containerClient.exists();
+        return { containerClient, exists };
+    }
+    try {
+        // Get container client
+        const { containerClient } = await getContainer(cleanedName);
+        
+        // Get blob client
+        const blockBlobClient = containerClient.getBlockBlobClient(req.body.blobName);
+        
+        // Convert Base64 to Buffer for upload
+        const buffer = Buffer.from(req.body.data, 'base64');
+        
+        // Upload the blob
+        await blockBlobClient.upload(buffer, buffer.length);
+        
+        res.send({ 
+            msg: "Blob uploaded successfully",
+            blobName: req.body.blobName,
+            containerName: cleanedName
+        });
+    } catch (error) {
+        console.error("Error uploading blob:", error);
+        res.status(500).send({ msg: "Error uploading blob" });
+    }
+});
+
+/**
  * @route ALL *
  * @description Catch-all route for undefined endpoints
  * @access Public

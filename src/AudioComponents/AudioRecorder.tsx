@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
-import { post, get } from "../utilities";
+import { post } from "../utilities";
 // import { usePatient } from "../context/PatientContext";
 interface AudioRecorderProps {
     patientID: string;
@@ -38,15 +38,33 @@ const AudioRecorder = ({ patientID, trialID, testStage }: AudioRecorderProps) =>
                     chunks.current.push(event.data);
                 }
             };
-            mediaRecorder.current.onstop = () => {
+            mediaRecorder.current.onstop = async () => {
                 const audioBlob = new Blob(chunks.current, {
                     type: "audio/wav",
                 });
                 const audioUrl = URL.createObjectURL(audioBlob);
-                const file = new File([audioBlob], `${patientID}_${trialID}_${testStage}.wav`, {
+                const fileName = `${patientID}_${trialID}_${testStage}.wav`;
+                const file = new File([audioBlob], fileName, {
                     type: "audio/wav",
                 });
-                console.log(`${patientID}_${trialID}_${testStage}.wav`);
+
+                try {
+                    // Convert ArrayBuffer to Base64
+                    const arrayBuffer = await file.arrayBuffer();
+                    const uint8Array = new Uint8Array(arrayBuffer);
+                    const base64Data = btoa(String.fromCharCode.apply(null, Array.from(uint8Array)));
+                    
+                    // Upload to Azure
+                    await post("/api/audioStorage/uploadBlob", {
+                        containerName: patientID,
+                        blobName: fileName,
+                        data: base64Data
+                    });
+                    console.log(`Successfully uploaded ${fileName} to Azure`);
+                } catch (error) {
+                    console.error("Error uploading to Azure:", error);
+                }
+                
                 setRecordedURL(audioUrl);
                 chunks.current = [];
             };
