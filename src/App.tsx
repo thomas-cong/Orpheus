@@ -1,7 +1,7 @@
 import RAVLTTest from "./RAVLTTest/RAVLTTest";
 import "./index.css";
 import DemographicInput from "./PatientInfo/DemographicInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TestSelection from "./PatientInfo/TestSelection";
 import { PatientProvider } from "./context/PatientContext";
 const App = () => {

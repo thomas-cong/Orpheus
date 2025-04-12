@@ -73,7 +73,7 @@ router.get("/patients/genPatientID", (req, res) => {
  * @returns {Object} - Either the patient information object or an error message
  * @returns {string} [msg] - Error message if patient not found or server error
  */
-router.get("/patients/getPatientInfo", (req, res) => {
+router.get("/patients/getPatient", (req, res) => {
     // Queries patient info from MongoDB
     Patient.findOne({ patientID: req.query.patientID })
         .then((patient) => {
@@ -116,7 +116,7 @@ router.post("/patients/addPatient", (req, res) => {
         res.status(400).send({ msg: "Missing required fields" });
         return;
     }
-    const patient = new PatientInfo(req.body);
+    const patient = new Patient(req.body);
     patient
         .save()
         .then(() => {
