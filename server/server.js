@@ -8,7 +8,7 @@ import express from "express"; // backend framework for our node server.
 import session from "express-session"; // library that stores info about each connected user
 import mongoose from "mongoose"; // library to connect to MongoDB
 
-import api from "./api.js";
+import api from "./Endpoints/api.js";
 
 // Server configuration below
 // TODO change connection URL after setting up your team database
