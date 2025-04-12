@@ -1,11 +1,11 @@
 import GenerateWordsButton from "../TestGeneration/GenerateWordsButton";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
-import RAVLTestTrial from "./RAVLTTrial";
+import RAVLTCycle from "./RAVLTCycle";
 import { useState } from "react";
 import { usePatient } from "../context/PatientContext";
 
-const RAVLTTest = () => {
+const RAVLT = () => {
     // We're using the PatientContext in child components, but not directly here
     const {} = usePatient();
     const [wordArray, setWordArray] = useState<string[]>([]);
@@ -13,7 +13,7 @@ const RAVLTTest = () => {
     const [testStage, setTestStage] = useState(0);
     const [trialStage, setTrialStage] = useState("Listening");
     const [recordingID, setRecordingID] = useState(0);
-    const RAVLTTrial = RAVLTestTrial(
+    const RAVLTCycleComponent = RAVLTCycle(
         wordArray,
         trialStage,
         setTrialStage,
@@ -51,10 +51,10 @@ const RAVLTTest = () => {
                     />
                 </div>
             )}
-            {testStage === 2 && RAVLTTrial}
-            {testStage === 3 && RAVLTTrial}
-            {testStage === 4 && RAVLTTrial}
-            {testStage === 5 && RAVLTTrial}
+            {testStage === 2 && RAVLTCycleComponent}
+            {testStage === 3 && RAVLTCycleComponent}
+            {testStage === 4 && RAVLTCycleComponent}
+            {testStage === 5 && RAVLTCycleComponent}
             {testStage === 6 && (
                 <>
                     <InstructionDisplay instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember." />
@@ -66,9 +66,9 @@ const RAVLTTest = () => {
                     />
                 </>
             )}
-            {testStage === 7 && RAVLTTrial}
+            {testStage === 7 && RAVLTCycleComponent}
         </div>
     );
 };
 
-export default RAVLTTest;
+export default RAVLT;
