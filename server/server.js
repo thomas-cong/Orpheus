@@ -14,7 +14,7 @@ import api from "./api.js";
 // TODO change connection URL after setting up your team database
 const mongoConnectionURL = process.env.MONGO_DB_SRV;
 // TODO change database name to the name you chose
-const databaseName = "patientInfo";
+const databaseName = "Records";
 
 mongoose.set("strictQuery", false);
 
