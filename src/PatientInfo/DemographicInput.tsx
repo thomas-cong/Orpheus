@@ -7,7 +7,7 @@ const DemographicInput = ({
 }: {
     setDemographicsCollected: (demographicsCollected: boolean) => void;
 }) => {
-    const { 
+    const {
         setPatientID,
         firstName,
         setFirstName,
@@ -18,7 +18,7 @@ const DemographicInput = ({
         educationLevel,
         setEducationLevel,
         ethnicity,
-        setEthnicity 
+        setEthnicity,
     } = usePatient();
     // const [firstName, setFirstName] = useState("");
     // const [lastName, setLastName] = useState("");
@@ -65,7 +65,7 @@ const DemographicInput = ({
             DOB: DOB,
         });
         // Check if patient has already been collected for demographics
-        await get("/api/patients/getPatientInfo", { patientID: patientID }).then(
+        await get("/api/patients/getPatient", { patientID: patientID }).then(
             (result) => {
                 if (result.msg === "Patient not found") {
                     // Patient does not exist, add new patient
@@ -80,9 +80,13 @@ const DemographicInput = ({
                 }
             }
         );
-        await get("/api/audioStorage/getContainer", { containerName: patientID }).then((result) => {
+        await get("/api/audioStorage/getContainer", {
+            containerName: patientID,
+        }).then((result) => {
             if (result.msg === "Container not found") {
-                post("/api/audioStorage/createContainer", { containerName: patientID });
+                post("/api/audioStorage/createContainer", {
+                    containerName: patientID,
+                });
             }
             console.log(result);
         });
