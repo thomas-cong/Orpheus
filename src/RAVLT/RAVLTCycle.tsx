@@ -2,7 +2,7 @@ import TTSAudioComponent from "../AudioComponents/TTSAudioComponent";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import AudioRecorder from "../AudioComponents/AudioRecorder";
 import { usePatient } from "../context/PatientContext";
-const RAVLTestTrial = (
+const RAVLTCycle = (
     wordArray: string[],
     trialStage: string,
     setTrialStage: (stage: string) => void,
@@ -61,4 +61,4 @@ const RAVLTestTrial = (
     );
 };
 
-export default RAVLTestTrial;
+export default RAVLTCycle;
