@@ -8,4 +8,4 @@ const patientInfoSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
 });
-export default mongoose.model("PatientInfo", patientInfoSchema);
+export default mongoose.model("Patient", patientInfoSchema);

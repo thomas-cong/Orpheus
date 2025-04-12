@@ -31,4 +31,23 @@ const sanitizeContainerName = (name) => {
 
     return sanitized;
 };
-export { stringToNumber, sanitizeContainerName };
+
+/**
+ * Generates a random alphanumeric sequence of specified length
+ * @param {number} length - The length of the sequence to generate
+ * @returns {string} - A random alphanumeric sequence
+ */
+const generateAlphanumericSequence = (length) => {
+    const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+    }
+
+    return result;
+};
+
+export { stringToNumber, sanitizeContainerName, generateAlphanumericSequence };

@@ -1,7 +1,12 @@
 import express from "express";
 import fs from "fs";
-import PatientInfo from "./Models/PatientInfo.js";
-import { stringToNumber, sanitizeContainerName } from "./helperfunctions.js";
+import Patient from "./Models/Patient.js";
+import Trial from "./Models/Trial.js";
+import {
+    stringToNumber,
+    sanitizeContainerName,
+    generateAlphanumericSequence,
+} from "./helperfunctions.js";
 const router = express.Router();
 
 const wordsContent = fs.readFileSync("./Data/words.txt", "utf-8");
@@ -70,7 +75,7 @@ router.get("/patients/genPatientID", (req, res) => {
  */
 router.get("/patients/getPatientInfo", (req, res) => {
     // Queries patient info from MongoDB
-    PatientInfo.findOne({ patientID: req.query.patientID })
+    Patient.findOne({ patientID: req.query.patientID })
         .then((patient) => {
             // Returns patient info if found
             if (patient) {
@@ -137,7 +142,8 @@ router.get("/audioStorage/getContainer", (req, res) => {
     }
     const cleanedName = sanitizeContainerName(req.query.containerName);
     async function getContainer(containerName) {
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient =
+            blobServiceClient.getContainerClient(containerName);
         const exists = await containerClient.exists();
         return { containerClient, exists };
     }
@@ -215,7 +221,7 @@ router.post("/audioStorage/createContainer", (req, res) => {
         .then((containerClient) => {
             res.send({
                 msg: "Container created",
-                containerName: cleanedName
+                containerName: cleanedName,
             });
         })
         .catch((error) => {
@@ -241,31 +247,48 @@ router.post("/audioStorage/uploadBlob", async (req, res) => {
 
     const cleanedName = sanitizeContainerName(req.body.containerName);
     async function getContainer(containerName) {
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient =
+            blobServiceClient.getContainerClient(containerName);
         const exists = await containerClient.exists();
         return { containerClient, exists };
     }
     try {
         // Get container client
         const { containerClient } = await getContainer(cleanedName);
-        
+
         // Get blob client
-        const blockBlobClient = containerClient.getBlockBlobClient(req.body.blobName);
-        
+        const blockBlobClient = containerClient.getBlockBlobClient(
+            req.body.blobName
+        );
+
         // Convert Base64 to Buffer for upload
-        const buffer = Buffer.from(req.body.data, 'base64');
-        
+        const buffer = Buffer.from(req.body.data, "base64");
+
         // Upload the blob
         await blockBlobClient.upload(buffer, buffer.length);
-        
-        res.send({ 
+
+        res.send({
             msg: "Blob uploaded successfully",
             blobName: req.body.blobName,
-            containerName: cleanedName
+            containerName: cleanedName,
         });
     } catch (error) {
         console.error("Error uploading blob:", error);
         res.status(500).send({ msg: "Error uploading blob" });
+    }
+});
+router.get("/trials/genTrialID", async (req, res) => {
+    while (true) {
+        const trialID = generateAlphanumericSequence(10);
+        async function checkTrialID(trialID) {
+            const exists = await Trial.findOne({ trialID: trialID });
+            return exists;
+        }
+        const exists = await checkTrialID(trialID);
+        if (!exists) {
+            res.send({ trialID: trialID });
+            break;
+        }
     }
 });
 

@@ -1,7 +1,7 @@
 import RAVLT from "./RAVLT/RAVLT";
 import "./index.css";
 import DemographicInput from "./PatientInfo/DemographicInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TestSelection from "./PatientInfo/TestSelection";
 import { PatientProvider } from "./context/PatientContext";
 const App = () => {
