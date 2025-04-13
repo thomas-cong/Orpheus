@@ -9,7 +9,9 @@ const RAVLTCycle = (
     recordingID: number,
     setRecordingID: (id: number) => void,
     trialCycle: number,
-    setTrialCycle: (cycle: number) => void
+    setTrialCycle: (cycle: number) => void,
+    recordings: Blob[],
+    setRecordings: (recordings: Blob[]) => void
 ) => {
     const { patientID, trialID } = usePatient();
     const finishingFunction = () => {
@@ -51,7 +53,7 @@ const RAVLTCycle = (
             {trialStatus === "Recording" && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
-                    <AudioRecorder patientID={patientID} trialID={trialID} trialCycle={trialCycle} />
+                    <AudioRecorder recordings={recordings} setRecordings={setRecordings} />
                     <button onClick={finishingFunction}>
                         Finished Recording
                     </button>
