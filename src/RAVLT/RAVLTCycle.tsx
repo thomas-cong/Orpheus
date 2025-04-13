@@ -13,13 +13,11 @@ const RAVLTCycle = (
     recordings: Blob[],
     setRecordings: (recordings: Blob[]) => void
 ) => {
-    const { patientID, trialID } = usePatient();
+    const { patientID } = usePatient();
     const finishingFunction = () => {
         console.log(
             "Patient " +
                 patientID +
-                " trial " +
-                trialID +
                 " recording " +
                 recordingID +
                 " completed"

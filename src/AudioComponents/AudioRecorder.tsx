@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
-// import { post } from "../utilities";
-// import { usePatient } from "../context/PatientContext";
 interface AudioRecorderProps {
-    // patientID: string;
-    // trialID: string;
-    // trialCycle: number;
     recordings: Blob[];
     setRecordings: (recordings: Blob[]) => void;
 }

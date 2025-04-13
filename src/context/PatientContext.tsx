@@ -4,8 +4,6 @@ import React, { createContext, useContext, ReactNode, useState } from "react";
 interface PatientContextType {
     patientID: string;
     setPatientID: (id: string) => void;
-    trialID: string;
-    setTrialID: (id: string) => void;
     firstName: string;
     setFirstName: (firstName: string) => void;
     lastName: string;
@@ -22,8 +20,6 @@ interface PatientContextType {
 const PatientContext = createContext<PatientContextType>({
     patientID: "",
     setPatientID: () => {},
-    trialID: "",
-    setTrialID: () => {},
     firstName: "",
     setFirstName: () => {},
     lastName: "",
@@ -45,7 +41,6 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
     children,
 }) => {
     const [patientID, setPatientID] = useState("");
-    const [trialID, setTrialID] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [DOB, setDOB] = useState("");
@@ -57,8 +52,6 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
             value={{
                 patientID,
                 setPatientID,
-                trialID,
-                setTrialID,
                 firstName,
                 setFirstName,
                 lastName,
