@@ -5,9 +5,9 @@
     "type": "module",
     "scripts": {
         "vite": "vite",
-        "tailwindcss": "npx @tailwindcss/cli -i ./src/index.css -o ./src/output.css --watch",
-        "dev": "vite && npx @tailwindcss/cli -i ./src/index.css -o ./src/output.css --watch",
-        "build": "tsc -b && vite build",
+        "tailwindcss": "npx @tailwindcss/cli -i ./global-files/index.css -o ./global-files/output.css --watch",
+        "dev": "vite && npx @tailwindcss/cli -i ./global-files/index.css -o ./global-files/output.css --watch",
+        "build": "tsc -b && vite build && npx @tailwindcss/cli -i ./global-files/index.css -o ./global-files/output.css --watch",
         "lint": "eslint .",
         "preview": "vite preview",
         "start": "node server/server.js",

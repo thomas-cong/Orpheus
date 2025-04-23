@@ -1,4 +1,5 @@
-import { get } from "../utilities";
+import React from "react";
+import { get } from "../../global-files/utilities";
 
 const GenerateWordsButton = (props: {
     numWords: number;

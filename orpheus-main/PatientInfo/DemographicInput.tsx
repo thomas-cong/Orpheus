@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { get, post } from "../utilities";
+import { get, post } from "../../global-files/utilities";
 import { usePatient } from "../context/PatientContext";
+import React from "react";
 
 const DemographicInput = ({
     setDemographicsCollected,

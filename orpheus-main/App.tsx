@@ -1,9 +1,10 @@
 import RAVLT from "./RAVLT/RAVLT";
-import "./index.css";
+import "../global-files/index.css";
 import DemographicInput from "./PatientInfo/DemographicInput";
 import { useState } from "react";
 import TestSelection from "./PatientInfo/TestSelection";
 import { PatientProvider } from "./context/PatientContext";
+import React from "react";
 const App = () => {
     const [test, setTest] = useState("");
     const [demographicsCollected, setDemographicsCollected] = useState(false);

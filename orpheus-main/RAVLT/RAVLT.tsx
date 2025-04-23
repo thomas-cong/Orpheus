@@ -4,7 +4,8 @@ import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import RAVLTCycle from "./RAVLTCycle";
 import { useState, useEffect } from "react";
 import { usePatient } from "../context/PatientContext";
-import { get, post } from "../utilities";
+import { get, post } from "../../global-files/utilities";
+import React from "react";
 
 const RAVLT = () => {
     // We're using the PatientContext in child components, but not directly here
