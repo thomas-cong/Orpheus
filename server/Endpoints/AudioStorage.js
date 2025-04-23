@@ -1,7 +1,11 @@
 import express from "express";
 import { BlobServiceClient } from "@azure/storage-blob";
+import { StorageSharedKeyCredential } from "@azure/storage-blob";
+import { ContainerSASPermissions } from "@azure/storage-blob";
+import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
 
 // Load environment variables
 dotenv.config();
@@ -11,6 +15,10 @@ const router = express.Router();
 // Initialize Azure Blob Service client
 const blobServiceClient = BlobServiceClient.fromConnectionString(
     process.env.STORAGE_CONNECTION_STRING
+);
+const sharedKeyCredential = new StorageSharedKeyCredential(
+    process.env.STORAGE_ACCOUNT_NAME,
+    process.env.STORAGE_KEY
 );
 
 /**
@@ -172,6 +180,96 @@ router.post("/uploadBlob", async (req, res) => {
     } catch (error) {
         console.error("Error uploading blob:", error);
         res.status(500).send({ msg: "Error uploading blob" });
+    }
+});
+/**
+ *
+ * @param {ContainerClient} containerClient
+ * @param {StorageSharedKeyCredential} sharedKeyCredential
+ * @param {string} storedPolicyName
+ * @returns {string} - SAS URL for the container
+ */
+const getContainerSasUri = async (
+    containerClient,
+    sharedKeyCredential,
+    storedPolicyName
+) => {
+    const sasOptions = {
+        containerName: containerClient.containerName,
+        permissions: ContainerSASPermissions.parse("racwl"),
+    };
+
+    if (storedPolicyName == null) {
+        sasOptions.startsOn = new Date();
+        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
+    } else {
+        sasOptions.identifier = storedPolicyName;
+    }
+
+    const sasToken = generateBlobSASQueryParameters(
+        sasOptions,
+        sharedKeyCredential
+    ).toString();
+    console.log(`SAS token for blob container is: ${sasToken}`);
+
+    return `${containerClient.url}?${sasToken}`;
+};
+/**
+ * @route POST /api/audioStorage/transcribe
+ * @description Create a transcription job using Azure Speech-to-Text API
+ * @access Public
+ * @param {Object} req.body - Request body matching Azure Speech-to-Text API requirements
+ * @param {Array} req.body.containerName - Container name of audio files to transcribe
+ * @param {string} req.body.locale - Locale for transcription (e.g., "en-US")
+ * @param {string} req.body.displayName - Name for the transcription job
+ * @param {Object} [req.body.properties] - Optional properties for transcription
+ * @returns {Object} - JSON response from Azure or error message
+ */
+router.post("/transcribe", async (req, res) => {
+    // Create a service SAS for a blob container
+    const containerClient = blobServiceClient.getContainerClient(
+        req.body.containerName
+    );
+    const sas = await getContainerSasUri(
+        containerClient,
+        sharedKeyCredential,
+        null
+    );
+    console.log("SAS", sas);
+    const apiUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions`;
+    const body = {
+        contentContainerUrl: sas,
+        locale: req.body.locale,
+        displayName: req.body.displayName,
+        model: null,
+    };
+
+    const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Ocp-Apim-Subscription-Key": process.env.SPEECH_KEY,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    res.send(data);
+});
+router.get("/getTranscriptionStatus", async (req, res) => {
+    try {
+        const apiUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions/${req.query.transcriptionId}`;
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+                "Ocp-Apim-Subscription-Key": process.env.SPEECH_KEY,
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        res.status(response.status).json(data);
+    } catch (error) {
+        console.error("Error getting transcription status:", error);
+        res.status(500).send({ msg: "Error getting transcription status" });
     }
 });
 
