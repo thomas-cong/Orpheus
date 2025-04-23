@@ -4,7 +4,6 @@ import DemographicInput from "./PatientInfo/DemographicInput";
 import { useState } from "react";
 import TestSelection from "./PatientInfo/TestSelection";
 import { PatientProvider } from "./context/PatientContext";
-import { get, post } from "./utilities";
 const App = () => {
     const [test, setTest] = useState("");
     const [demographicsCollected, setDemographicsCollected] = useState(false);

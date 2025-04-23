@@ -4,5 +4,6 @@ const TrialSchema = new mongoose.Schema({
     trialID: String,
     test: String,
     date: Date,
+    transcriptionID: String,
 });
 export default mongoose.model("Trial", TrialSchema);
