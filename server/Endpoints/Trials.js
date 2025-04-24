@@ -62,4 +62,18 @@ router.post("/addTrial", (req, res) => {
         });
 });
 
+router.get("/getTrials", (req, res) => {
+    if (!req.query.patientID) {
+        return res.status(400).send({ msg: "Missing patient ID" });
+    }
+    Trial.find({ patientID: req.query.patientID })
+        .then((trials) => {
+            res.json({ trials: trials });
+        })
+        .catch((error) => {
+            console.error("Error getting trials:", error);
+            res.status(500).json({ error: "Failed to get trials" });
+        });
+});
+
 export default router;
