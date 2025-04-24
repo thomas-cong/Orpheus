@@ -100,7 +100,7 @@ const DemographicInput = ({
             <div className="flex w-full justify-between mb-4 mt-4">
                 <div className="flex flex-col w-45/100">
                     <input
-                        className={`w-full ${
+                        className={`w-full focus:outline-none focus:ring-2 focus:ring-orange ${
                             firstNameError ? "border-red-500 border-2" : ""
                         }`}
                         type="text"
@@ -126,7 +126,7 @@ const DemographicInput = ({
                 </div>
                 <div className="flex flex-col w-45/100">
                     <input
-                        className={`w-full ${
+                        className={`w-full focus:outline-none focus:ring-2 focus:ring-orange ${
                             lastNameError ? "border-red-500 border-2" : ""
                         }`}
                         type="text"
@@ -152,13 +152,13 @@ const DemographicInput = ({
                 </div>
             </div>
             <input
-                className="w-90/100"
+                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
                 type="date"
                 placeholder="Date of Birth"
                 onChange={(e) => setDOB(e.target.value)}
             />
             <select
-                className="w-90/100"
+                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
                 onChange={(e) => setEducationLevel(e.target.value)}
             >
                 <option value="">Select Education Level</option>
@@ -169,7 +169,7 @@ const DemographicInput = ({
                 <option value="Other">Other</option>
             </select>
             <select
-                className="w-90/100"
+                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
                 onChange={(e) => setEthnicity(e.target.value)}
             >
                 <option value="">Select Ethnicity</option>
@@ -182,8 +182,8 @@ const DemographicInput = ({
             </select>
             <button
                 className={`${
-                    isFormValid ? "bg-dukeblue" : "bg-gray-400"
-                } text-eblack h-15/100 w-50/100 rounded-lg p-2 text-center mt-4`}
+                    isFormValid ? "bg-orange" : "bg-gray-400"
+                } text-seasalt h-15/100 w-50/100 rounded-lg p-2 text-center mt-4 focus:outline-none focus:ring-2 focus:ring-orange`}
                 onClick={submit}
                 disabled={!isFormValid}
             >

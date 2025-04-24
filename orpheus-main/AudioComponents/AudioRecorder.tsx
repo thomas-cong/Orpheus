@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
+import React from "react";
 interface AudioRecorderProps {
     recordings: Blob[];
     setRecordings: (recordings: Blob[]) => void;

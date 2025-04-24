@@ -17,13 +17,13 @@
         transform: scale(1);
     }
 }
-button {
-    @apply animate-[var(--button-pulse-size)];
-    @apply rounded-lg;
-}
+
 :root {
-    --button-pulse-size: button-pulse-size 2s cubic-bezier(0.4, 0, 0.6, 0.5)
-        infinite;
+    button {
+        @apply cursor-pointer;
+        @apply rounded-md;
+        @apply hover:border-orange hover:border;
+    }
 }
 input {
     @apply bg-seasalt rounded-lg p-2;

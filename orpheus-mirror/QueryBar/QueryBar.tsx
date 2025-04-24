@@ -22,11 +22,11 @@ const QueryBar = () => {
             <input
                 type="text"
                 placeholder="Patient ID"
-                className="bg-white flex-1 rounded-lg p-2 mr-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-dukeblue"
+                className="bg-white flex-1 rounded-lg p-2 mr-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange"
                 onChange={(e) => setPatientID(e.target.value)}
             />
             <button
-                className="bg-dukeblue text-seasalt rounded-lg px-6 py-2 hover:bg-blue-900 transition-colors whitespace-nowrap"
+                className="bg-orange text-seasalt rounded-lg px-6 py-2 hover:bg-orange-900 transition-colors whitespace-nowrap focus:ring-2 focus:ring-orange"
                 onClick={() => patientQuery(patientID)}
             >
                 Get Patient Info
