@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import QueryBar from "./QueryBar/QueryBar";
 import "../global-files/index.css";
 import PatientList from "./PatientList/PatientList";
+import TrialList from "./TrialList/TrialList";
 
 export default function App() {
     const [patients, setPatients] = useState([]);
-    const [focusedPatient, setFocusedPatient] = useState(null);
+    const [focusedPatientID, setFocusedPatientID] = useState(null);
     return (
         <div className="flex flex-col min-h-screen">
             <QueryBar setPatients={setPatients} />
@@ -13,11 +14,11 @@ export default function App() {
                 <div className="w-1/2">
                     <PatientList
                         patients={patients}
-                        setFocusedPatient={setFocusedPatient}
+                        setFocusedPatientID={setFocusedPatientID}
                     />
                 </div>
                 <div className="w-1/2">
-                    {/* Content for the right side can go here */}
+                    <TrialList patientID={focusedPatientID || ""} />
                 </div>
             </div>
         </div>

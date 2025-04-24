@@ -39,7 +39,7 @@ router.get("/getPatient", (req, res) => {
             .then((patient) => {
                 // Returns patient info if found
                 if (patient) {
-                    res.json({ patient: patient });
+                    res.json({ patients: [patient] });
                 } else {
                     res.json({ msg: "Patient not found" });
                 }
