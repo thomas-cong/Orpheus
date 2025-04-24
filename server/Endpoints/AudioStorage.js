@@ -253,7 +253,7 @@ router.post("/transcribe", async (req, res) => {
         body: JSON.stringify(body),
     });
     const data = await response.json();
-    res.send(data);
+    res.send({ msg: "Transcription started", data: data });
 });
 router.get("/getTranscriptionStatus", async (req, res) => {
     try {

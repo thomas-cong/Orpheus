@@ -33,19 +33,32 @@ router.get("/genPatientID", (req, res) => {
  */
 router.get("/getPatient", (req, res) => {
     // Queries patient info from MongoDB
-    Patient.findOne({ patientID: req.query.patientID })
-        .then((patient) => {
-            // Returns patient info if found
-            if (patient) {
-                res.json(patient);
-            } else {
-                res.json({ msg: "Patient not found" });
-            }
-        })
-        .catch((error) => {
-            console.error("Error getting patient info:", error);
-            res.status(500).send({ msg: "Error getting patient info" });
-        });
+    if (req.query.patientID) {
+        // If patientID is provided, find by patientID- and only return one
+        Patient.findOne({ patientID: req.query.patientID })
+            .then((patient) => {
+                // Returns patient info if found
+                if (patient) {
+                    res.json({ patient: patient });
+                } else {
+                    res.json({ msg: "Patient not found" });
+                }
+            })
+            .catch((error) => {
+                console.error("Error getting patient info:", error);
+                res.status(500).send({ msg: "Error getting patient info" });
+            });
+    } else {
+        // If no patientID is provided, find by other fields and return many
+        Patient.find(req.query)
+            .then((patients) => {
+                res.json({ patients: patients });
+            })
+            .catch((error) => {
+                console.error("Error getting patient info:", error);
+                res.status(500).send({ msg: "Error getting patient info" });
+            });
+    }
 });
 
 /**
