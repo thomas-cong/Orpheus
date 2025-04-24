@@ -10,7 +10,7 @@ const App = () => {
     const [demographicsCollected, setDemographicsCollected] = useState(false);
     return (
         <PatientProvider>
-            <div className="bg-floralwhite min-h-screen flex items-center justify-center">
+            <div className="bg-seasalt min-h-screen flex items-center justify-center">
                 {test === "" && (
                     <>
                         {demographicsCollected ? (

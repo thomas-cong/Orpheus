@@ -1,11 +1,9 @@
 @import "tailwindcss";
 @theme {
-    --color-floralwhite: #fffbf3;
-    --color-dukeblue: #090c9b;
-    --color-cerulean: #1282a2;
-    --color-orange: #ff6201;
-    --color-eblack: #1b1b1b;
-    --color-honeydew: #fffeed;
+    --color-seasalt: #f7f7f7;
+    --color-dukeblue: #0062ff;
+    --color-cerulean: #9ad1d4;
+    --color-orange: #f79f79;
 }
 
 @keyframes button-pulse-size {
@@ -28,11 +26,11 @@ button {
         infinite;
 }
 input {
-    @apply bg-floralwhite rounded-lg p-2;
+    @apply bg-seasalt rounded-lg p-2;
     @apply mr-4 ml-4 mt-1 mb-1;
 }
 select {
-    @apply bg-floralwhite rounded-lg p-2;
+    @apply bg-seasalt rounded-lg p-2;
     @apply mr-4 ml-4 mt-1 mb-1;
 }
 .slideIn {

@@ -86,7 +86,7 @@ const RAVLT = () => {
         }
     }, [trialCycle]);
     return (
-        <div className="max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-honeydew flex items-center justify-center slideIn">
+        <div className="max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-seasalt flex items-center justify-center slideIn">
             {trialCycle === 0 && (
                 <div className="flex flex-col items-center">
                     <InstructionDisplay

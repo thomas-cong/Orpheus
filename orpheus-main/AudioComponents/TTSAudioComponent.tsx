@@ -46,7 +46,7 @@ const TTSAudioComponent = ({
     };
     return (
         <button
-            className="bg-cerulean text-eblack h-10 w-15"
+            className="bg-dukeblue text-eblack h-10 w-15"
             disabled={started}
             onClick={startTTS}
         >

@@ -21,11 +21,6 @@ const DemographicInput = ({
         ethnicity,
         setEthnicity,
     } = usePatient();
-    // const [firstName, setFirstName] = useState("");
-    // const [lastName, setLastName] = useState("");
-    // const [DOB, setDOB] = useState("");
-    // const [education, setEducation] = useState("");
-    // const [ethnicity, setEthnicity] = useState("");
 
     // Validation states
     const [firstNameError, setFirstNameError] = useState("");
@@ -101,7 +96,7 @@ const DemographicInput = ({
         setDemographicsCollected(true);
     };
     return (
-        <div className="max-w-xl aspect-[3/2] drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-honeydew flex flex-col items-center">
+        <div className="max-w-xl aspect-[3/2] drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-seasalt flex flex-col items-center">
             <div className="flex w-full justify-between mb-4 mt-4">
                 <div className="flex flex-col w-45/100">
                     <input
@@ -187,7 +182,7 @@ const DemographicInput = ({
             </select>
             <button
                 className={`${
-                    isFormValid ? "bg-cerulean" : "bg-gray-400"
+                    isFormValid ? "bg-dukeblue" : "bg-gray-400"
                 } text-eblack h-15/100 w-50/100 rounded-lg p-2 text-center mt-4`}
                 onClick={submit}
                 disabled={!isFormValid}

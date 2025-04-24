@@ -26,7 +26,7 @@ const QueryBar = () => {
                 onChange={(e) => setPatientID(e.target.value)}
             />
             <button
-                className="bg-dukeblue text-honeydew rounded-lg px-6 py-2 hover:bg-blue-900 transition-colors whitespace-nowrap"
+                className="bg-dukeblue text-seasalt rounded-lg px-6 py-2 hover:bg-blue-900 transition-colors whitespace-nowrap"
                 onClick={() => patientQuery(patientID)}
             >
                 Get Patient Info
