@@ -2,12 +2,17 @@ import GenerateWordsButton from "../TestGeneration/GenerateWordsButton";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import RAVLTCycle from "./RAVLTCycle";
+import RAVLTEndPage from './RAVLTEndPage';
+import DelayTimer from './DelayTimer';
 import { useState, useEffect } from "react";
 import { usePatient } from "../context/PatientContext";
 import { get, post } from "../../global-files/utilities";
 import React from "react";
 
-const RAVLT = () => {
+const RAVLT = ({ setTest, setDemographicsCollected }: { 
+    setTest: (test: string) => void;
+    setDemographicsCollected: (collected: boolean) => void;
+}) => {
     // We're using the PatientContext in child components, but not directly here
     const { patientID } = usePatient();
     const [wordArray, setWordArray] = useState<string[]>([]);
@@ -71,7 +76,7 @@ const RAVLT = () => {
         };
 
         // Only upload recordings when the test is finished (trialCycle === 8)
-        if (trialCycle === 8 && recordings.length > 0) {
+        if (trialCycle === 10 && recordings.length > 0) {
             get("/api/trials/genTrialID").then((result) => {
                 const trialID = result.trialID;
                 uploadRecordings(trialID);
@@ -130,6 +135,11 @@ const RAVLT = () => {
                 </>
             )}
             {trialCycle === 7 && RAVLTCycleComponentInterference}
+            {trialCycle === 8 && (
+                 <DelayTimer onTimerComplete={() => setTrialCycle(9)} />
+             )}
+             {trialCycle === 9 && RAVLTCycleComponent}
+             {trialCycle === 10 && <RAVLTEndPage setTest={setTest} setDemographicsCollected={setDemographicsCollected} />}
         </div>
     );
 };

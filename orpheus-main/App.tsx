@@ -24,7 +24,9 @@ const App = () => {
                         )}
                     </>
                 )}
-                {test === "RAVLT" && <RAVLT />}
+                {test === "RAVLT" && (
+                 <RAVLT setTest={setTest} setDemographicsCollected={setDemographicsCollected} />
+             )}
             </div>
         </PatientProvider>
     );

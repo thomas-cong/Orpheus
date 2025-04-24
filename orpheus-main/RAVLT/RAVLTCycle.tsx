@@ -2,6 +2,8 @@ import TTSAudioComponent from "../AudioComponents/TTSAudioComponent";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import AudioRecorder from "../AudioComponents/AudioRecorder";
 import { usePatient } from "../context/PatientContext";
+import React from "react";
+
 const RAVLTCycle = (
     wordArray: string[],
     trialStatus: string,
