@@ -72,7 +72,10 @@ router.get("/getContainer", (req, res) => {
     getContainer(cleanedName)
         .then(({ containerClient, exists }) => {
             if (exists) {
-                res.send({ containerName: cleanedName });
+                res.send({
+                    containerName: cleanedName,
+                    containerClient: containerClient,
+                });
             } else {
                 res.send({ msg: "Container not found" });
             }
@@ -214,6 +217,33 @@ const getContainerSasUri = async (
 
     return `${containerClient.url}?${sasToken}`;
 };
+const getFileSasUri = async (
+    containerClient,
+    sharedKeyCredential,
+    storedPolicyName,
+    blobName
+) => {
+    const sasOptions = {
+        containerName: containerClient.containerName,
+        blobName: blobName,
+        permissions: ContainerSASPermissions.parse("racwl"),
+    };
+
+    if (storedPolicyName == null) {
+        sasOptions.startsOn = new Date();
+        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
+    } else {
+        sasOptions.identifier = storedPolicyName;
+    }
+
+    const sasToken = generateBlobSASQueryParameters(
+        sasOptions,
+        sharedKeyCredential
+    ).toString();
+    console.log(`SAS token for blob is: ${sasToken}`);
+
+    return `${containerClient.url}?${sasToken}`;
+};
 /**
  * @route POST /api/audioStorage/transcribe
  * @description Create a transcription job using Azure Speech-to-Text API
@@ -255,6 +285,13 @@ router.post("/transcribe", async (req, res) => {
     const data = await response.json();
     res.send({ msg: "Transcription started", data: data });
 });
+/**
+ * @route GET /api/audioStorage/getTranscriptionStatus
+ * @description Get the status of a transcription job
+ * @access Public
+ * @param {string} req.query.transcriptionId - ID of the transcription job
+ * @returns {Object} - JSON response from Azure or error message
+ */
 router.get("/getTranscriptionStatus", async (req, res) => {
     try {
         const apiUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions/${req.query.transcriptionId}`;
@@ -272,5 +309,50 @@ router.get("/getTranscriptionStatus", async (req, res) => {
         res.status(500).send({ msg: "Error getting transcription status" });
     }
 });
+/**
+ * @route GET /api/audioStorage/getContainerFileURLs
+ * @description Get the URLs of files in a container
+ * @access Public
+ * @param {string} req.query.containerName - Name of the container
+ * @returns {Object} - JSON object with container name or error message
+ * @returns {string} [msg] - Error message if container not found or server error
+ */
+router.get("/getContainerFileURLs", async (req, res) => {
+    if (!req.query.containerName) {
+        return res.status(400).send({ msg: "Container name is required" });
+    }
+    const cleanedName = sanitizeContainerName(req.query.containerName);
 
+    getContainer(cleanedName)
+        .then(({ containerClient, exists }) => {
+            if (exists) {
+                const blobList = containerClient.listBlobsFlat();
+                console.log("blobList", blobList);
+                const urls = [];
+                for (const blob of blobList) {
+                    getFileSasUri(
+                        containerClient,
+                        sharedKeyCredential,
+                        null,
+                        blob.name
+                    ).then((url) => {
+                        urls.push({
+                            blobName: blob.name,
+                            url: url,
+                        });
+                    });
+                }
+                res.send({
+                    containerName: cleanedName,
+                    urls: urls,
+                });
+            } else {
+                res.send({ msg: "Container not found" });
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting container:", error);
+            res.status(500).send({ msg: "Error getting container" });
+        });
+});
 export default router;

@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { get } from "../../global-files/utilities";
 
-const TrialList = (props: { patientID: string }) => {
+const TrialList = (props: {
+    patientID: string;
+    setFocusedContainerName: (containerName: string) => void;
+}) => {
     const [trials, setTrials] = useState([]);
     useEffect(() => {
         if (!props.patientID) return;
@@ -10,6 +13,9 @@ const TrialList = (props: { patientID: string }) => {
             .then((res) => {
                 if (res.trials) {
                     setTrials(res.trials);
+                    props.setFocusedContainerName(
+                        props.patientID + "-" + res.trials[0].transcriptionID
+                    );
                 }
             })
             .catch((err) => {
@@ -21,6 +27,11 @@ const TrialList = (props: { patientID: string }) => {
             <div
                 key={trial.trialID}
                 className="flex flex-col w-full px-4 py-2 bg-seasalt shadow-md mb-2 rounded-lg hover:border-2 hover:border-orange cursor-pointer"
+                onClick={() => {
+                    props.setFocusedContainerName(
+                        props.patientID + "-" + trial.transcriptionID
+                    );
+                }}
             >
                 <div className="flex flex-row items-center justify-between mb-2">
                     <h3 className="text-lg font-bold">{trial.test}</h3>
@@ -33,7 +44,7 @@ const TrialList = (props: { patientID: string }) => {
                         Date: {new Date(trial.date).toLocaleDateString()}
                     </span>
                     <span className="text-gray-600">
-                        Score: {trial.score || "N/A"}
+                        Transcription ID: {trial.transcriptionID || "None"}
                     </span>
                 </div>
             </div>

@@ -3,10 +3,12 @@ import QueryBar from "./QueryBar/QueryBar";
 import "../global-files/index.css";
 import PatientList from "./PatientList/PatientList";
 import TrialList from "./TrialList/TrialList";
+import FileList from "./TestInfo/FileList";
 
 export default function App() {
     const [patients, setPatients] = useState([]);
     const [focusedPatientID, setFocusedPatientID] = useState(null);
+    const [focusedContainerName, setFocusedContainerName] = useState("");
     return (
         <div className="flex flex-col min-h-screen">
             <QueryBar setPatients={setPatients} />
@@ -18,8 +20,14 @@ export default function App() {
                     />
                 </div>
                 <div className="w-1/2">
-                    <TrialList patientID={focusedPatientID || ""} />
+                    <TrialList
+                        patientID={focusedPatientID || ""}
+                        setFocusedContainerName={setFocusedContainerName}
+                    />
                 </div>
+            </div>
+            <div className="w-full mt-4">
+                <FileList containerName={focusedContainerName} />
             </div>
         </div>
     );
