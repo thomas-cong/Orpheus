@@ -6,7 +6,7 @@ import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-import multer from 'multer';
+import multer from "multer";
 const upload = multer();
 
 // Load environment variables
@@ -74,7 +74,10 @@ router.get("/getContainer", (req, res) => {
     getContainer(cleanedName)
         .then(({ containerClient, exists }) => {
             if (exists) {
-                res.send({ containerName: cleanedName });
+                res.send({
+                    containerName: cleanedName,
+                    containerClient: containerClient,
+                });
             } else {
                 res.send({ msg: "Container not found" });
             }
@@ -198,6 +201,33 @@ const getContainerSasUri = async (
 
     return `${containerClient.url}?${sasToken}`;
 };
+const getFileSasUri = async (
+    containerClient,
+    sharedKeyCredential,
+    storedPolicyName,
+    blobName
+) => {
+    const sasOptions = {
+        containerName: containerClient.containerName,
+        blobName: blobName,
+        permissions: ContainerSASPermissions.parse("racwl"),
+    };
+
+    if (storedPolicyName == null) {
+        sasOptions.startsOn = new Date();
+        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
+    } else {
+        sasOptions.identifier = storedPolicyName;
+    }
+
+    const sasToken = generateBlobSASQueryParameters(
+        sasOptions,
+        sharedKeyCredential
+    ).toString();
+    console.log(`SAS token for blob is: ${sasToken}`);
+
+    return `${containerClient.url}?${sasToken}`;
+};
 /**
  * @route POST /api/audioStorage/transcribe
  * @description Create a transcription job using Azure Speech-to-Text API
@@ -212,9 +242,7 @@ const getContainerSasUri = async (
 router.post("/transcribe", async (req, res) => {
     // Create a service SAS for a blob container
     const cleanedName = sanitizeContainerName(req.body.containerName);
-    const containerClient = blobServiceClient.getContainerClient(
-        cleanedName
-    );
+    const containerClient = blobServiceClient.getContainerClient(cleanedName);
     const sas = await getContainerSasUri(
         containerClient,
         sharedKeyCredential,
@@ -331,14 +359,10 @@ router.get("/getTranscriptionFiles", async (req, res) => {
         for (const file of filesData.values) {
             const fileResponse = await fetch(file.links.contentUrl);
             const fileContent = await fileResponse.json();
-            console.log('File Name:', file.name);
-            console.log('File Content Structure:', JSON.stringify(fileContent, null, 2));
-            // Only log the first file's content and break
             transcriptionResults.push({
                 filename: file.name,
                 content: fileContent
             });
-            break; // Just get the first file for testing
         }
 
         res.json({
@@ -352,3 +376,4 @@ router.get("/getTranscriptionFiles", async (req, res) => {
 });
 
 export default router;
+export { createContainer };

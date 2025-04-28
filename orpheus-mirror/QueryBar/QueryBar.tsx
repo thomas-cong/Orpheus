@@ -32,19 +32,20 @@ const QueryBar = (props: { setPatients: (patients: any) => void }) => {
     };
 
     return (
-        <div className="flex flex-col w-full px-4 py-2 bg-seasalt shadow-md">
+        <div className="flex flex-col w-full px-4 py-2 bg-gray-800 border border-gray-700 shadow-md rounded-lg">
+            <h2 className="text-lg font-bold mb-2 text-blue-400">Patient Search</h2>
             <div className="flex flex-row w-full mb-2">
                 <input
                     type="text"
                     placeholder="First Name"
-                    className="bg-seasalt flex-1 rounded-lg p-2 mr-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange"
+                    className="bg-gray-700 text-blue-200 flex-1 rounded-lg p-2 mr-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                 />
                 <input
                     type="text"
                     placeholder="Last Name"
-                    className="bg-seasalt flex-1 rounded-lg p-2 mr-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange"
+                    className="bg-gray-700 text-blue-200 flex-1 rounded-lg p-2 mr-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                 />
@@ -53,20 +54,20 @@ const QueryBar = (props: { setPatients: (patients: any) => void }) => {
                 <input
                     type="text"
                     placeholder="Patient ID"
-                    className="bg-seasalt flex-1 rounded-lg p-2 mr-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange"
+                    className="bg-gray-700 text-blue-200 flex-1 rounded-lg p-2 mr-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={patientID}
                     onChange={(e) => setPatientID(e.target.value)}
                 />
                 <input
                     type="date"
                     placeholder="Date of Birth"
-                    className="bg-seasalt flex-1 rounded-lg p-2 mr-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange"
+                    className="bg-gray-700 text-blue-200 flex-1 rounded-lg p-2 mr-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={DOB}
                     onChange={(e) => setDOB(e.target.value)}
                 />
             </div>
             <button
-                className="bg-orange text-seasalt rounded-lg px-6 py-2 hover:bg-orange-900 transition-colors whitespace-nowrap focus:ring-2 focus:ring-orange"
+                className="bg-blue-600 text-white rounded-lg px-6 py-2 hover:bg-blue-700 transition-colors whitespace-nowrap focus:ring-2 focus:ring-blue-400"
                 onClick={patientQuery}
             >
                 Get Patient Info

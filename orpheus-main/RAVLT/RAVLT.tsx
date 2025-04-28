@@ -2,14 +2,17 @@ import GenerateWordsButton from "../TestGeneration/GenerateWordsButton";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import RAVLTCycle from "./RAVLTCycle";
-import RAVLTEndPage from './RAVLTEndPage';
-import DelayTimer from './DelayTimer';
+import RAVLTEndPage from "./RAVLTEndPage";
+import DelayTimer from "./DelayTimer";
 import { useState, useEffect } from "react";
 import { usePatient } from "../context/PatientContext";
 import { get, post } from "../../global-files/utilities";
 import React from "react";
 
-const RAVLT = ({ setTest, setDemographicsCollected }: { 
+const RAVLT = ({
+    setTest,
+    setDemographicsCollected,
+}: {
     setTest: (test: string) => void;
     setDemographicsCollected: (collected: boolean) => void;
 }) => {
@@ -100,9 +103,9 @@ const RAVLT = ({ setTest, setDemographicsCollected }: {
                 await post("/api/trials/addTrial", {
                     patientID: patientID,
                     date: new Date().toISOString(),
+                    transcriptionID: "None",
                     test: "RAVLT",
                     trialID: trialID,
-                    transcriptionID: "Not Transcribed",
                 });
             });
         }
@@ -153,10 +156,15 @@ const RAVLT = ({ setTest, setDemographicsCollected }: {
             )}
             {trialCycle === 7 && RAVLTCycleComponentInterference}
             {trialCycle === 8 && (
-                 <DelayTimer onTimerComplete={() => setTrialCycle(9)} />
-             )}
-             {trialCycle === 9 && RAVLTCycleComponent}
-             {trialCycle === 10 && <RAVLTEndPage setTest={setTest} setDemographicsCollected={setDemographicsCollected} />}
+                <DelayTimer onTimerComplete={() => setTrialCycle(9)} />
+            )}
+            {trialCycle === 9 && RAVLTCycleComponent}
+            {trialCycle === 10 && (
+                <RAVLTEndPage
+                    setTest={setTest}
+                    setDemographicsCollected={setDemographicsCollected}
+                />
+            )}
         </div>
     );
 };
