@@ -14,8 +14,9 @@ const TrialList = (props: {
                 if (res.trials) {
                     setTrials(res.trials);
                     props.setFocusedContainerName(
-                        props.patientID + "-" + res.trials[0].transcriptionID
+                        props.patientID + "-" + res.trials[0].trialID
                     );
+                    console.log(props.patientID + "-" + res.trials[0].trialID);
                 }
             })
             .catch((err) => {
@@ -29,12 +30,15 @@ const TrialList = (props: {
                 className="flex flex-col w-full px-4 py-2 bg-gray-800 border border-gray-700 shadow-md mb-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
                 onClick={() => {
                     props.setFocusedContainerName(
-                        props.patientID + "-" + trial.transcriptionID
+                        props.patientID + "-" + trial.trialID
                     );
+                    console.log(props.patientID + "-" + trial.trialID);
                 }}
             >
                 <div className="flex flex-row items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-blue-300">{trial.test}</h3>
+                    <h3 className="text-lg font-bold text-blue-300">
+                        {trial.test}
+                    </h3>
                     <span className="text-gray-400 text-xs">
                         {trial.trialID}
                     </span>

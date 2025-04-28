@@ -215,7 +215,7 @@ const getFileSasUri = async (
     const sasOptions = {
         containerName: containerClient.containerName,
         blobName: blobName,
-        permissions: ContainerSASPermissions.parse("racwl"),
+        permissions: ContainerSASPermissions.parse("racw"),
     };
 
     if (storedPolicyName == null) {
@@ -312,23 +312,27 @@ router.get("/getContainerFileURLs", async (req, res) => {
     const cleanedName = sanitizeContainerName(req.query.containerName);
 
     getContainer(cleanedName)
-        .then(({ containerClient, exists }) => {
+        .then(async ({ containerClient, exists }) => {
             if (exists) {
-                const blobList = containerClient.listBlobsFlat();
-                console.log("blobList", blobList);
                 const urls = [];
-                for (const blob of blobList) {
-                    getFileSasUri(
-                        containerClient,
-                        sharedKeyCredential,
-                        null,
-                        blob.name
-                    ).then((url) => {
-                        urls.push({
-                            blobName: blob.name,
-                            url: url,
-                        });
-                    });
+                for await (const response of containerClient
+                    .listBlobsFlat()
+                    .byPage({ maxPageSize: 10 })) {
+                    console.log("- Page:");
+                    if (response.segment.blobItems) {
+                        for (const blob of response.segment.blobItems) {
+                            console.log(`  - ${blob.name}`);
+                            urls.push({
+                                blobName: blob.name,
+                                url: await getFileSasUri(
+                                    containerClient,
+                                    sharedKeyCredential,
+                                    null,
+                                    blob.name
+                                ),
+                            });
+                        }
+                    }
                 }
                 res.send({
                     containerName: cleanedName,
