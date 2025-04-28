@@ -46,29 +46,34 @@ const RAVLT = ({
         recordings,
         setRecordings
     );
+
+    // Helper to sanitize names for Azure Blob Storage
+    const sanitizeForAzure = (name: string) => {
+        return name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    };
+
     useEffect(() => {
         console.log("Trial Cycle: " + String(trialCycle));
         const uploadRecordings = async (trialID: string) => {
             let tempTrialCycle = 0;
+            const safePatientID = sanitizeForAzure(patientID);
+            const safeTrialID = sanitizeForAzure(trialID);
+            const containerName = `${safePatientID}-${safeTrialID}`;
             for (const audioBlob of recordings) {
-                const fileName = `${patientID}_${trialID}_${tempTrialCycle}.wav`;
+                const fileName = `${safePatientID}-${safeTrialID}-${tempTrialCycle}.wav`;
                 const file = new File([audioBlob], fileName, {
                     type: "audio/wav",
                 });
 
                 try {
-                    // Convert ArrayBuffer to Base64
-                    const arrayBuffer = await file.arrayBuffer();
-                    const uint8Array = new Uint8Array(arrayBuffer);
-                    const base64Data = btoa(
-                        String.fromCharCode.apply(null, Array.from(uint8Array))
-                    );
+                    const formData = new FormData();
+                    formData.append('containerName', containerName);
+                    formData.append('blobName', fileName);
+                    formData.append('file', file);
 
-                    // Upload to Azure
-                    await post("/api/audioStorage/uploadBlob", {
-                        containerName: patientID,
-                        blobName: fileName,
-                        data: base64Data,
+                    await fetch('/api/audioStorage/uploadBlob', {
+                        method: 'POST',
+                        body: formData,
                     });
                     console.log(`Successfully uploaded ${fileName} to Azure`);
                 } catch (error) {
@@ -80,10 +85,22 @@ const RAVLT = ({
 
         // Only upload recordings when the test is finished (trialCycle === 8)
         if (trialCycle === 10 && recordings.length > 0) {
-            get("/api/trials/genTrialID").then((result) => {
+            get("/api/trials/genTrialID").then(async (result) => {
                 const trialID = result.trialID;
-                uploadRecordings(trialID);
-                post("/api/trials/addTrial", {
+                const safePatientID = sanitizeForAzure(patientID);
+                const safeTrialID = sanitizeForAzure(trialID);
+                const containerName = `${safePatientID}-${safeTrialID}`;
+                await post("/api/audioStorage/createContainer", {
+                    containerName: containerName,
+                });
+                await uploadRecordings(trialID);
+                await post("/api/audioStorage/transcribe", {
+                    containerName: containerName,
+                    locale: "en-US",
+                    displayName: "RAVLT Transcription " + trialID,
+                });
+
+                await post("/api/trials/addTrial", {
                     patientID: patientID,
                     date: new Date().toISOString(),
                     test: "RAVLT",

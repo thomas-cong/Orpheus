@@ -13,6 +13,7 @@ const AudioRecorder = ({ recordings, setRecordings }: AudioRecorderProps) => {
     const mediaStream = useRef<MediaStream | null>(null);
     const mediaRecorder = useRef<MediaRecorder | null>(null);
     const chunks = useRef<Blob[]>([]);
+    const index = recordings.length;
     useEffect(() => {
         if (timer > 120) {
             stopRecording();
@@ -40,7 +41,9 @@ const AudioRecorder = ({ recordings, setRecordings }: AudioRecorderProps) => {
                 const audioBlob = new Blob(chunks.current, {
                     type: "audio/wav",
                 });
-                setRecordings([...recordings, audioBlob]);
+                const tempRecordings = [...recordings];
+                tempRecordings[index] = audioBlob;
+                setRecordings(tempRecordings);
                 const audioUrl = URL.createObjectURL(audioBlob);
                 setRecordedURL(audioUrl);
                 chunks.current = [];

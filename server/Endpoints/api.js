@@ -1,10 +1,20 @@
 import express from "express";
+import bodyParser from "body-parser";
 import testGenerationRoutes from "./testGeneration.js";
 import patientRoutes from "./Patients.js";
 import audioStorageRoutes from "./AudioStorage.js";
 import trialRoutes from "./Trials.js";
 
 const router = express.Router();
+
+// For JSON bodies
+router.use(express.json({ limit: '50mb' }));
+
+// For URL-encoded bodies
+router.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+router.use(bodyParser.json({ limit: '50mb' }));
+router.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 /**
  * @route GET /api

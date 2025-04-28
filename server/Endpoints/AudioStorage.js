@@ -6,6 +6,8 @@ import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
+import multer from 'multer';
+const upload = multer();
 
 // Load environment variables
 dotenv.config();
@@ -153,38 +155,20 @@ router.post("/createContainer", (req, res) => {
  * @param {ArrayBuffer} req.body.data - The blob data as an ArrayBuffer
  * @returns {Object} - JSON object with success or error message
  */
-router.post("/uploadBlob", async (req, res) => {
-    if (!req.body.containerName || !req.body.blobName || !req.body.data) {
-        return res.status(400).send({ msg: "Missing required fields" });
-    }
-
-    const cleanedName = sanitizeContainerName(req.body.containerName);
-
+router.post("/uploadBlob", upload.single('file'), async (req, res) => {
     try {
-        // Get container client
-        const { containerClient } = await getContainer(cleanedName);
-
-        // Get blob client
-        const blockBlobClient = containerClient.getBlockBlobClient(
-            req.body.blobName
-        );
-
-        // Convert Base64 to Buffer for upload
-        const buffer = Buffer.from(req.body.data, "base64");
-
-        // Upload the blob
-        await blockBlobClient.upload(buffer, buffer.length);
-
-        res.send({
-            msg: "Blob uploaded successfully",
-            blobName: req.body.blobName,
-            containerName: cleanedName,
-        });
+        const { containerName, blobName } = req.body;
+        const fileBuffer = req.file.buffer;
+        // Upload fileBuffer to Azure Blob Storage
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        await containerClient.uploadBlockBlob(blobName, fileBuffer, fileBuffer.length);
+        res.send({ msg: "Upload successful" });
     } catch (error) {
         console.error("Error uploading blob:", error);
         res.status(500).send({ msg: "Error uploading blob" });
     }
 });
+
 /**
  *
  * @param {ContainerClient} containerClient
@@ -257,8 +241,9 @@ const getFileSasUri = async (
  */
 router.post("/transcribe", async (req, res) => {
     // Create a service SAS for a blob container
+    const cleanedName = sanitizeContainerName(req.body.containerName);
     const containerClient = blobServiceClient.getContainerClient(
-        req.body.containerName
+        cleanedName
     );
     const sas = await getContainerSasUri(
         containerClient,
