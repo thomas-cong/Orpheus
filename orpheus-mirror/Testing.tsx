@@ -109,7 +109,7 @@ const Testing = () => {
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value={endpointUrl}
                                         onChange={(e) =>
                                             setEndpointUrl(e.target.value)
@@ -189,7 +189,7 @@ const Testing = () => {
                                 Parameters (JSON)
                             </label>
                             <textarea
-                                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono h-32"
+                                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono h-32"
                                 value={paramsInput}
                                 onChange={(e) => setParamsInput(e.target.value)}
                                 placeholder='{"key": "value"}'

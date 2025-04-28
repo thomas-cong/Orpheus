@@ -210,7 +210,7 @@ const getFileSasUri = async (
     const sasOptions = {
         containerName: containerClient.containerName,
         blobName: blobName,
-        permissions: ContainerSASPermissions.parse("racwl"),
+        permissions: ContainerSASPermissions.parse("racw"),
     };
 
     if (storedPolicyName == null) {
@@ -373,6 +373,49 @@ router.get("/getTranscriptionFiles", async (req, res) => {
         console.error("Error getting transcription files:", error);
         res.status(500).json({ msg: "Error retrieving transcription files" });
     }
+});
+
+router.get("/getContainerFileURLs", async (req, res) => {
+    if (!req.query.containerName) {
+        return res.status(400).send({ msg: "Container name is required" });
+    }
+    const cleanedName = sanitizeContainerName(req.query.containerName);
+
+    getContainer(cleanedName)
+        .then(async ({ containerClient, exists }) => {
+            if (exists) {
+                const urls = [];
+                for await (const response of containerClient
+                    .listBlobsFlat()
+                    .byPage({ maxPageSize: 10 })) {
+                    console.log("- Page:");
+                    if (response.segment.blobItems) {
+                        for (const blob of response.segment.blobItems) {
+                            console.log(`  - ${blob.name}`);
+                            urls.push({
+                                blobName: blob.name,
+                                url: await getFileSasUri(
+                                    containerClient,
+                                    sharedKeyCredential,
+                                    null,
+                                    blob.name
+                                ),
+                            });
+                        }
+                    }
+                }
+                res.send({
+                    containerName: cleanedName,
+                    urls: urls,
+                });
+            } else {
+                res.send({ msg: "Container not found" });
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting container:", error);
+            res.status(500).send({ msg: "Error getting container" });
+        });
 });
 
 export default router;
