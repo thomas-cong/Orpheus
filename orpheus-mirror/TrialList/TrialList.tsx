@@ -26,7 +26,7 @@ const TrialList = (props: {
         return trials.map((trial: any) => (
             <div
                 key={trial.trialID}
-                className="flex flex-col w-full px-4 py-2 bg-seasalt shadow-md mb-2 rounded-lg hover:border-2 hover:border-orange cursor-pointer"
+                className="flex flex-col w-full px-4 py-2 bg-gray-800 border border-gray-700 shadow-md mb-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
                 onClick={() => {
                     props.setFocusedContainerName(
                         props.patientID + "-" + trial.transcriptionID
@@ -34,16 +34,16 @@ const TrialList = (props: {
                 }}
             >
                 <div className="flex flex-row items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold">{trial.test}</h3>
-                    <span className="text-gray-600 text-xs">
+                    <h3 className="text-lg font-bold text-blue-300">{trial.test}</h3>
+                    <span className="text-gray-400 text-xs">
                         {trial.trialID}
                     </span>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <span className="text-gray-600 mr-2">
+                    <span className="text-gray-400 mr-2">
                         Date: {new Date(trial.date).toLocaleDateString()}
                     </span>
-                    <span className="text-gray-600">
+                    <span className="text-gray-400">
                         Transcription ID: {trial.transcriptionID || "None"}
                     </span>
                 </div>
@@ -52,13 +52,13 @@ const TrialList = (props: {
     };
 
     return (
-        <div className="flex flex-col w-full px-4 py-2 bg-seasalt shadow-md rounded-lg m-2 h-96">
-            <h2 className="text-lg font-bold mb-2">Trial List</h2>
+        <div className="flex flex-col w-full px-4 py-2 bg-gray-800 border border-gray-700 shadow-md rounded-lg m-2 h-96">
+            <h2 className="text-lg font-bold mb-2 text-blue-400">Trial List</h2>
             <div className="overflow-y-auto">
                 {trials && trials.length > 0 ? (
                     renderTrials()
                 ) : (
-                    <p className="text-gray-600">
+                    <p className="text-gray-400">
                         {props.patientID
                             ? "No trials found for this patient."
                             : "Select a patient to view their trials."}

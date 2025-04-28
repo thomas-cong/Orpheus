@@ -4,6 +4,7 @@ import testGenerationRoutes from "./testGeneration.js";
 import patientRoutes from "./Patients.js";
 import audioStorageRoutes from "./AudioStorage.js";
 import trialRoutes from "./Trials.js";
+import adminRoutes from "./AdminEndpoints.js";
 
 const router = express.Router();
 
@@ -31,6 +32,7 @@ router.use("/testhelper", testGenerationRoutes);
 router.use("/patients", patientRoutes);
 router.use("/audioStorage", audioStorageRoutes);
 router.use("/trials", trialRoutes);
+router.use("/admin", adminRoutes);
 
 /**
  * @route ALL *

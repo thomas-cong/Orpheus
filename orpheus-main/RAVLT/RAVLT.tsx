@@ -103,9 +103,9 @@ const RAVLT = ({
                 await post("/api/trials/addTrial", {
                     patientID: patientID,
                     date: new Date().toISOString(),
+                    transcriptionID: "None",
                     test: "RAVLT",
                     trialID: trialID,
-                    transcriptionID: "None",
                 });
             });
         }

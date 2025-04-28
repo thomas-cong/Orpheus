@@ -4,6 +4,7 @@ import { get } from "../../global-files/utilities";
 const FileList = (props: { containerName: string }) => {
     const [fileList, setFileList] = useState([]);
     useEffect(() => {
+        if (!props.containerName) return;
         get("/api/audioStorage/getContainerFileURLs", {
             containerName: props.containerName,
         })
@@ -16,21 +17,21 @@ const FileList = (props: { containerName: string }) => {
             });
     }, [props.containerName]);
     return (
-        <div className="w-full p-4 border-t border-gray-200">
-            <h2 className="text-xl font-semibold mb-4">File List</h2>
+        <div className="w-full p-4 border-t border-gray-700 bg-gray-800 rounded-b-lg">
+            <h2 className="text-xl font-semibold mb-4 text-green-400">File List</h2>
             {fileList && fileList.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
                     {fileList.map((file: any) => (
                         <div
                             key={file.blobName}
-                            className="p-3 border border-gray-200 rounded-md hover:bg-gray-50"
+                            className="p-3 border border-gray-700 bg-gray-700 rounded-md hover:bg-gray-600 transition-colors text-gray-200"
                         >
                             {file.blobName}
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="text-gray-500">No files available</div>
+                <div className="text-gray-400">No files available</div>
             )}
         </div>
     );

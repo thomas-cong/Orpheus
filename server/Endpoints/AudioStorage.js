@@ -6,7 +6,7 @@ import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-import multer from 'multer';
+import multer from "multer";
 const upload = multer();
 
 // Load environment variables
@@ -155,13 +155,18 @@ router.post("/createContainer", (req, res) => {
  * @param {ArrayBuffer} req.body.data - The blob data as an ArrayBuffer
  * @returns {Object} - JSON object with success or error message
  */
-router.post("/uploadBlob", upload.single('file'), async (req, res) => {
+router.post("/uploadBlob", upload.single("file"), async (req, res) => {
     try {
         const { containerName, blobName } = req.body;
         const fileBuffer = req.file.buffer;
         // Upload fileBuffer to Azure Blob Storage
-        const containerClient = blobServiceClient.getContainerClient(containerName);
-        await containerClient.uploadBlockBlob(blobName, fileBuffer, fileBuffer.length);
+        const containerClient =
+            blobServiceClient.getContainerClient(containerName);
+        await containerClient.uploadBlockBlob(
+            blobName,
+            fileBuffer,
+            fileBuffer.length
+        );
         res.send({ msg: "Upload successful" });
     } catch (error) {
         console.error("Error uploading blob:", error);
@@ -242,9 +247,7 @@ const getFileSasUri = async (
 router.post("/transcribe", async (req, res) => {
     // Create a service SAS for a blob container
     const cleanedName = sanitizeContainerName(req.body.containerName);
-    const containerClient = blobServiceClient.getContainerClient(
-        cleanedName
-    );
+    const containerClient = blobServiceClient.getContainerClient(cleanedName);
     const sas = await getContainerSasUri(
         containerClient,
         sharedKeyCredential,
@@ -341,3 +344,4 @@ router.get("/getContainerFileURLs", async (req, res) => {
         });
 });
 export default router;
+export { createContainer };
