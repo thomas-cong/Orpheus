@@ -11,7 +11,6 @@ import {
     sanitizeContainerName,
 } from "../helperfunctions.js";
 import { createContainer } from "../Endpoints/AudioStorage.js";
-
 // Load environment variables
 dotenv.config();
 
@@ -21,6 +20,7 @@ const router = express.Router();
 const blobServiceClient = BlobServiceClient.fromConnectionString(
     process.env.STORAGE_CONNECTION_STRING
 );
+// Set up key info into Blob Storage
 const sharedKeyCredential = new StorageSharedKeyCredential(
     process.env.STORAGE_ACCOUNT_NAME,
     process.env.STORAGE_KEY
@@ -39,9 +39,11 @@ router.get("/", (req, res) => {
  * @returns {Object} - JSON object with success or error message
  */
 router.post("/generateTestingTrial", async (req, res) => {
+    // Try and start generating a dummy patient and trial
     try {
         console.log("Generating Testing Trial", req.body);
 
+        // Check if test type is provided
         if (!req.body.test) {
             return res.status(400).send({ msg: "Test type is required" });
         }
@@ -63,7 +65,7 @@ router.post("/generateTestingTrial", async (req, res) => {
             educationLevel: "College",
             ethnicity: "Test",
         });
-
+        // Save the patient
         await testPatient.save();
         console.log("Test patient created with ID:", patientID);
 
@@ -76,8 +78,9 @@ router.post("/generateTestingTrial", async (req, res) => {
             date: new Date(),
             transcriptionID: "None",
         });
-
+        // Save the trial
         await testTrial.save();
+        // Clean up the container name
         const cleanedName = sanitizeContainerName(patientID + "-" + trialID);
 
         // Create container for the patient
@@ -85,9 +88,11 @@ router.post("/generateTestingTrial", async (req, res) => {
         // Create container and return response
         createContainer(blobServiceClient, cleanedName)
             .then((containerClient) => {
+                // Log the created container if successful
                 console.log("Container created for patient:", cleanedName);
             })
             .catch((error) => {
+                // Log the error if container creation fails
                 console.error("Error creating container:", error);
                 res.status(500).send({ msg: "Error creating container" });
             });
@@ -125,7 +130,7 @@ router.post("/generateTestingTrial", async (req, res) => {
                 const blockBlobClient =
                     containerClient.getBlockBlobClient(blobName);
                 await blockBlobClient.upload(fileData, fileData.length);
-
+                // Log the uploaded file
                 console.log(
                     `Uploaded test audio file ${i + 1}/${Math.min(
                         10,
@@ -137,13 +142,14 @@ router.post("/generateTestingTrial", async (req, res) => {
                 throw error; // Rethrow to be caught by the outer try/catch
             }
         }
-
+        // Log the completion of the test trial generation
         res.status(200).send({
             msg: "Test trial generated successfully",
             patientID: patientID,
             trialID: trialID,
         });
     } catch (error) {
+        // Log the error if test trial generation fails
         console.error("Error generating test trial:", error);
         res.status(500).send({
             msg: "Error generating test trial",

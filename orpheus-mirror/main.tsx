@@ -15,10 +15,9 @@ import {
 // Create router configuration
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route element={<App />}>
-            <Route path="/" element={<App />} />
-            <Route path="/portal" element={<PatientPortal />} />
-            <Route path="/testing" element={<Testing />} />
+        <Route path="/" element={<App />}>
+            <Route path="portal" element={<PatientPortal />} />
+            <Route path="testing" element={<Testing />} />
         </Route>
     )
 );

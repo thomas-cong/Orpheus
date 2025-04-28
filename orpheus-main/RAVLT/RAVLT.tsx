@@ -24,6 +24,7 @@ const RAVLT = ({
     const [trialStatus, setTrialStatus] = useState("Listening");
     const [recordingID, setRecordingID] = useState(0);
     const [recordings, setRecordings] = useState<Array<Blob>>([]);
+    // RAVLT cycle components
     const RAVLTCycleComponent = RAVLTCycle(
         wordArray,
         trialStatus,
@@ -35,6 +36,7 @@ const RAVLT = ({
         recordings,
         setRecordings
     );
+    // RAVLT cycle components for interference
     const RAVLTCycleComponentInterference = RAVLTCycle(
         interferenceArray,
         trialStatus,
@@ -46,12 +48,11 @@ const RAVLT = ({
         recordings,
         setRecordings
     );
-
     // Helper to sanitize names for Azure Blob Storage
     const sanitizeForAzure = (name: string) => {
-        return name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        return name.toLowerCase().replace(/[^a-z0-9-]/g, "-");
     };
-
+    // Upload recordings to Azure Blob Storage
     useEffect(() => {
         console.log("Trial Cycle: " + String(trialCycle));
         const uploadRecordings = async (trialID: string) => {
@@ -64,19 +65,16 @@ const RAVLT = ({
                 const file = new File([audioBlob], fileName, {
                     type: "audio/wav",
                 });
-
+                // Upload file to Azure Blob Storage
                 try {
                     const formData = new FormData();
-                    formData.append('containerName', containerName);
-                    formData.append('blobName', fileName);
-                    formData.append('file', file);
-
-                    await fetch('/api/audioStorage/uploadBlob', {
-                        method: 'POST',
-                        body: formData,
-                    });
+                    formData.append("containerName", containerName);
+                    formData.append("blobName", fileName);
+                    formData.append("file", file);
+                    await post("/api/audioStorage/uploadBlob", formData);
                     console.log(`Successfully uploaded ${fileName} to Azure`);
                 } catch (error) {
+                    // Handle error
                     console.error("Error uploading to Azure:", error);
                 }
                 tempTrialCycle++;
@@ -85,26 +83,32 @@ const RAVLT = ({
 
         // Only upload recordings when the test is finished (trialCycle === 8)
         if (trialCycle === 10 && recordings.length > 0) {
+            // Generate a new trial ID
             get("/api/trials/genTrialID").then(async (result) => {
                 const trialID = result.trialID;
+                // Sanitize patient ID and trial ID for Azure Blob Storage
                 const safePatientID = sanitizeForAzure(patientID);
                 const safeTrialID = sanitizeForAzure(trialID);
                 const containerName = `${safePatientID}-${safeTrialID}`;
+                // Create container in Azure Blob Storage
                 await post("/api/audioStorage/createContainer", {
                     containerName: containerName,
                 });
+                // Upload recordings to Azure Blob Storage
                 await uploadRecordings(trialID);
-                await post("/api/audioStorage/transcribe", {
-                    containerName: containerName,
-                    locale: "en-US",
-                    displayName: "RAVLT Transcription " + trialID,
-                });
-
+                // Add trial to database
                 await post("/api/trials/addTrial", {
                     patientID: patientID,
                     date: new Date().toISOString(),
                     transcriptionID: "None",
                     test: "RAVLT",
+                    trialID: trialID,
+                });
+                // Transcribe recordings in Azure Blob Storage
+                await post("/api/audioStorage/transcribe", {
+                    containerName: containerName,
+                    locale: "en-US",
+                    displayName: "RAVLT Transcription " + trialID,
                     trialID: trialID,
                 });
             });

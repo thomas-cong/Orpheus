@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { get, post } from "../global-files/utilities";
 
 // List of common endpoints for suggestions
-const COMMON_ENDPOINTS = [
-    "/api/patients/genPatientID",
-    "/api/patients/getPatient",
-    "/api/patients/addPatient",
-    "/api/trials/genTrialID",
-    "/api/trials/addTrial",
-    "/api/trials/getTrials",
-    "/api/admin/generateTestingTrial",
-    "/api/audioStorage/getContainer",
-    "/api/audioStorage/createContainer",
-    "/api/audioStorage/uploadBlob",
-    "/api/audioStorage/getContainerFileURLs",
-];
 
 const Testing = () => {
+    const COMMON_ENDPOINTS = [
+        "/api/patients/genPatientID",
+        "/api/patients/getPatient",
+        "/api/patients/addPatient",
+        "/api/trials/genTrialID",
+        "/api/trials/addTrial",
+        "/api/trials/getTrials",
+        "/api/admin/generateTestingTrial",
+        "/api/audioStorage/getContainer",
+        "/api/audioStorage/createContainer",
+        "/api/audioStorage/uploadBlob",
+        "/api/audioStorage/getContainerFileURLs",
+    ];
     // API testing state
     const [endpointUrl, setEndpointUrl] = useState(
         "/api/patients/genPatientID"
@@ -30,7 +30,6 @@ const Testing = () => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [filteredSuggestions, setFilteredSuggestions] =
         useState(COMMON_ENDPOINTS);
-
     // Filter suggestions based on input
     useEffect(() => {
         // Ensure endpointUrl is a string before calling trim()
@@ -44,7 +43,6 @@ const Testing = () => {
             setFilteredSuggestions(filtered);
         }
     }, [endpointUrl]);
-
     // Function to call the selected API endpoint
     const callApiEndpoint = async () => {
         setIsLoading(true);
@@ -78,7 +76,6 @@ const Testing = () => {
             setIsLoading(false);
         }
     };
-
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
             <div className="max-w-7xl mx-auto">
@@ -206,8 +203,6 @@ const Testing = () => {
                             {isLoading ? "Loading..." : "Execute API Call"}
                         </button>
                     </div>
-
-                    {/* API Response Display */}
                     {(apiResponse || error) && (
                         <div className="mt-6">
                             <h3 className="text-lg font-semibold mb-2 text-gray-300">
@@ -219,7 +214,6 @@ const Testing = () => {
                                     Error: {error}
                                 </div>
                             )}
-
                             {apiResponse && (
                                 <div className="bg-gray-700 border border-gray-600 rounded-md p-3 font-mono text-green-300 whitespace-pre-wrap overflow-auto max-h-80">
                                     {JSON.stringify(apiResponse, null, 2)}

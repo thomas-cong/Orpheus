@@ -4,6 +4,7 @@ import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import { ContainerSASPermissions } from "@azure/storage-blob";
 import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
+import Trial from "../Models/Trial.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import multer from "multer";
@@ -186,24 +187,28 @@ const getContainerSasUri = async (
     sharedKeyCredential,
     storedPolicyName
 ) => {
+    // Create SAS token for the container
     const sasOptions = {
         containerName: containerClient.containerName,
         permissions: ContainerSASPermissions.parse("racwl"),
     };
 
     if (storedPolicyName == null) {
+        // Set SAS token to expire in 1 hour
         sasOptions.startsOn = new Date();
         sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
     } else {
         sasOptions.identifier = storedPolicyName;
     }
 
+    // Generate SAS token
     const sasToken = generateBlobSASQueryParameters(
         sasOptions,
         sharedKeyCredential
     ).toString();
     console.log(`SAS token for blob container is: ${sasToken}`);
 
+    // Return the SAS token
     return `${containerClient.url}?${sasToken}`;
 };
 const getFileSasUri = async (
@@ -212,6 +217,7 @@ const getFileSasUri = async (
     storedPolicyName,
     blobName
 ) => {
+    // Create SAS token for the file
     const sasOptions = {
         containerName: containerClient.containerName,
         blobName: blobName,
@@ -219,18 +225,22 @@ const getFileSasUri = async (
     };
 
     if (storedPolicyName == null) {
+        // Set SAS token to expire in 1 hour
         sasOptions.startsOn = new Date();
         sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
     } else {
+        // Use stored policy
         sasOptions.identifier = storedPolicyName;
     }
 
+    // Generate SAS token
     const sasToken = generateBlobSASQueryParameters(
         sasOptions,
         sharedKeyCredential
     ).toString();
     console.log(`SAS token for blob is: ${sasToken}`);
 
+    // Return the SAS token + url
     return `${containerClient.url}?${sasToken}`;
 };
 /**
@@ -241,6 +251,7 @@ const getFileSasUri = async (
  * @param {Array} req.body.containerName - Container name of audio files to transcribe
  * @param {string} req.body.locale - Locale for transcription (e.g., "en-US")
  * @param {string} req.body.displayName - Name for the transcription job
+ * @param {string} req.body.trialID - ID of the trial to update
  * @param {Object} [req.body.properties] - Optional properties for transcription
  * @returns {Object} - JSON response from Azure or error message
  */
@@ -253,7 +264,7 @@ router.post("/transcribe", async (req, res) => {
         sharedKeyCredential,
         null
     );
-    console.log("SAS", sas);
+    // Send the request to Azure Speech-to-Text API
     const apiUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions`;
     const body = {
         contentContainerUrl: sas,
@@ -261,7 +272,7 @@ router.post("/transcribe", async (req, res) => {
         displayName: req.body.displayName,
         model: null,
     };
-
+    // Send the request to Azure Speech-to-Text API
     const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
@@ -270,9 +281,53 @@ router.post("/transcribe", async (req, res) => {
         },
         body: JSON.stringify(body),
     });
+    // Get the response from Azure Speech-to-Text API
     const data = await response.json();
-    res.send({ msg: "Transcription started", data: data });
+
+    // Get the transcription ID - last bit of the URL
+    const transcriptionId = data.self.split("/").pop();
+    console.log("Extracted transcription ID:", transcriptionId);
+
+    // Update the trial with the transcription ID if trial ID is provided
+    if (req.body.trialID) {
+        try {
+            // Find and update the trial - use transcriptionID with uppercase ID to match schema
+            const updatedTrial = await Trial.findOneAndUpdate(
+                { trialID: req.body.trialID },
+                { transcriptionID: transcriptionId },
+                { new: true } // Return the updated document
+            );
+            if (!updatedTrial) {
+                console.error("Trial not found with ID:", req.body.trialID);
+                return res.status(404).send({
+                    msg: "Trial not found",
+                    trialID: req.body.trialID,
+                });
+            }
+
+            res.send({
+                msg: "Transcription started",
+                data: data,
+                transcriptionId: transcriptionId,
+                updatedTrial: updatedTrial,
+            });
+        } catch (error) {
+            console.error("Error updating trial transcription ID:", error);
+            res.status(500).send({
+                msg: "Error updating trial transcription ID",
+                error: error.message,
+            });
+        }
+    } else {
+        // If no trialID provided, just return the transcription data
+        res.send({
+            msg: "Transcription started",
+            data: data,
+            transcriptionId: transcriptionId,
+        });
+    }
 });
+
 /**
  * @route GET /api/audioStorage/getTranscriptionStatus
  * @description Get the status of a transcription job
