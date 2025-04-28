@@ -76,16 +76,6 @@ const DemographicInput = ({
                 }
             }
         );
-        await get("/api/audioStorage/getContainer", {
-            containerName: patientID,
-        }).then((result) => {
-            if (result.msg === "Container not found") {
-                post("/api/audioStorage/createContainer", {
-                    containerName: patientID,
-                });
-            }
-            console.log(result);
-        });
         // Initialize the patient context with form data
         setPatientID(patientID);
         setFirstName(firstName);
