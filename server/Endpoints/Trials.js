@@ -15,31 +15,6 @@ async function getUseModel() {
     return useModel;
 }
 
-async function cosineSemantic(word1, word2) {
-    const model = await getUseModel();
-    const embeddings = await model.embed([word1, word2]);
-    const array = await embeddings.array();
-    const [v1, v2] = array;
-    let dot = 0, n1 = 0, n2 = 0;
-    for (let i = 0; i < v1.length; i++) {
-        dot += v1[i] * v2[i];
-        n1 += v1[i] * v1[i];
-        n2 += v2[i] * v2[i];
-    }
-    return dot / (Math.sqrt(n1) * Math.sqrt(n2));
-}
-
-/**
- * Compute phonetic similarity between two words using SoundEx + Jaro-Winkler
- * @param {string} w1 - first word
- * @param {string} w2 - second word
- * @returns {number} similarity score [0–1]
- */
-function phoneticSimilarity(w1, w2) {
-    // Just use string similarity directly - simpler and more reliable
-    return JaroWinklerDistance(w1, w2);
-}
-
 /**
  * @route GET /api/trials/genTrialID
  * @description Generate a unique trial ID
@@ -129,79 +104,13 @@ router.post("/addRAVLTResults", (req, res) => {
         return res.status(400).send({ msg: "Missing required fields" });
     }
     const RAVLT = new RAVLTResults(req.body);
-    RAVLT
-        .save()
+    RAVLT.save()
         .then(() => {
             res.send({ msg: "RAVLT results added" });
         })
         .catch((error) => {
             console.error("Error adding RAVLT results:", error);
             res.status(500).send({ msg: "Error adding RAVLT results" });
-        });
-})
-
-router.post("/calculateRAVLTResults", async (req, res) => {
-    if (!req.body.patientID || !req.body.trialID) {
-        return res.status(400).send({ msg: "Missing required fields" });
-    }
-    const { patientID, trialID } = req.body;
-    const results = await RAVLTResults.findOne({ patientID: patientID, trialID: trialID });
-    if (!results.transcribedWords) {
-        return res.status(400).send({ msg: "Missing transcribed words" });
-    }
-    const transcribedWords = results.transcribedWords.map(w => w.word);
-    const testWords = results.testWords;
-    // const interferenceWords = results.interferenceWords;
-
-    // Compute total recall score (number of words correctly recalled)
-    const totalRecallScore = testWords.filter(w => transcribedWords.includes(w)).length;
-
-    // Compute semantic similarity via cosine of USE embeddings
-    // const semanticScores = [];
-    // const phoneticScores = [];
-    // let wordIndex = 0;
-    // for (const tw of testWords) {
-    //     semanticScores.push([]);
-    //     phoneticScores.push([]);
-    //     for (const twTrans of transcribedWords) {
-    //         const semanticSim = cosineSemantic(tw, twTrans);
-    //         semanticScores[wordIndex].push(semanticSim);
-    //         const phoneticSim = phoneticSimilarity(tw, twTrans);
-    //         phoneticScores[wordIndex].push(phoneticSim);
-    // }
-    //     wordIndex++;
-    // }
-
-    // let similarityIndex = 0;
-    // const usedTranscribed = new Set();
-    // const usedTest = new Set();
-    // for (let i = 0; i < Math.min(testWords.length, transcribedWords.length); i++) {
-    //     let bestScore = 0;
-    //     let bestTranscribed = 0;
-    //     let bestTest = 0;
-    //     for (let j = 0; j < transcribedWords.length; j++) {
-    //         if (usedTranscribed.has(j)) continue;
-    //         for (let k = 0; k < testWords.length; k++) {
-    //             if (usedTest.has(k)) continue;
-    //             const score = Math.max(semanticScores[i][j], phoneticScores[i][j]);
-    //             if (score > bestScore) {
-    //                 bestScore = score;
-    //                 bestTranscribed = j;
-    //                 bestTest = k;
-    //             }
-    //         }
-    //     }
-    //     similarityIndex += bestScore;
-    //     usedTranscribed.add(bestTranscribed);
-    //     usedTest.add(bestTest);
-    // }
-    RAVLTResults.findOneAndUpdate({ patientID: patientID, trialID: trialID }, { totalRecallScore: totalRecallScore })
-        .then(() => {
-            res.send({ msg: "RAVLT results updated", totalRecallScore: totalRecallScore });
-        })
-        .catch((error) => {
-            console.error("Error updating RAVLT results:", error);
-            res.status(500).send({ msg: "Error updating RAVLT results" });
         });
 });
 

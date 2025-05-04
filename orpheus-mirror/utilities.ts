@@ -70,16 +70,24 @@ export function get(
 // Returns a Promise to a JSON Object.
 export function post(
     endpoint: string,
-    params: Record<string, any> = {}
+    params: Record<string, any> | FormData = {}
 ): Promise<any> {
-    return fetch(endpoint, {
+    // Different handling based on params type
+    const options: RequestInit = {
         method: "post",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify(params),
-    })
-        .then(convertToJSON) // convert result to JSON object
+    };
+
+    // If it's FormData, don't set Content-Type (browser will set it with boundary)
+    if (params instanceof FormData) {
+        options.body = params;
+    } else {
+        options.headers = { "Content-type": "application/json" };
+        options.body = JSON.stringify(params);
+    }
+
+    return fetch(endpoint, options)
+        .then(convertToJSON)
         .catch((error) => {
-            // give a useful error message
             throw `POST request to ${endpoint} failed with error:\n${error}`;
         });
 }
