@@ -76,7 +76,6 @@ router.get("/getContainer", (req, res) => {
             if (exists) {
                 res.send({
                     containerName: cleanedName,
-                    containerClient: containerClient,
                 });
             } else {
                 res.send({ msg: "Container not found" });
@@ -233,7 +232,7 @@ const getFileSasUri = async (
  * @description Create a transcription job using Azure Speech-to-Text API
  * @access Public
  * @param {Object} req.body - Request body matching Azure Speech-to-Text API requirements
- * @param {Array} req.body.containerName - Container name of audio files to transcribe
+ * @param {string} req.body.containerName - Container name of audio files to transcribe
  * @param {string} req.body.locale - Locale for transcription (e.g., "en-US")
  * @param {string} req.body.displayName - Name for the transcription job
  * @param {Object} [req.body.properties] - Optional properties for transcription
@@ -273,12 +272,12 @@ router.post("/transcribe", async (req, res) => {
  * @route GET /api/audioStorage/getTranscriptionStatus
  * @description Get transcription status for a specific container
  * @access Public
- * @param {string} req.query.containerName - Name of the container
+ * @param {string} req.query.transcriptionId - ID of the transcription job
  * @returns {Object} - JSON containing the transcription status or error message
  */
 router.get("/getTranscriptionStatus", async (req, res) => {
     try {
-        const cleanedName = sanitizeContainerName(req.query.containerName);
+        const transcriptionId = req.query.transcriptionId;
         // Get all transcriptions
         const apiUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions`;
         const response = await fetch(apiUrl, {
@@ -291,7 +290,7 @@ router.get("/getTranscriptionStatus", async (req, res) => {
         const data = await response.json();
         
         // Find the transcription for this container
-        const transcription = data.values?.find(t => t.displayName === cleanedName);
+        const transcription = data.values?.find(t => t.id === transcriptionId);
         
         if (!transcription) {
             return res.status(404).json({ msg: "No transcription found for this container" });
