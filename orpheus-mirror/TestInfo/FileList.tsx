@@ -5,14 +5,17 @@ const FileList = (props: { containerName: string }) => {
     const [fileList, setFileList] = useState([]);
     useEffect(() => {
         if (!props.containerName) return;
+        // Get file URLs from Azure Blob Storage
         get("/api/audioStorage/getContainerFileURLs", {
             containerName: props.containerName,
         })
             .then((res) => {
+                // Set file list
                 setFileList(res.urls);
                 console.log(res.urls);
             })
             .catch((err) => {
+                // Handle error
                 console.error(err);
             });
     }, [props.containerName]);
@@ -22,6 +25,7 @@ const FileList = (props: { containerName: string }) => {
             <h2 className="text-xl font-semibold mb-4 text-green-400">
                 File List
             </h2>
+            {/* Render file list if available */}
             {fileList && fileList.length > 0 ? (
                 <div className="space-y-2 w-full">
                     {fileList.map((file: any) => {
