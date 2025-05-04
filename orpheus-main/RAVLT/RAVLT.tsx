@@ -68,10 +68,14 @@ const RAVLT = ({
                 // Upload file to Azure Blob Storage
                 try {
                     const formData = new FormData();
-                    formData.append("containerName", containerName);
-                    formData.append("blobName", fileName);
-                    formData.append("file", file);
-                    await post("/api/audioStorage/uploadBlob", formData);
+                    formData.append('containerName', containerName);
+                    formData.append('blobName', fileName);
+                    formData.append('file', file);
+
+                    await fetch('/api/audioStorage/uploadBlob', {
+                        method: 'POST',
+                        body: formData,
+                    });
                     console.log(`Successfully uploaded ${fileName} to Azure`);
                 } catch (error) {
                     // Handle error
@@ -111,6 +115,26 @@ const RAVLT = ({
                     displayName: "RAVLT Transcription " + trialID,
                     trialID: trialID,
                 });
+                console.log("patientID: " + patientID);
+                console.log("trialID: " + trialID);
+                console.log("transcriptionID: " + "None");
+                console.log("transcribedWords: " + []);
+                console.log("testWords: " + wordArray);
+                console.log("interferenceWords: " + interferenceArray);
+                console.log("totalRecallScore: " + 0);
+                console.log("similarityIndex: " + 0);
+                console.log("primacyRecencyIndex: " + 0);
+                await post("/api/trials/addRAVLTResults", {
+                    patientID: patientID,
+                    trialID: trialID,
+                    transcriptionID: "None",
+                    transcribedWords: [],
+                    testWords: wordArray,
+                    interferenceWords: interferenceArray,
+                    totalRecallScore: 0,
+                    similarityIndex: 0,
+                    primacyRecencyIndex: 0,
+                });
             });
         }
     }, [trialCycle]);
@@ -136,7 +160,7 @@ const RAVLT = ({
                 <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Press the button below to generate the words. Only press this when you are ready." />
                     <GenerateWordsButton
-                        numWords={1}
+                        numWords={5}
                         words={wordArray}
                         setWords={setWordArray}
                         onClick={() => setTrialCycle(2)}
@@ -151,7 +175,7 @@ const RAVLT = ({
                 <>
                     <InstructionDisplay instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember." />
                     <GenerateWordsButton
-                        numWords={1}
+                        numWords={5}
                         words={interferenceArray}
                         setWords={setInterferenceArray}
                         onClick={() => setTrialCycle(7)}

@@ -5,6 +5,7 @@ import { ContainerSASPermissions } from "@azure/storage-blob";
 import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import Trial from "../Models/Trial.js";
+import RAVLTResults from "../Models/RAVLTResults.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import multer from "multer";
@@ -270,6 +271,10 @@ router.post("/transcribe", async (req, res) => {
         locale: req.body.locale,
         displayName: req.body.displayName,
         model: null,
+        properties: {
+            wordLevelTimestampsEnabled: true,
+            displayFormWordLevelTimestampsEnabled: true
+        }
     };
     // Send the request to Azure Speech-to-Text API
     const response = await fetch(apiUrl, {
@@ -318,11 +323,11 @@ router.post("/transcribe", async (req, res) => {
             });
         }
     } else {
-        // If no trialID provided, just return the transcription data
+        // If no trialID provided, just return transcription metadata
         res.send({
             msg: "Transcription started",
             data: data,
-            transcriptionId: transcriptionId,
+            transcriptionId: transcriptionId
         });
     }
 });
@@ -371,6 +376,9 @@ router.get("/getTranscriptionStatus", async (req, res) => {
  * @description Get the transcription files for a completed transcription job
  * @access Public
  * @param {string} req.query.transcriptionID - ID of the transcription job
+ * @param {string} req.query.patientID - ID of the patient
+ * @param {string} req.query.trialID - ID of the trial
+ * @param {string} req.query.test - Type of test performed
  * @returns {Object} - JSON containing the transcription files or error message
  */
 router.get("/getTranscriptionFiles", async (req, res) => {
@@ -421,10 +429,39 @@ router.get("/getTranscriptionFiles", async (req, res) => {
             });
         }
 
-        res.json({
-            msg: "Transcription files retrieved successfully",
-            files: transcriptionResults,
+        // Aggregate word-level timestamps, phrases, and combined phrases
+        const words = [];
+        const phrases = [];
+        const combinedPhrases = [];
+        transcriptionResults.forEach(({ content, filename }) => {
+            // extract file index (from '-X.wav.json')
+            const match = filename.match(/-(\d+)\.wav\.json$/);
+            const fileIndex = match ? Number(match[1]) : null;
+            (content.combinedRecognizedPhrases || []).forEach(p => combinedPhrases.push(p.display));
+            (content.recognizedPhrases || []).forEach(rp => {
+                const top = rp.nBest && rp.nBest[0];
+                if (top) {
+                    phrases.push(top.display);
+                    (top.words || []).forEach(w => words.push({ word: w.word, time: w.offsetMilliseconds, duration: w.durationMilliseconds, confidence: w.confidence, fileIndex }));
+                }
+            });
         });
+        if (req.query.patientID && req.query.trialID && req.query.test) {
+            switch (req.query.test) {
+                case "RAVLT":
+                    const transcribedWords = words
+                    RAVLTResults.findOneAndUpdate({ patientID: req.query.patientID, trialID: req.query.trialID }, { transcribedWords: transcribedWords }, { new: true })
+                    .then((updatedTrial) => {
+                        console.log("Updated trial:", updatedTrial);
+                    })
+                    .catch((error) => {
+                        console.error("Error updating trial:", error);
+                        res.status(500).json({ msg: "Error updating trial" });
+                    });
+            }
+        }
+
+        res.json({ words, phrases, combinedPhrases });
     } catch (error) {
         console.error("Error retrieving transcription files:", error);
         res.status(500).json({ msg: "Error retrieving transcription files" });

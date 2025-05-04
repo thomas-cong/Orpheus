@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  }
  
  const DelayTimer: React.FC<DelayTimerProps> = ({ onTimerComplete }) => {
-     const DELAY_MINUTES = 1;
+     const DELAY_MINUTES = .2;
      const [secondsLeft, setSecondsLeft] = useState(DELAY_MINUTES * 60);
      const [timerComplete, setTimerComplete] = useState(false);
  
