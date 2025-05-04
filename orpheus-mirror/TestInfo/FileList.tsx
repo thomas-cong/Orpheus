@@ -38,14 +38,6 @@ const FileList = (props: { containerName: string }) => {
                                     <span className="truncate">
                                         {file.blobName}
                                     </span>
-                                    <button
-                                        className="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-xs"
-                                        onClick={() =>
-                                            window.open(file.url, "_blank")
-                                        }
-                                    >
-                                        Download
-                                    </button>
                                 </div>
                             </div>
                         );

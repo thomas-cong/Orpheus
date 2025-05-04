@@ -43,7 +43,7 @@ function convertToJSON(res: Response): Promise<any> {
     return res
         .clone() // clone so that the original is still readable for debugging
         .json() // start converting to JSON object
-        .catch((error) => {
+        .catch(() => {
             // throw an error containing the text that couldn't be converted to JSON
             return res.text().then((text) => {
                 throw `API request's result could not be converted to a JSON object: \n${text}`;

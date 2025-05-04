@@ -155,13 +155,18 @@ router.post("/createContainer", (req, res) => {
  * @param {ArrayBuffer} req.body.data - The blob data as an ArrayBuffer
  * @returns {Object} - JSON object with success or error message
  */
-router.post("/uploadBlob", upload.single('file'), async (req, res) => {
+router.post("/uploadBlob", upload.single("file"), async (req, res) => {
     try {
         const { containerName, blobName } = req.body;
         const fileBuffer = req.file.buffer;
         // Upload fileBuffer to Azure Blob Storage
-        const containerClient = blobServiceClient.getContainerClient(containerName);
-        await containerClient.uploadBlockBlob(blobName, fileBuffer, fileBuffer.length);
+        const containerClient =
+            blobServiceClient.getContainerClient(containerName);
+        await containerClient.uploadBlockBlob(
+            blobName,
+            fileBuffer,
+            fileBuffer.length
+        );
         res.send({ msg: "Upload successful" });
     } catch (error) {
         console.error("Error uploading blob:", error);
@@ -342,14 +347,18 @@ router.get("/getTranscriptionStatus", async (req, res) => {
             },
         });
         const data = await response.json();
-        
+
         // Find the transcription for this container
-        const transcription = data.values?.find(t => t.id === transcriptionId);
-        
+        const transcription = data.values?.find(
+            (t) => t.id === transcriptionId
+        );
+
         if (!transcription) {
-            return res.status(404).json({ msg: "No transcription found for this container" });
+            return res
+                .status(404)
+                .json({ msg: "No transcription found for this container" });
         }
-        
+
         res.json(transcription);
     } catch (error) {
         console.error("Error getting transcription status:", error);
@@ -361,39 +370,23 @@ router.get("/getTranscriptionStatus", async (req, res) => {
  * @route GET /api/audioStorage/getTranscriptionFiles
  * @description Get the transcription files for a completed transcription job
  * @access Public
- * @param {string} req.query.containerName - Name of the container
+ * @param {string} req.query.transcriptionID - ID of the transcription job
  * @returns {Object} - JSON containing the transcription files or error message
  */
 router.get("/getTranscriptionFiles", async (req, res) => {
     try {
-        const cleanedName = sanitizeContainerName(req.query.containerName);
-        
-        // First get all transcriptions to find the one for this container
-        const transcriptionsUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions`;
-        const transcriptionsResponse = await fetch(transcriptionsUrl, {
-            method: "GET",
-            headers: {
-                "Ocp-Apim-Subscription-Key": process.env.SPEECH_KEY,
-                "Content-Type": "application/json",
-            },
-        });
-        const transcriptionsData = await transcriptionsResponse.json();
-        
-        // Find the transcription for this container
-        const transcription = transcriptionsData.values?.find(t => t.displayName === cleanedName);
-        
-        if (!transcription) {
-            return res.status(404).json({ msg: "No transcription found for this container" });
-        }
+        // Get transcription ID from query params - check both casing options (transcriptionId and transcriptionID)
+        const transcriptionID = req.query.transcriptionID;
 
-        if (transcription.status !== "Succeeded") {
-            return res.status(400).json({
-                msg: `Transcription is not ready. Current status: ${transcription.status}`,
-            });
+        // Validate transcription ID is provided
+        if (!transcriptionID) {
+            return res
+                .status(400)
+                .json({ msg: "Transcription ID is required" });
         }
+        // Directly access the files endpoint for the specific transcription ID
+        const filesUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions/${transcriptionID}/files`;
 
-        // Get the files URL from the transcription
-        const filesUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions/${transcription.self.split('/').pop()}/files`;
         const filesResponse = await fetch(filesUrl, {
             method: "GET",
             headers: {
@@ -401,10 +394,20 @@ router.get("/getTranscriptionFiles", async (req, res) => {
                 "Content-Type": "application/json",
             },
         });
+
+        // Handle potential errors
+        if (!filesResponse.ok) {
+            return res.status(filesResponse.status).json({
+                msg: `Error retrieving transcription files: ${filesResponse.statusText}`,
+            });
+        }
+
         const filesData = await filesResponse.json();
 
         if (!filesData.values || filesData.values.length === 0) {
-            return res.status(404).json({ msg: "No transcription files found" });
+            return res
+                .status(404)
+                .json({ msg: "No transcription files found" });
         }
 
         // Get the actual transcription content
@@ -414,16 +417,16 @@ router.get("/getTranscriptionFiles", async (req, res) => {
             const fileContent = await fileResponse.json();
             transcriptionResults.push({
                 filename: file.name,
-                content: fileContent
+                content: fileContent,
             });
         }
 
         res.json({
             msg: "Transcription files retrieved successfully",
-            files: transcriptionResults
+            files: transcriptionResults,
         });
     } catch (error) {
-        console.error("Error getting transcription files:", error);
+        console.error("Error retrieving transcription files:", error);
         res.status(500).json({ msg: "Error retrieving transcription files" });
     }
 });
