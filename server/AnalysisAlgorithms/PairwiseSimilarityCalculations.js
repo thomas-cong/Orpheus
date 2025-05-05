@@ -6,10 +6,26 @@ const calculateMinDistance = (metaphonePair1, metaphonePair2, word2) => {
     const [p2, s2] = metaphonePair2;
 
     const distances = [
-        { distance: levenshteinDistance(p1, p2), word: word2 },
-        { distance: levenshteinDistance(s1, s2), word: word2 },
-        { distance: levenshteinDistance(p1, s2), word: word2 },
-        { distance: levenshteinDistance(s1, p2), word: word2 },
+        {
+            distance:
+                levenshteinDistance(p1, p2) / Math.max(p1.length, p2.length),
+            word: word2,
+        },
+        {
+            distance:
+                levenshteinDistance(s1, s2) / Math.max(s1.length, s2.length),
+            word: word2,
+        },
+        {
+            distance:
+                levenshteinDistance(p1, s2) / Math.max(p1.length, s2.length),
+            word: word2,
+        },
+        {
+            distance:
+                levenshteinDistance(s1, p2) / Math.max(s1.length, p2.length),
+            word: word2,
+        },
     ];
 
     return distances.reduce((min, current) =>
@@ -24,39 +40,90 @@ const pairwiseSimilarityCalculations = (sampledWords, actualWords) => {
     let actualWordsToDoubleMetaphoneMapping = actualWords.map((word) =>
         doubleMetaphone(word).concat(word)
     );
-    let minDistanceDictionary = {};
 
-    // Initialize the dictionary with entries for each word in list1
-    for (let i = 0; i < actualWordsToDoubleMetaphoneMapping.length; i++) {
-        const word1 = actualWordsToDoubleMetaphoneMapping[i][2];
-        minDistanceDictionary[word1] = {
-            distance: Number.MAX_SAFE_INTEGER,
-            matchingWord: "",
-        };
-    }
-    let matchedWordsDictionary = {};
+    // Calculate all pairwise distances and store them
+    const allDistances = [];
 
-    /**
-     * TODO: if the word has been matched previously, don't use it again
-     */
     for (let i = 0; i < actualWordsToDoubleMetaphoneMapping.length; i++) {
-        const word1 = actualWordsToDoubleMetaphoneMapping[i][2];
+        const actualWord = actualWordsToDoubleMetaphoneMapping[i][2];
+
         for (let j = 0; j < sampledWordsToDoubleMetaphoneMapping.length; j++) {
-            const word2 = sampledWordsToDoubleMetaphoneMapping[j][2];
+            const sampledWord = sampledWordsToDoubleMetaphoneMapping[j][2];
+
             const minPhoneticDistance = calculateMinDistance(
                 actualWordsToDoubleMetaphoneMapping[i],
-                sampledWordsToDoubleMetaphoneMapping[j]
+                sampledWordsToDoubleMetaphoneMapping[j],
+                sampledWord
             );
-            const minOrthographicDistance = levenshteinDistance(word1, word2);
+
+            const minOrthographicDistance =
+                levenshteinDistance(actualWord, sampledWord) /
+                Math.max(actualWord.length, sampledWord.length);
+
             const minDistance = Math.min(
                 minPhoneticDistance.distance,
                 minOrthographicDistance
             );
-            if (minDistance < minDistanceDictionary[word1].distance) {
-                minDistanceDictionary[word1].distance = minDistance;
-                minDistanceDictionary[word1].matchingWord = word2;
-            }
+
+            allDistances.push({
+                actualWord,
+                sampledWord,
+                distance: minDistance,
+                phoneticDistance: minPhoneticDistance.distance,
+                orthographicDistance: minOrthographicDistance,
+            });
         }
+    }
+
+    // Sort all distances from lowest to highest
+    allDistances.sort((a, b) => a.distance - b.distance);
+
+    // Create result dictionary
+    let minDistanceDictionary = {};
+
+    // Initialize all actual words with max distance
+    for (let i = 0; i < actualWordsToDoubleMetaphoneMapping.length; i++) {
+        const word = actualWordsToDoubleMetaphoneMapping[i][2];
+        minDistanceDictionary[word] = {
+            distance: Number.MAX_SAFE_INTEGER,
+            matchingWord: "",
+            phoneticDistance: Number.MAX_SAFE_INTEGER,
+            orthographicDistance: Number.MAX_SAFE_INTEGER,
+        };
+    }
+
+    // Keep track of matched sampled words to ensure one-to-one mapping
+    let matchedWordsDictionary = {};
+
+    // Process distances from lowest to highest for greedy matching
+    for (const pair of allDistances) {
+        const {
+            actualWord,
+            sampledWord,
+            distance,
+            phoneticDistance,
+            orthographicDistance,
+        } = pair;
+
+        // Skip if this actual word already has a better match
+        if (minDistanceDictionary[actualWord].distance <= distance) {
+            continue;
+        }
+
+        // Skip if the sampled word has already been matched
+        if (matchedWordsDictionary[sampledWord]) {
+            continue;
+        }
+
+        // Make the match
+        minDistanceDictionary[actualWord].distance = distance;
+        minDistanceDictionary[actualWord].matchingWord = sampledWord;
+        minDistanceDictionary[actualWord].phoneticDistance = phoneticDistance;
+        minDistanceDictionary[actualWord].orthographicDistance =
+            orthographicDistance;
+        matchedWordsDictionary[sampledWord] = true;
+        const similarityScore = 1 / (distance + 1);
+        minDistanceDictionary[actualWord].similarityScore = similarityScore;
     }
 
     return minDistanceDictionary;

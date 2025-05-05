@@ -1,4 +1,4 @@
 import pairwiseSimilarityCalculations from "./PairwiseSimilarityCalculations.js";
-const testingWords = ["cat", "hat", "bat", "rat", "mat", "pat"];
-const sampledWords = ["cat", "night", "rat"];
+const testingWords = ["brainrot", "brain", "cleveland", "helter"];
+const sampledWords = ["brains", "cleaveland", "helters"];
 console.log(pairwiseSimilarityCalculations(testingWords, sampledWords));
