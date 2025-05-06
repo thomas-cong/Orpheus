@@ -1,6 +1,6 @@
 import natural from "natural";
+const metaphone = new natural.DoubleMetaphone();
 const doubleMetaphone = (input) => {
-    const metaphone = new natural.DoubleMetaphone();
     return metaphone.process(input);
 };
 

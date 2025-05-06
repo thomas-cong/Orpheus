@@ -1,37 +1,38 @@
 import levenshteinDistance from "./LevenshteinDistance.js";
 import doubleMetaphone from "./NaturalPhoneticAlgs.js";
 
-const calculateMinDistance = (metaphonePair1, metaphonePair2, word2) => {
+const calculateMaxSimilarity = (metaphonePair1, metaphonePair2, word2) => {
     const [p1, s1] = metaphonePair1;
     const [p2, s2] = metaphonePair2;
 
-    const distances = [
+    const similarities = [
         {
-            distance:
-                levenshteinDistance(p1, p2) / Math.max(p1.length, p2.length),
+            similarity: normalizedSimilarity(p1, p2),
             word: word2,
         },
         {
-            distance:
-                levenshteinDistance(s1, s2) / Math.max(s1.length, s2.length),
+            similarity: normalizedSimilarity(s1, s2),
             word: word2,
         },
         {
-            distance:
-                levenshteinDistance(p1, s2) / Math.max(p1.length, s2.length),
+            similarity: normalizedSimilarity(p1, s2),
             word: word2,
         },
         {
-            distance:
-                levenshteinDistance(s1, p2) / Math.max(s1.length, p2.length),
+            similarity: normalizedSimilarity(s1, p2),
             word: word2,
         },
     ];
 
-    return distances.reduce((min, current) =>
-        current.distance < min.distance ? current : min
+    return similarities.reduce((max, current) =>
+        current.similarity > max.similarity ? current : max
     );
 };
+
+const normalizedSimilarity = (actualSpelling, sampledSpelling) => {
+    const distance = levenshteinDistance(actualSpelling, sampledSpelling);
+    return Math.max(0, 1 - distance / actualSpelling.length);
+}
 
 const pairwiseSimilarityCalculations = (sampledWords, actualWords) => {
     let sampledWordsToDoubleMetaphoneMapping = sampledWords.map((word) =>
@@ -41,8 +42,8 @@ const pairwiseSimilarityCalculations = (sampledWords, actualWords) => {
         doubleMetaphone(word).concat(word)
     );
 
-    // Calculate all pairwise distances and store them
-    const allDistances = [];
+    // Calculate all pairwise similarities and store them
+    const allSimilarities = [];
 
     for (let i = 0; i < actualWordsToDoubleMetaphoneMapping.length; i++) {
         const actualWord = actualWordsToDoubleMetaphoneMapping[i][2];
@@ -50,63 +51,61 @@ const pairwiseSimilarityCalculations = (sampledWords, actualWords) => {
         for (let j = 0; j < sampledWordsToDoubleMetaphoneMapping.length; j++) {
             const sampledWord = sampledWordsToDoubleMetaphoneMapping[j][2];
 
-            const minPhoneticDistance = calculateMinDistance(
+            const maxPhoneticSimilarity = calculateMaxSimilarity(
                 actualWordsToDoubleMetaphoneMapping[i],
                 sampledWordsToDoubleMetaphoneMapping[j],
                 sampledWord
             );
 
-            const minOrthographicDistance =
-                levenshteinDistance(actualWord, sampledWord) /
-                Math.max(actualWord.length, sampledWord.length);
+            const maxOrthographicSimilarity = normalizedSimilarity(actualWord, sampledWord);
 
-            const minDistance = Math.min(
-                minPhoneticDistance.distance,
-                minOrthographicDistance
+            const maxSimilarity = Math.max(
+                maxPhoneticSimilarity.similarity,
+                maxOrthographicSimilarity
             );
 
-            allDistances.push({
+            allSimilarities.push({
                 actualWord,
                 sampledWord,
-                distance: minDistance,
-                phoneticDistance: minPhoneticDistance.distance,
-                orthographicDistance: minOrthographicDistance,
+                similarity: maxSimilarity,
+                phoneticSimilarity: maxPhoneticSimilarity.similarity,
+                orthographicSimilarity: maxOrthographicSimilarity,
             });
         }
     }
 
-    // Sort all distances from lowest to highest
-    allDistances.sort((a, b) => a.distance - b.distance);
+    // Sort all similarities from highest to lowest
+    allSimilarities.sort((a, b) => b.similarity - a.similarity);
 
     // Create result dictionary
-    let minDistanceDictionary = {};
+    let maxSimilarityDictionary = {};
 
-    // Initialize all actual words with max distance
+    // Initialize all actual words with minimum similarity
     for (let i = 0; i < actualWordsToDoubleMetaphoneMapping.length; i++) {
         const word = actualWordsToDoubleMetaphoneMapping[i][2];
-        minDistanceDictionary[word] = {
-            distance: Number.MAX_SAFE_INTEGER,
+        maxSimilarityDictionary[word] = {
+            similarity: 0,
             matchingWord: "",
-            phoneticDistance: Number.MAX_SAFE_INTEGER,
-            orthographicDistance: Number.MAX_SAFE_INTEGER,
+            phoneticSimilarity: 0,
+            orthographicSimilarity: 0,
         };
     }
 
     // Keep track of matched sampled words to ensure one-to-one mapping
     let matchedWordsDictionary = {};
 
-    // Process distances from lowest to highest for greedy matching
-    for (const pair of allDistances) {
+    // Process similarities from highest to lowest for greedy matching
+    for (const pair of allSimilarities) {
         const {
             actualWord,
             sampledWord,
-            distance,
-            phoneticDistance,
-            orthographicDistance,
+            similarity,
+            phoneticSimilarity,
+            orthographicSimilarity,
         } = pair;
 
         // Skip if this actual word already has a better match
-        if (minDistanceDictionary[actualWord].distance <= distance) {
+        if (maxSimilarityDictionary[actualWord].similarity >= similarity) {
             continue;
         }
 
@@ -116,17 +115,14 @@ const pairwiseSimilarityCalculations = (sampledWords, actualWords) => {
         }
 
         // Make the match
-        minDistanceDictionary[actualWord].distance = distance;
-        minDistanceDictionary[actualWord].matchingWord = sampledWord;
-        minDistanceDictionary[actualWord].phoneticDistance = phoneticDistance;
-        minDistanceDictionary[actualWord].orthographicDistance =
-            orthographicDistance;
+        maxSimilarityDictionary[actualWord].similarity = similarity;
+        maxSimilarityDictionary[actualWord].matchingWord = sampledWord;
+        maxSimilarityDictionary[actualWord].phoneticSimilarity = phoneticSimilarity;
+        maxSimilarityDictionary[actualWord].orthographicSimilarity = orthographicSimilarity;
         matchedWordsDictionary[sampledWord] = true;
-        const similarityScore = 1 / (distance + 1);
-        minDistanceDictionary[actualWord].similarityScore = similarityScore;
     }
 
-    return minDistanceDictionary;
+    return maxSimilarityDictionary;
 };
 
 export default pairwiseSimilarityCalculations;

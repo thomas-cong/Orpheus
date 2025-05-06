@@ -1,6 +1,7 @@
 import RAVLTResults from "../Models/RAVLTResults.js";
-import levenshteinDistance from "../AnalysisAlgorithms/LevenshteinDistance.js";
-import doubleMetaphone from "../AnalysisAlgorithms/NaturalPhoneticAlgs.js";
+import pairwiseSimilarityCalculations from "../AnalysisAlgorithms/PairwiseSimilarityCalculations.js";
+import express from "express";
+
 const router = express.Router();
 
 let useModel;
@@ -28,15 +29,23 @@ router.post("/calculateRAVLTResults", async (req, res) => {
     const totalRecallScore = testWords.filter((w) =>
         transcribedWords.includes(w)
     ).length;
+    
+    const pairwiseSimilarities = pairwiseSimilarityCalculations(testWords, transcribedWords);
+    let similarityIndex = 0;
+    for (const word in pairwiseSimilarities) {
+        similarityIndex += pairwiseSimilarities[word].similarity;
+    }
+    
     // Update total recall score in database
     RAVLTResults.findOneAndUpdate(
         { patientID: patientID, trialID: trialID },
-        { totalRecallScore: totalRecallScore }
+        { totalRecallScore: totalRecallScore, similarityIndex: similarityIndex }
     )
         .then(() => {
             res.send({
                 msg: "RAVLT results updated",
                 totalRecallScore: totalRecallScore,
+                similarityIndex: similarityIndex,
             });
         })
         .catch((error) => {

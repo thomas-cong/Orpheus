@@ -48,6 +48,18 @@ const RAVLT = ({
         recordings,
         setRecordings
     );
+
+    const RAVLTCycleComponentFinal = RAVLTCycle(
+        [],
+        trialStatus,
+        setTrialStatus,
+        recordingID,
+        setRecordingID,
+        trialCycle,
+        setTrialCycle,
+        recordings,
+        setRecordings
+    )
     // Helper to sanitize names for Azure Blob Storage
     const sanitizeForAzure = (name: string) => {
         return name.toLowerCase().replace(/[^a-z0-9-]/g, "-");
@@ -85,8 +97,8 @@ const RAVLT = ({
             }
         };
 
-        // Only upload recordings when the test is finished (trialCycle === 8)
-        if (trialCycle === 10 && recordings.length > 0) {
+        // Only upload recordings when the test is finished (trialCycle === 11)
+        if (trialCycle === 11 && recordings.length > 0) {
             // Generate a new trial ID
             get("/api/trials/genTrialID").then(async (result) => {
                 const trialID = result.trialID;
@@ -186,8 +198,14 @@ const RAVLT = ({
             {trialCycle === 8 && (
                 <DelayTimer onTimerComplete={() => setTrialCycle(9)} />
             )}
-            {trialCycle === 9 && RAVLTCycleComponent}
-            {trialCycle === 10 && (
+            {trialCycle === 9 && (
+                <>
+                    <InstructionDisplay instructions="Now, please try to recall as many words as possible from the first list of words that you learned." />
+                    <TestProgressionButton onClick={() => setTrialCycle(10)} text="Start" />
+                </>
+            )}
+            {trialCycle === 10 && RAVLTCycleComponentFinal}
+            {trialCycle === 11 && (
                 <RAVLTEndPage
                     setTest={setTest}
                     setDemographicsCollected={setDemographicsCollected}
