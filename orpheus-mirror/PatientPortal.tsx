@@ -4,6 +4,7 @@ import QueryBar from "./QueryBar/QueryBar";
 import PatientList from "./PatientList/PatientList";
 import TrialList from "./TrialList/TrialList";
 import FileList from "./TestInfo/FileList";
+import OperationPanel from "./OperationsPanel/OperationPanel";
 
 const PatientPortal = () => {
     const [patients, setPatients] = useState([]);
@@ -61,6 +62,20 @@ const PatientPortal = () => {
                             </div>
                         )}
                     </div>
+                </div>
+                <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 mt-8">
+                    <h2 className="text-xl font-semibold mb-4 text-blue-300">
+                        Operations Panel
+                    </h2>
+                    <OperationPanel
+                        patientID={
+                            focusedContainerName
+                                .split("-")
+                                .slice(0, 2)
+                                .join("-") || ""
+                        }
+                        trialID={focusedContainerName.split("-")[2] || ""}
+                    />
                 </div>
             </div>
         </div>

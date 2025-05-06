@@ -4,11 +4,6 @@ import express from "express";
 
 const router = express.Router();
 
-let useModel;
-async function getUseModel() {
-    if (!useModel) useModel = await use.load();
-    return useModel;
-}
 router.post("/calculateRAVLTResults", async (req, res) => {
     if (!req.body.patientID || !req.body.trialID) {
         return res.status(400).send({ msg: "Missing required fields" });
@@ -18,7 +13,7 @@ router.post("/calculateRAVLTResults", async (req, res) => {
         patientID: patientID,
         trialID: trialID,
     });
-    if (!results.transcribedWords) {
+    if (!results || !results.transcribedWords) {
         return res.status(400).send({ msg: "Missing transcribed words" });
     }
     const transcribedWords = results.transcribedWords.map((w) => w.word);
@@ -29,13 +24,16 @@ router.post("/calculateRAVLTResults", async (req, res) => {
     const totalRecallScore = testWords.filter((w) =>
         transcribedWords.includes(w)
     ).length;
-    
-    const pairwiseSimilarities = pairwiseSimilarityCalculations(testWords, transcribedWords);
+
+    const pairwiseSimilarities = pairwiseSimilarityCalculations(
+        testWords,
+        transcribedWords
+    );
     let similarityIndex = 0;
     for (const word in pairwiseSimilarities) {
         similarityIndex += pairwiseSimilarities[word].similarity;
     }
-    
+
     // Update total recall score in database
     RAVLTResults.findOneAndUpdate(
         { patientID: patientID, trialID: trialID },
