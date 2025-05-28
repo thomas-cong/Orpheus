@@ -1,9 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import "tailwindcss";
+
 @theme {
     --color-seasalt: #f7f7f7;
-    --color-dukeblue: #0062ff;
+    --color-darkblue: #002fa7;
     --color-cerulean: #9ad1d4;
     --color-orange: #f79f79;
+    --font-funnel-sans: "Funnel Sans", sans-serif;
 }
 
 @keyframes button-pulse-size {
@@ -16,6 +19,31 @@
     100% {
         transform: scale(1);
     }
+}
+
+.link-underline {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.link-underline::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 50%;
+    background-color: var(--color-orange);
+    transition: width 0.3s ease, left 0.3s ease, color 0.3s ease;
+}
+
+.link-underline:hover {
+    color: var(--color-orange);
+}
+
+.link-underline:hover::after {
+    width: 100%;
+    left: 0;
 }
 
 :root {
