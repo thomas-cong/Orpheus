@@ -59,7 +59,7 @@ const RAVLT = ({
         setTrialCycle,
         recordings,
         setRecordings
-    )
+    );
     // Helper to sanitize names for Azure Blob Storage
     const sanitizeForAzure = (name: string) => {
         return name.toLowerCase().replace(/[^a-z0-9-]/g, "-");
@@ -80,12 +80,12 @@ const RAVLT = ({
                 // Upload file to Azure Blob Storage
                 try {
                     const formData = new FormData();
-                    formData.append('containerName', containerName);
-                    formData.append('blobName', fileName);
-                    formData.append('file', file);
+                    formData.append("containerName", containerName);
+                    formData.append("blobName", fileName);
+                    formData.append("file", file);
 
-                    await fetch('/api/audioStorage/uploadBlob', {
-                        method: 'POST',
+                    await fetch("/api/audioStorage/uploadBlob", {
+                        method: "POST",
                         body: formData,
                     });
                     console.log(`Successfully uploaded ${fileName} to Azure`);
@@ -151,7 +151,7 @@ const RAVLT = ({
         }
     }, [trialCycle]);
     return (
-        <div className="max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-seasalt flex items-center justify-center slideIn">
+        <div className="font-funnel-sans max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] flex items-center justify-center">
             {trialCycle === 0 && (
                 <div className="flex flex-col items-center">
                     <InstructionDisplay
@@ -201,7 +201,10 @@ const RAVLT = ({
             {trialCycle === 9 && (
                 <>
                     <InstructionDisplay instructions="Now, please try to recall as many words as possible from the first list of words that you learned." />
-                    <TestProgressionButton onClick={() => setTrialCycle(10)} text="Start" />
+                    <TestProgressionButton
+                        onClick={() => setTrialCycle(10)}
+                        text="Start"
+                    />
                 </>
             )}
             {trialCycle === 10 && RAVLTCycleComponentFinal}

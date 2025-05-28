@@ -86,7 +86,7 @@ const DemographicInput = ({
         setDemographicsCollected(true);
     };
     return (
-        <div className="max-w-xl aspect-[3/2] drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] rounded-lg bg-seasalt flex flex-col items-center">
+        <div className="max-w-xl aspect-[3/2] flex flex-col items-center">
             <div className="flex w-full justify-between mb-4 mt-4">
                 <div className="flex flex-col w-45/100">
                     <input
