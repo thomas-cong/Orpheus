@@ -56,7 +56,8 @@ router.post("/addRAVLTTrial", (req, res) => {
     if (!req.body.trialID) {
         return res.status(400).send({ msg: "Missing trial ID" });
     }
-    const trial = new RAVLTTrial(req.body);
+    let trial = new RAVLTTrial(req.body);
+    trial.status = "incomplete";
     trial
         .save()
         .then(() => {
@@ -150,7 +151,11 @@ router.get("/getRAVLTTrialByTrialID", (req, res) => {
     }
     RAVLTTrial.findOne({ trialID: req.query.trialID })
         .then((trial) => {
-            res.json({ trial: trial });
+            if (trial.trialID) {
+                res.json({ trial: trial });
+            } else {
+                res.json({ msg: "Trial not found" });
+            }
         })
         .catch((error) => {
             res.json({ msg: "Trial not found" });

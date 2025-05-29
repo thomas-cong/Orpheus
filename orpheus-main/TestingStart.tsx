@@ -2,28 +2,46 @@ import RAVLT from "./RAVLT/RAVLT";
 import "../global-files/index.css";
 import DemographicInput from "./PatientInfo/DemographicInput";
 import { useState, useEffect } from "react";
-import TestSelection from "./PatientInfo/TestSelection";
 import { PatientProvider } from "./context/PatientContext";
 import React from "react";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import UtilityBar from "./UtilityBar/UtilityBar";
 import { get } from "../global-files/utilities";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const TestingStart = () => {
     const [test, setTest] = useState("");
     const [demographicsCollected, setDemographicsCollected] = useState(false);
     const [trialID, setTrialID] = useState("");
     const [trialFound, setTrialFound] = useState(false);
-    useEffect(() => {
-        if (trialID) {
-            get("/api/trials/getRAVLTTrialByTrialID", {
-                trialID: trialID,
-            }).then((result) => {
-                if (result.msg === "RAVLT Trial not found") {
-                    setTrialFound(false);
+    const checkTrialExistence = (trialID: string, trialType: string) => {
+        get(`/api/trials/get${trialType}TrialByTrialID`, {
+            trialID: trialID,
+        }).then((result) => {
+            if (result.msg === "Trial not found") {
+                return false;
+            } else {
+                if (result.trial.status == "incomplete") {
+                    toast.success(`${trialType} Trial found`);
+                    setTrialFound(true);
+                    setTest(result.trialID.split("-")[0]);
+                    return true;
+                } else {
+                    toast.error(`${trialType} Trial not found`);
+                    return false;
                 }
+            }
+        });
+    };
+    const onSubmitTrialId = async () => {
+        const testTypes = ["RAVLT"];
+        if (trialID) {
+            testTypes.forEach((testType) => {
+                checkTrialExistence(trialID, testType);
             });
         }
-    }, [trialID]);
+    };
     return (
         <PatientProvider>
             <ShaderGradientCanvas
@@ -45,20 +63,16 @@ const TestingStart = () => {
             {trialFound && (
                 <div className="font-funnel-sans min-h-screen flex items-center justify-start pl-4">
                     <div className="h-[90vh] w-[92%] flex flex-col items-center justify-center bg-seasalt rounded-lg drop-shadow-lg">
-                        {test === "" && (
-                            <>
-                                {demographicsCollected ? (
-                                    <TestSelection setTest={setTest} />
-                                ) : (
-                                    <DemographicInput
-                                        setDemographicsCollected={
-                                            setDemographicsCollected
-                                        }
-                                    />
-                                )}
-                            </>
-                        )}
-                        {test === "RAVLT" && (
+                        <>
+                            {!demographicsCollected && (
+                                <DemographicInput
+                                    setDemographicsCollected={
+                                        setDemographicsCollected
+                                    }
+                                />
+                            )}
+                        </>
+                        {test === "RAVLT" && demographicsCollected && (
                             <>
                                 <RAVLT
                                     setTest={setTest}
@@ -81,6 +95,12 @@ const TestingStart = () => {
                         value={trialID}
                         onChange={(e) => setTrialID(e.target.value)}
                     />
+                    <button
+                        className="bg-darkblue hover:bg-cerulean text-white font-bold py-2 px-4 rounded"
+                        onClick={onSubmitTrialId}
+                    >
+                        Submit
+                    </button>
                 </div>
             )}
         </PatientProvider>

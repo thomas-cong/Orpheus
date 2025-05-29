@@ -114,7 +114,7 @@ const RAVLT = ({
                     trialID: trialID,
                     patientID: patientID,
                     date: new Date().toISOString(),
-                    status: "Completed",
+                    status: "complete",
                 });
                 // Transcribe recordings in Azure Blob Storage
                 await post("/api/audioStorage/transcribe", {

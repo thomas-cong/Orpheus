@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import "../global-files/index.css";
 import TestingStart from "./TestingStart.tsx";
 import React from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
     createBrowserRouter,
     createRoutesFromElements,
@@ -22,6 +24,20 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <RouterProvider router={router} />
+        <>
+            <RouterProvider router={router} />
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
+        </>
     </StrictMode>
 );
