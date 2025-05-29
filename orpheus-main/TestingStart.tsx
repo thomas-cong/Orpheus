@@ -20,12 +20,13 @@ const TestingStart = () => {
             trialID: trialID,
         }).then((result) => {
             if (result.msg === "Trial not found") {
+                toast.error(`${trialType} Trial not found`);
                 return false;
             } else {
                 if (result.trial.status == "incomplete") {
                     toast.success(`${trialType} Trial found`);
                     setTrialFound(true);
-                    setTest(result.trialID.split("-")[0]);
+                    setTest(trialType);
                     return true;
                 } else {
                     toast.error(`${trialType} Trial not found`);
@@ -42,6 +43,17 @@ const TestingStart = () => {
             });
         }
     };
+
+    useEffect(() => {
+        console.log(
+            "State updated - trialFound:",
+            trialFound,
+            "test:",
+            test,
+            "demographicsCollected:",
+            demographicsCollected
+        );
+    }, [trialFound, test, demographicsCollected]);
     return (
         <PatientProvider>
             <ShaderGradientCanvas
