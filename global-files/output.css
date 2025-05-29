@@ -243,6 +243,12 @@
   .sticky {
     position: sticky;
   }
+  .right-1\/2 {
+    right: calc(1/2 * 100%);
+  }
+  .bottom-1\/2 {
+    bottom: calc(1/2 * 100%);
+  }
   .z-10 {
     z-index: 10;
   }
@@ -339,12 +345,6 @@
   .aspect-\[3\/2\] {
     aspect-ratio: 3/2;
   }
-  .h-1\/2 {
-    height: calc(1/2 * 100%);
-  }
-  .h-2 {
-    height: calc(var(--spacing) * 2);
-  }
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
@@ -363,9 +363,6 @@
   .h-\[90vh\] {
     height: 90vh;
   }
-  .h-full {
-    height: 100%;
-  }
   .max-h-60 {
     max-height: calc(var(--spacing) * 60);
   }
@@ -374,12 +371,6 @@
   }
   .min-h-screen {
     min-height: 100vh;
-  }
-  .w-1\/2 {
-    width: calc(1/2 * 100%);
-  }
-  .w-2 {
-    width: calc(var(--spacing) * 2);
   }
   .w-15 {
     width: calc(var(--spacing) * 15);
@@ -393,8 +384,17 @@
   .w-90\/100 {
     width: calc(90/100 * 100%);
   }
-  .w-\[85\%\] {
-    width: 85%;
+  .w-\[8\%\] {
+    width: 8%;
+  }
+  .w-\[92\%\] {
+    width: 92%;
+  }
+  .w-\[100\%\] {
+    width: 100%;
+  }
+  .w-\[300\%\] {
+    width: 300%;
   }
   .w-full {
     width: 100%;
@@ -416,6 +416,10 @@
   }
   .grow {
     flex-grow: 1;
+  }
+  .translate-y-1\/2 {
+    --tw-translate-y: calc(1/2 * 100%);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .transform {
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
@@ -449,9 +453,6 @@
   }
   .justify-start {
     justify-content: flex-start;
-  }
-  .gap-2 {
-    gap: calc(var(--spacing) * 2);
   }
   .gap-6 {
     gap: calc(var(--spacing) * 6);
@@ -497,9 +498,6 @@
   }
   .rounded {
     border-radius: 0.25rem;
-  }
-  .rounded-full {
-    border-radius: calc(infinity * 1px);
   }
   .rounded-lg {
     border-radius: var(--radius-lg);
@@ -692,6 +690,9 @@
   .text-blue-600 {
     color: var(--color-blue-600);
   }
+  .text-darkblue {
+    color: var(--color-darkblue);
+  }
   .text-gray-100 {
     color: var(--color-gray-100);
   }
@@ -712,6 +713,9 @@
   }
   .text-green-400 {
     color: var(--color-green-400);
+  }
+  .text-orange {
+    color: var(--color-orange);
   }
   .text-purple-400 {
     color: var(--color-purple-400);
@@ -829,6 +833,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-purple-500);
+      }
+    }
+  }
+  .hover\:text-orange {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-orange);
       }
     }
   }
@@ -963,6 +974,21 @@ select {
   to {
     opacity: 1;
   }
+}
+@property --tw-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
 }
 @property --tw-rotate-x {
   syntax: "*";

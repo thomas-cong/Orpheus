@@ -12,9 +12,11 @@ import React from "react";
 const RAVLT = ({
     setTest,
     setDemographicsCollected,
+    trialID,
 }: {
     setTest: (test: string) => void;
     setDemographicsCollected: (collected: boolean) => void;
+    trialID: string;
 }) => {
     // We're using the PatientContext in child components, but not directly here
     const { patientID } = usePatient();
@@ -69,11 +71,10 @@ const RAVLT = ({
         console.log("Trial Cycle: " + String(trialCycle));
         const uploadRecordings = async (trialID: string) => {
             let tempTrialCycle = 0;
-            const safePatientID = sanitizeForAzure(patientID);
             const safeTrialID = sanitizeForAzure(trialID);
-            const containerName = `${safePatientID}-${safeTrialID}`;
+            const containerName = `${safeTrialID}`;
             for (const audioBlob of recordings) {
-                const fileName = `${safePatientID}-${safeTrialID}-${tempTrialCycle}.wav`;
+                const fileName = `${safeTrialID}-${tempTrialCycle}.wav`;
                 const file = new File([audioBlob], fileName, {
                     type: "audio/wav",
                 });
@@ -96,29 +97,24 @@ const RAVLT = ({
                 tempTrialCycle++;
             }
         };
-
         // Only upload recordings when the test is finished (trialCycle === 11)
         if (trialCycle === 11 && recordings.length > 0) {
-            // Generate a new trial ID
-            get("/api/trials/genTrialID").then(async (result) => {
-                const trialID = result.trialID;
-                // Sanitize patient ID and trial ID for Azure Blob Storage
-                const safePatientID = sanitizeForAzure(patientID);
-                const safeTrialID = sanitizeForAzure(trialID);
-                const containerName = `${safePatientID}-${safeTrialID}`;
-                // Create container in Azure Blob Storage
+            // Sanitize trial ID for Azure Blob Storage
+            const safeTrialID = sanitizeForAzure(trialID);
+            const containerName = `${safeTrialID}`;
+            // Create container in Azure Blob Storage
+            const handleRAVLTEnd = async () => {
                 await post("/api/audioStorage/createContainer", {
                     containerName: containerName,
                 });
                 // Upload recordings to Azure Blob Storage
                 await uploadRecordings(trialID);
                 // Add trial to database
-                await post("/api/trials/addTrial", {
+                await post("/api/trials/updateRAVLTTrial", {
+                    trialID: trialID,
                     patientID: patientID,
                     date: new Date().toISOString(),
-                    transcriptionID: "None",
-                    test: "RAVLT",
-                    trialID: trialID,
+                    status: "Completed",
                 });
                 // Transcribe recordings in Azure Blob Storage
                 await post("/api/audioStorage/transcribe", {
@@ -147,7 +143,8 @@ const RAVLT = ({
                     similarityIndex: 0,
                     primacyRecencyIndex: 0,
                 });
-            });
+            };
+            handleRAVLTEnd();
         }
     }, [trialCycle]);
     return (

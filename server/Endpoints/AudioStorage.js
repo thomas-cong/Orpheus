@@ -4,7 +4,7 @@ import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import { ContainerSASPermissions } from "@azure/storage-blob";
 import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
-import Trial from "../Models/Trial.js";
+import RAVLTTrial from "../Models/RAVLTTrial.js";
 import RAVLTResults from "../Models/RAVLTResults.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
@@ -273,8 +273,8 @@ router.post("/transcribe", async (req, res) => {
         model: null,
         properties: {
             wordLevelTimestampsEnabled: true,
-            displayFormWordLevelTimestampsEnabled: true
-        }
+            displayFormWordLevelTimestampsEnabled: true,
+        },
     };
     // Send the request to Azure Speech-to-Text API
     const response = await fetch(apiUrl, {
@@ -296,7 +296,7 @@ router.post("/transcribe", async (req, res) => {
     if (req.body.trialID) {
         try {
             // Find and update the trial - use transcriptionID with uppercase ID to match schema
-            const updatedTrial = await Trial.findOneAndUpdate(
+            const updatedTrial = await RAVLTTrial.findOneAndUpdate(
                 { trialID: req.body.trialID },
                 { transcriptionID: transcriptionId },
                 { new: true } // Return the updated document
@@ -327,7 +327,7 @@ router.post("/transcribe", async (req, res) => {
         res.send({
             msg: "Transcription started",
             data: data,
-            transcriptionId: transcriptionId
+            transcriptionId: transcriptionId,
         });
     }
 });
@@ -437,27 +437,46 @@ router.get("/getTranscriptionFiles", async (req, res) => {
             // extract file index (from '-X.wav.json')
             const match = filename.match(/-(\d+)\.wav\.json$/);
             const fileIndex = match ? Number(match[1]) : null;
-            (content.combinedRecognizedPhrases || []).forEach(p => combinedPhrases.push(p.display));
-            (content.recognizedPhrases || []).forEach(rp => {
+            (content.combinedRecognizedPhrases || []).forEach((p) =>
+                combinedPhrases.push(p.display)
+            );
+            (content.recognizedPhrases || []).forEach((rp) => {
                 const top = rp.nBest && rp.nBest[0];
                 if (top) {
                     phrases.push(top.display);
-                    (top.words || []).forEach(w => words.push({ word: w.word, time: w.offsetMilliseconds, duration: w.durationMilliseconds, confidence: w.confidence, fileIndex }));
+                    (top.words || []).forEach((w) =>
+                        words.push({
+                            word: w.word,
+                            time: w.offsetMilliseconds,
+                            duration: w.durationMilliseconds,
+                            confidence: w.confidence,
+                            fileIndex,
+                        })
+                    );
                 }
             });
         });
         if (req.query.patientID && req.query.trialID && req.query.test) {
             switch (req.query.test) {
                 case "RAVLT":
-                    const transcribedWords = words
-                    RAVLTResults.findOneAndUpdate({ patientID: req.query.patientID, trialID: req.query.trialID }, { transcribedWords: transcribedWords }, { new: true })
-                    .then((updatedTrial) => {
-                        console.log("Updated trial:", updatedTrial);
-                    })
-                    .catch((error) => {
-                        console.error("Error updating trial:", error);
-                        res.status(500).json({ msg: "Error updating trial" });
-                    });
+                    const transcribedWords = words;
+                    RAVLTResults.findOneAndUpdate(
+                        {
+                            patientID: req.query.patientID,
+                            trialID: req.query.trialID,
+                        },
+                        { transcribedWords: transcribedWords },
+                        { new: true }
+                    )
+                        .then((updatedTrial) => {
+                            console.log("Updated trial:", updatedTrial);
+                        })
+                        .catch((error) => {
+                            console.error("Error updating trial:", error);
+                            res.status(500).json({
+                                msg: "Error updating trial",
+                            });
+                        });
             }
         }
 

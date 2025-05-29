@@ -1,5 +1,5 @@
 import express from "express";
-import Trial from "../Models/Trial.js";
+import RAVLTTrial from "../Models/RAVLTTrial.js";
 import { generateAlphanumericSequence } from "../helperfunctions.js";
 import RAVLTResults from "../Models/RAVLTResults.js";
 // import '@tensorflow/tfjs-node';
@@ -21,14 +21,14 @@ async function getUseModel() {
  * @access Public
  * @returns {Object} - JSON object containing the generated trial ID
  */
-router.get("/genTrialID", async (req, res) => {
+router.get("/genRAVLTTrialID", async (req, res) => {
     try {
         let unique = false;
         let trialID;
 
         while (!unique) {
-            trialID = generateAlphanumericSequence(10);
-            const exists = await Trial.findOne({ trialID: trialID });
+            trialID = "RAVLT-" + generateAlphanumericSequence(10);
+            const exists = await RAVLTTrial.findOne({ trialID: trialID });
             if (!exists) {
                 unique = true;
             }
@@ -52,24 +52,41 @@ router.get("/genTrialID", async (req, res) => {
  * @param {string} req.body.trialID - Unique identifier for the trial
  * @returns {Object} - JSON object with success or error message
  */
-router.post("/addTrial", (req, res) => {
-    if (
-        !req.body.patientID ||
-        !req.body.date ||
-        !req.body.test ||
-        !req.body.trialID
-    ) {
-        return res.status(400).send({ msg: "Missing required fields" });
+router.post("/addRAVLTTrial", (req, res) => {
+    if (!req.body.trialID) {
+        return res.status(400).send({ msg: "Missing trial ID" });
     }
-    const trial = new Trial(req.body);
+    const trial = new RAVLTTrial(req.body);
     trial
         .save()
         .then(() => {
-            res.send({ msg: "Trial added" });
+            res.send({ msg: "RAVLT Trial added" });
         })
         .catch((error) => {
-            console.error("Error adding trial:", error);
-            res.status(500).send({ msg: "Error adding trial" });
+            console.error("Error adding RAVLT trial:", error);
+            res.status(500).send({ msg: "Error adding RAVLT trial" });
+        });
+});
+
+/**
+ * @route POST /api/trials/updateTrial
+ * @description Update a trial in the database
+ * @access Public
+ * @param {Object} req.body - The trial information
+ * @param {string} req.body.trialID - ID of the trial to update
+ * @returns {Object} - JSON object with success or error message
+ */
+router.post("/updateRAVLTTrial", (req, res) => {
+    if (!req.body.trialID) {
+        return res.status(400).send({ msg: "Missing trial ID" });
+    }
+    RAVLTTrial.findOneAndUpdate({ trialID: req.body.trialID }, req.body)
+        .then(() => {
+            res.send({ msg: "RAVLT Trial updated" });
+        })
+        .catch((error) => {
+            console.error("Error updating RAVLT trial:", error);
+            res.status(500).send({ msg: "Error updating RAVLT trial" });
         });
 });
 
@@ -114,11 +131,11 @@ router.post("/addRAVLTResults", (req, res) => {
         });
 });
 
-router.get("/getTrials", (req, res) => {
+router.get("/getRAVLTTrialsByPatientID", (req, res) => {
     if (!req.query.patientID) {
         return res.status(400).send({ msg: "Missing patient ID" });
     }
-    Trial.find({ patientID: req.query.patientID })
+    RAVLTTrial.find({ patientID: req.query.patientID })
         .then((trials) => {
             res.json({ trials: trials });
         })
@@ -127,5 +144,16 @@ router.get("/getTrials", (req, res) => {
             res.status(500).json({ error: "Failed to get trials" });
         });
 });
-
+router.get("/getRAVLTTrialByTrialID", (req, res) => {
+    if (!req.query.trialID) {
+        return res.status(400).send({ msg: "Missing trial ID" });
+    }
+    RAVLTTrial.findOne({ trialID: req.query.trialID })
+        .then((trial) => {
+            res.json({ trial: trial });
+        })
+        .catch((error) => {
+            res.json({ msg: "Trial not found" });
+        });
+});
 export default router;
