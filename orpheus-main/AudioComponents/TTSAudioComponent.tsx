@@ -56,17 +56,15 @@ const TTSAudioComponent = ({
     };
     return (
         <div className="flex flex-col items-center space-y-4">
-             {currentCount !== null && (
-                 <CountdownDisplay count={currentCount} />
-             )}
-             <button
-                 className="bg-cerulean text-eblack h-10 px-6 rounded-lg hover:bg-opacity-90 transition-colors"
-                 disabled={started}
-                 onClick={startTTS}
-             >
-                 Play
-             </button>
-         </div>
+            {currentCount !== null && <CountdownDisplay count={currentCount} />}
+            <button
+                className="bg-darkblue text-white h-10 px-6 rounded-lg hover:bg-opacity-90 transition-colors"
+                disabled={started}
+                onClick={startTTS}
+            >
+                Play
+            </button>
+        </div>
     );
 };
 export default TTSAudioComponent;
