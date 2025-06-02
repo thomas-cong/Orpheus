@@ -1,29 +1,10 @@
 import express from "express";
-import fs from "fs";
 import RAVLTTrial from "../Models/RAVLTTrial.js";
 import RAVLTResults from "../Models/RAVLTResults.js";
 import pairwiseSimilarityCalculations from "../AnalysisAlgorithms/PairwiseSimilarityCalculations.js";
 import { generateAlphanumericSequence } from "../helperfunctions.js";
-import use from "@tensorflow-models/universal-sentence-encoder";
 
 const router = express.Router();
-
-// import '@tensorflow/tfjs-node';
-// import * as use from '@tensorflow-models/universal-sentence-encoder';
-// import natural from 'natural';
-// const { JaroWinklerDistance } = natural;
-
-// ======================================================
-// UTILITY FUNCTIONS
-// ======================================================
-// Helper functions used by the endpoints
-
-let useModel;
-async function getUseModel() {
-    if (!useModel) useModel = await use.load();
-    return useModel;
-}
-
 
 // ======================================================
 // TRIAL MANAGEMENT
@@ -49,16 +30,16 @@ router.post("/createTrial", async (req, res) => {
                 unique = true;
             }
         }
-        
+
         // Create a new trial with empty patientID, current date, and incomplete status
         let trial = new RAVLTTrial({
             trialID: trialID,
             patientID: "", // Empty patientID as requested
             date: new Date(), // Current date
             test: "RAVLT",
-            status: "incomplete"
+            status: "incomplete",
         });
-        
+
         await trial.save();
         res.json({ trialID: trialID });
     } catch (error) {
@@ -66,7 +47,6 @@ router.post("/createTrial", async (req, res) => {
         res.status(500).json({ error: "Failed to initiate RAVLT trial" });
     }
 });
-
 
 // ======================================================
 // RESULT HANDLING

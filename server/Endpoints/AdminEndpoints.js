@@ -2,7 +2,6 @@ import express from "express";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import dotenv from "dotenv";
-import fs from "fs";
 import path from "path";
 import Patient from "../Models/Patient.js";
 import {
