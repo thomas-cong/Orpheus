@@ -4,6 +4,8 @@ import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import { ContainerSASPermissions } from "@azure/storage-blob";
 import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
+import RAVLTTrial from "../Models/RAVLTTrial.js";
+import RAVLTResults from "../Models/RAVLTResults.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import multer from "multer";
@@ -259,6 +261,135 @@ router.post("/transcribe", async (req, res) => {
             data: data,
             transcriptionId: transcriptionId,
         });
+    }
+});
+
+/**
+ * @route POST /audioStorage/updateTranscriptionResults
+ * @description Get the transcription files for a completed transcription job
+ * @access Public
+ * @param {string} req.body.trialID - ID of the trial
+ * @param {string} req.body.test - Type of test (e.g., "RAVLT")
+ * @returns {Object} - JSON containing the transcription files or error message
+ */
+router.post("/updateTranscriptionResults", async (req, res) => {
+    try {
+        // Get trialID from query params
+        const trialID = req.body.trialID;
+
+        // Validate trialID is provided
+        if (!trialID) {
+            return res
+                .status(400)
+                .json({ msg: "Trial ID is required" });
+        }
+
+        // Get transcriptionID from the database using trialID
+        const trial = await RAVLTTrial.findOne({ trialID: trialID });
+        if (trial.status !== "complete") {
+            return res
+                .status(400)
+                .json({ msg: "Trial is not completed" });
+        }
+        if (!trial || !trial.transcriptionID) {
+            return res
+                .status(404)
+                .json({ msg: "Transcription ID not found for this trial" });
+        }
+        const transcriptionID = trial.transcriptionID;
+        // Directly access the files endpoint for the specific transcription ID
+        const filesUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions/${transcriptionID}/files`;
+
+        const filesResponse = await fetch(filesUrl, {
+            method: "GET",
+            headers: {
+                "Ocp-Apim-Subscription-Key": process.env.SPEECH_KEY,
+                "Content-Type": "application/json",
+            },
+        });
+
+        // Handle potential errors
+        if (!filesResponse.ok) {
+            return res.status(filesResponse.status).json({
+                msg: `Error retrieving transcription files: ${filesResponse.statusText}`,
+            });
+        }
+
+        const filesData = await filesResponse.json();
+
+        if (!filesData.values || filesData.values.length === 0) {
+            return res
+                .status(404)
+                .json({ msg: "No transcription files found" });
+        }
+
+        // Get the actual transcription content
+        const transcriptionResults = [];
+        for (const file of filesData.values) {
+            const fileResponse = await fetch(file.links.contentUrl);
+            const fileContent = await fileResponse.json();
+            transcriptionResults.push({
+                filename: file.name,
+                content: fileContent,
+            });
+        }
+
+        // Aggregate word-level timestamps, phrases, and combined phrases
+        const words = [];
+        const phrases = [];
+        const combinedPhrases = [];
+        transcriptionResults.forEach(({ content, filename }) => {
+            // extract file index (from '-X.wav.json')
+            const match = filename.match(/-(\d+)\.wav\.json$/);
+            const fileIndex = match ? Number(match[1]) : null;
+            (content.combinedRecognizedPhrases || []).forEach((p) =>
+                combinedPhrases.push(p.display)
+            );
+            (content.recognizedPhrases || []).forEach((rp) => {
+                const top = rp.nBest && rp.nBest[0];
+                if (top) {
+                    phrases.push(top.display);
+                    (top.words || []).forEach((w) =>
+                        words.push({
+                            word: w.word,
+                            time: w.offsetMilliseconds,
+                            duration: w.durationMilliseconds,
+                            confidence: w.confidence,
+                            fileIndex,
+                        })
+                    );
+                }
+            });
+        });
+        // console.log(words);
+        if (req.body.test && req.body.trialID) {
+            switch (req.body.test) {
+                case "RAVLT":
+                    console.log("Transcribing RAVLT");
+                    const transcribedWords = words;
+                    RAVLTResults.findOneAndUpdate(
+                        {
+                            trialID: req.body.trialID,
+                        },
+                        { transcribedWords: transcribedWords },
+                        { new: true }
+                    )
+                        .then((updatedTrial) => {
+                            console.log("Updated trial:", updatedTrial);
+                        })
+                        .catch((error) => {
+                            console.error("Error updating trial:", error);
+                            res.status(500).json({
+                                msg: "Error updating trial",
+                            });
+                        });
+            }
+        }
+
+        res.json({ words, phrases, combinedPhrases });
+    } catch (error) {
+        console.error("Error retrieving transcription files:", error);
+        res.status(500).json({ msg: "Error retrieving transcription files" });
     }
 });
 

@@ -25,10 +25,10 @@ const OperationPanel = ({
         try {
             setComputing(true);
             setComputeStatus("Computing transcription results...");
-            console.log(trialID);
             // First update transcription results
-            const transcriptionResponse = await post("/api/ravlt/updateTranscriptionResults", {
-                trialID: trialID
+            const transcriptionResponse = await post("/api/audioStorage/updateTranscriptionResults", {
+                trialID: trialID,
+                test: "RAVLT",
             });
             
             setTimeout(() => {
@@ -37,7 +37,7 @@ const OperationPanel = ({
             
             // // Then calculate the results
             const resultsResponse = await post("/api/ravlt/calculateResults", {
-                trialID: trialID
+                trialID: trialID,
             });
             
             setComputeStatus("Computation complete!");
