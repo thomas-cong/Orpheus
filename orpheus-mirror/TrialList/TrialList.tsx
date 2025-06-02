@@ -5,24 +5,30 @@ import { get } from "../../global-files/utilities";
 const TrialList = (props: {
     patientID: string;
     setFocusedContainerName: (containerName: string) => void;
+    setFocusedTrialID: (trialID: string) => void;
+    setFocusedPatientID: (patientID: string) => void;
+    setFocused: (focused: boolean) => void;
+    focusedTrialID: string;
 }) => {
     // State variables for trials and expanded IDs
     const [trials, setTrials] = useState([]);
-    const [expandedIds, setExpandedIds] = useState<{ [key: string]: boolean }>(
-        {}
-    );
+    const [expandedIds, setExpandedIds] = useState<{ [key: string]: boolean }>({});
+    // const [focusedTrialID, setFocusedTrialID] = useState<string>("");
     // Whenever different patient selected, get trials for the patient
     useEffect(() => {
         if (!props.patientID) return;
-        get(`/api/trials/getTrials`, { patientID: props.patientID })
+        get(`/api/trials/getTrialsByPatientID`, { patientID: props.patientID })
             .then((res) => {
                 if (res.trials) {
                     setTrials(res.trials);
-                    // Set the first trial as the focused container
-                    props.setFocusedContainerName(
-                        props.patientID + "-" + res.trials[0].trialID
-                    );
-                    console.log(props.patientID + "-" + res.trials[0].trialID);
+                    // // Set the first trial as the focused container
+                    // props.setFocusedContainerName(
+                    //     props.patientID + "-" + res.trials[0].trialID
+                    // );
+                    // props.setFocusedPatientID(props.patientID);
+                    // props.setFocusedTrialID(res.trials[0].trialID);
+                    // props.setFocused(true);
+                    // console.log(props.patientID + "-" + res.trials[0].trialID);
                 }
             })
             .catch((err) => {
@@ -35,13 +41,16 @@ const TrialList = (props: {
         return trials.map((trial: any) => (
             <div
                 key={trial.trialID}
-                className="flex flex-col w-full px-4 py-2 bg-gray-800 border border-gray-700 shadow-md mb-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
+                className={`flex flex-col w-full px-4 py-2 ${props.focusedTrialID === trial.trialID ? 'bg-gray-600 border-blue-500' : 'bg-gray-800 border-gray-700'} border-2 shadow-md mb-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer`}
                 onClick={() => {
                     // Set the focused container name when clicked
                     props.setFocusedContainerName(
                         props.patientID + "-" + trial.trialID
                     );
+                    props.setFocusedPatientID(props.patientID);
+                    props.setFocusedTrialID(trial.trialID);
                     console.log(props.patientID + "-" + trial.trialID);
+                    props.setFocused(true);
                 }}
             >
                 {/* Some Display Content */}

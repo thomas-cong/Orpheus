@@ -4,8 +4,6 @@ import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import { ContainerSASPermissions } from "@azure/storage-blob";
 import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
-import RAVLTTrial from "../Models/RAVLTTrial.js";
-import RAVLTResults from "../Models/RAVLTResults.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import multer from "multer";
@@ -176,75 +174,7 @@ router.post("/uploadBlob", upload.single("file"), async (req, res) => {
 });
 
 /**
- *
- * @param {ContainerClient} containerClient
- * @param {StorageSharedKeyCredential} sharedKeyCredential
- * @param {string} storedPolicyName
- * @returns {string} - SAS URL for the container
- */
-const getContainerSasUri = async (
-    containerClient,
-    sharedKeyCredential,
-    storedPolicyName
-) => {
-    // Create SAS token for the container
-    const sasOptions = {
-        containerName: containerClient.containerName,
-        permissions: ContainerSASPermissions.parse("racwl"),
-    };
-
-    if (storedPolicyName == null) {
-        // Set SAS token to expire in 1 hour
-        sasOptions.startsOn = new Date();
-        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
-    } else {
-        sasOptions.identifier = storedPolicyName;
-    }
-
-    // Generate SAS token
-    const sasToken = generateBlobSASQueryParameters(
-        sasOptions,
-        sharedKeyCredential
-    ).toString();
-    console.log(`SAS token for blob container is: ${sasToken}`);
-
-    // Return the SAS token
-    return `${containerClient.url}?${sasToken}`;
-};
-const getFileSasUri = async (
-    containerClient,
-    sharedKeyCredential,
-    storedPolicyName,
-    blobName
-) => {
-    // Create SAS token for the file
-    const sasOptions = {
-        containerName: containerClient.containerName,
-        blobName: blobName,
-        permissions: ContainerSASPermissions.parse("racw"),
-    };
-
-    if (storedPolicyName == null) {
-        // Set SAS token to expire in 1 hour
-        sasOptions.startsOn = new Date();
-        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
-    } else {
-        // Use stored policy
-        sasOptions.identifier = storedPolicyName;
-    }
-
-    // Generate SAS token
-    const sasToken = generateBlobSASQueryParameters(
-        sasOptions,
-        sharedKeyCredential
-    ).toString();
-    console.log(`SAS token for blob is: ${sasToken}`);
-
-    // Return the SAS token + url
-    return `${containerClient.url}?${sasToken}`;
-};
-/**
- * @route POST /api/audioStorage/transcribe
+ * @route POST /ravlt/transcribe
  * @description Create a transcription job using Azure Speech-to-Text API
  * @access Public
  * @param {Object} req.body - Request body matching Azure Speech-to-Text API requirements
@@ -333,13 +263,82 @@ router.post("/transcribe", async (req, res) => {
 });
 
 /**
+ *
+ * @param {ContainerClient} containerClient
+ * @param {StorageSharedKeyCredential} sharedKeyCredential
+ * @param {string} storedPolicyName
+ * @returns {string} - SAS URL for the container
+ */
+const getContainerSasUri = async (
+    containerClient,
+    sharedKeyCredential,
+    storedPolicyName
+) => {
+    // Create SAS token for the container
+    const sasOptions = {
+        containerName: containerClient.containerName,
+        permissions: ContainerSASPermissions.parse("racwl"),
+    };
+
+    if (storedPolicyName == null) {
+        // Set SAS token to expire in 1 hour
+        sasOptions.startsOn = new Date();
+        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
+    } else {
+        sasOptions.identifier = storedPolicyName;
+    }
+
+    // Generate SAS token
+    const sasToken = generateBlobSASQueryParameters(
+        sasOptions,
+        sharedKeyCredential
+    ).toString();
+    console.log(`SAS token for blob container is: ${sasToken}`);
+
+    // Return the SAS token
+    return `${containerClient.url}?${sasToken}`;
+};
+const getFileSasUri = async (
+    containerClient,
+    sharedKeyCredential,
+    storedPolicyName,
+    blobName
+) => {
+    // Create SAS token for the file
+    const sasOptions = {
+        containerName: containerClient.containerName,
+        blobName: blobName,
+        permissions: ContainerSASPermissions.parse("racw"),
+    };
+
+    if (storedPolicyName == null) {
+        // Set SAS token to expire in 1 hour
+        sasOptions.startsOn = new Date();
+        sasOptions.expiresOn = new Date(new Date().valueOf() + 3600 * 1000);
+    } else {
+        // Use stored policy
+        sasOptions.identifier = storedPolicyName;
+    }
+
+    // Generate SAS token
+    const sasToken = generateBlobSASQueryParameters(
+        sasOptions,
+        sharedKeyCredential
+    ).toString();
+    console.log(`SAS token for blob is: ${sasToken}`);
+
+    // Return the SAS token + url
+    return `${containerClient.url}?${sasToken}`;
+};
+
+/**
  * @route GET /api/audioStorage/getTranscriptionStatus
  * @description Get transcription status for a specific container
  * @access Public
  * @param {string} req.query.transcriptionId - ID of the transcription job
  * @returns {Object} - JSON containing the transcription status or error message
  */
-router.get("/getTranscriptionStatus", async (req, res) => {
+router.get("/RAVLT/getTranscriptionStatus", async (req, res) => {
     try {
         const transcriptionId = req.query.transcriptionId;
         // Get all transcriptions
@@ -372,121 +371,12 @@ router.get("/getTranscriptionStatus", async (req, res) => {
 });
 
 /**
- * @route GET /api/audioStorage/getTranscriptionFiles
- * @description Get the transcription files for a completed transcription job
+ * @route GET /api/audioStorage/getContainerFileURLs
+ * @description Get the file URLs for a specific container
  * @access Public
- * @param {string} req.query.transcriptionID - ID of the transcription job
- * @param {string} req.query.patientID - ID of the patient
- * @param {string} req.query.trialID - ID of the trial
- * @param {string} req.query.test - Type of test performed
- * @returns {Object} - JSON containing the transcription files or error message
+ * @param {string} req.query.containerName - Name of the container
+ * @returns {Object} - JSON containing the file URLs or error message
  */
-router.get("/getTranscriptionFiles", async (req, res) => {
-    try {
-        // Get transcription ID from query params - check both casing options (transcriptionId and transcriptionID)
-        const transcriptionID = req.query.transcriptionID;
-
-        // Validate transcription ID is provided
-        if (!transcriptionID) {
-            return res
-                .status(400)
-                .json({ msg: "Transcription ID is required" });
-        }
-        // Directly access the files endpoint for the specific transcription ID
-        const filesUrl = `https://${process.env.SPEECH_REGION}.api.cognitive.microsoft.com/speechtotext/v3.2/transcriptions/${transcriptionID}/files`;
-
-        const filesResponse = await fetch(filesUrl, {
-            method: "GET",
-            headers: {
-                "Ocp-Apim-Subscription-Key": process.env.SPEECH_KEY,
-                "Content-Type": "application/json",
-            },
-        });
-
-        // Handle potential errors
-        if (!filesResponse.ok) {
-            return res.status(filesResponse.status).json({
-                msg: `Error retrieving transcription files: ${filesResponse.statusText}`,
-            });
-        }
-
-        const filesData = await filesResponse.json();
-
-        if (!filesData.values || filesData.values.length === 0) {
-            return res
-                .status(404)
-                .json({ msg: "No transcription files found" });
-        }
-
-        // Get the actual transcription content
-        const transcriptionResults = [];
-        for (const file of filesData.values) {
-            const fileResponse = await fetch(file.links.contentUrl);
-            const fileContent = await fileResponse.json();
-            transcriptionResults.push({
-                filename: file.name,
-                content: fileContent,
-            });
-        }
-
-        // Aggregate word-level timestamps, phrases, and combined phrases
-        const words = [];
-        const phrases = [];
-        const combinedPhrases = [];
-        transcriptionResults.forEach(({ content, filename }) => {
-            // extract file index (from '-X.wav.json')
-            const match = filename.match(/-(\d+)\.wav\.json$/);
-            const fileIndex = match ? Number(match[1]) : null;
-            (content.combinedRecognizedPhrases || []).forEach((p) =>
-                combinedPhrases.push(p.display)
-            );
-            (content.recognizedPhrases || []).forEach((rp) => {
-                const top = rp.nBest && rp.nBest[0];
-                if (top) {
-                    phrases.push(top.display);
-                    (top.words || []).forEach((w) =>
-                        words.push({
-                            word: w.word,
-                            time: w.offsetMilliseconds,
-                            duration: w.durationMilliseconds,
-                            confidence: w.confidence,
-                            fileIndex,
-                        })
-                    );
-                }
-            });
-        });
-        if (req.query.patientID && req.query.trialID && req.query.test) {
-            switch (req.query.test) {
-                case "RAVLT":
-                    const transcribedWords = words;
-                    RAVLTResults.findOneAndUpdate(
-                        {
-                            patientID: req.query.patientID,
-                            trialID: req.query.trialID,
-                        },
-                        { transcribedWords: transcribedWords },
-                        { new: true }
-                    )
-                        .then((updatedTrial) => {
-                            console.log("Updated trial:", updatedTrial);
-                        })
-                        .catch((error) => {
-                            console.error("Error updating trial:", error);
-                            res.status(500).json({
-                                msg: "Error updating trial",
-                            });
-                        });
-            }
-        }
-
-        res.json({ words, phrases, combinedPhrases });
-    } catch (error) {
-        console.error("Error retrieving transcription files:", error);
-        res.status(500).json({ msg: "Error retrieving transcription files" });
-    }
-});
-
 router.get("/getContainerFileURLs", async (req, res) => {
     if (!req.query.containerName) {
         return res.status(400).send({ msg: "Container name is required" });

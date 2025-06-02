@@ -14,52 +14,37 @@ const RAVLTResultsViewer = ({
 
     useEffect(() => {
         const fetchResults = async () => {
-            if (!patientID || !trialID) return;
+            if (!trialID) return;
             setLoading(true);
             setError("");
-            console.log(patientID, trialID);
+            console.log("Fetching results for trial ID:", trialID);
             try {
-                // 1. Fetch all trials for this patient and find the matching one
-                const trialsResp = await get("/api/trials/getTrials", {
-                    patientID: patientID,
+                // Get trial details to verify it exists
+                const trialResp = await get("/api/trials/getTrialByTrialID", {
+                    trialID: trialID,
                 });
-                const trials = trialsResp.trials || [];
-                const trial = trials.find((t: any) => t.trialID === trialID);
-                console.log(trialsResp);
-                if (!trial) {
+                
+                if (!trialResp.trial) {
                     console.log("Trial not found");
+                    setError("Trial not found");
                     return;
                 }
-                const transcriptionID = trial.transcriptionID;
-                if (!transcriptionID) {
-                    console.log("No transcription ID for trial");
-                    return;
+                
+                // Fetch RAVLT results using the new endpoint
+                const resultsResp = await get("/api/ravlt/getResultsByTrialID", {
+                    trialID: trialID,
+                });
+                
+                if (!resultsResp) {
+                    console.log("No results found for this trial");
+                    setResultText("No RAVLT results found for this trial. Try computing results first.");
+                } else {
+                    console.log("Results found:", resultsResp);
+                    setResultText(JSON.stringify(resultsResp, null, 2));
                 }
-
-                // 2. Fetch transcription files
-                const transFilesResp = await get(
-                    "/api/audioStorage/getTranscriptionFiles",
-                    {
-                        transcriptionID: transcriptionID,
-                        patientID: patientID,
-                        trialID: trialID,
-                        test: "RAVLT",
-                    }
-                );
-                console.log(transFilesResp);
-                // 3. Calculate RAVLT results
-                const ravltResp = await post(
-                    "/api/analytics/calculateRAVLTResults",
-                    {
-                        patientID: patientID,
-                        trialID: trialID,
-                    }
-                );
-                console.log(ravltResp);
-                setResultText(JSON.stringify(ravltResp, null, 2));
             } catch (e) {
                 console.error(e);
-                setError(e.message);
+                setError(e.message || "Error fetching results");
             } finally {
                 setLoading(false);
             }

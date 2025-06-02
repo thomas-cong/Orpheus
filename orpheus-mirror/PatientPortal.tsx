@@ -8,9 +8,10 @@ import OperationPanel from "./OperationsPanel/OperationPanel";
 
 const PatientPortal = () => {
     const [patients, setPatients] = useState([]);
-    const [focusedPatientID, setFocusedPatientID] = useState(null);
     const [focusedContainerName, setFocusedContainerName] = useState("");
-
+    const [focusedPatientID, setFocusedPatientID] = useState("");
+    const [focusedTrialID, setFocusedTrialID] = useState("");
+    const [focused, setFocused] = useState(false);
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
             <div className="max-w-7xl mx-auto">
@@ -50,6 +51,10 @@ const PatientPortal = () => {
                         <TrialList
                             patientID={focusedPatientID || ""}
                             setFocusedContainerName={setFocusedContainerName}
+                            setFocusedTrialID={setFocusedTrialID}
+                            setFocusedPatientID={setFocusedPatientID}
+                            setFocused={setFocused}
+                            focusedTrialID={focusedTrialID}
                         />
                         {focusedContainerName && (
                             <div className="mt-6">
@@ -68,13 +73,9 @@ const PatientPortal = () => {
                         Operations Panel
                     </h2>
                     <OperationPanel
-                        patientID={
-                            focusedContainerName
-                                .split("-")
-                                .slice(0, 2)
-                                .join("-") || ""
-                        }
-                        trialID={focusedContainerName.split("-")[2] || ""}
+                        patientID={focusedPatientID}
+                        trialID={focusedTrialID}
+                        focused={focused}
                     />
                 </div>
             </div>

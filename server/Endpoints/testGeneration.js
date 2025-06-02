@@ -8,7 +8,7 @@ const wordsContent = fs.readFileSync("./Data/words.txt", "utf-8");
 const wordArray = wordsContent.split("\n");
 
 /**
- * @route GET /api/testhelper/generateWords
+ * @route GET /testHelper/generateWords
  * @description Generate a list of random words for testing purposes
  * @access Public
  * @param {number} req.query.numWords - Number of random words to generate

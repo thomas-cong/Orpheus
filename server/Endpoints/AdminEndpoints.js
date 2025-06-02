@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import Patient from "../Models/Patient.js";
-import RAVLTTrial from "../Models/RAVLTTrial.js";
 import {
     generateAlphanumericSequence,
     sanitizeContainerName,

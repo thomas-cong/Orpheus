@@ -9,7 +9,7 @@ const GenerateWordsButton = (props: {
 }) => {
     const generateWords = async () => {
         try {
-            const { words } = await get("/api/testhelper/generateWords", {
+            const { words } = await get("/api/testHelper/generateWords", {
                 numWords: props.numWords,
             });
             props.setWords(words);

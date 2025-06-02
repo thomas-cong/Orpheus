@@ -1,11 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
-import testGenerationRoutes from "./testGeneration.js";
+import testGenerationRoutes from "./TestGeneration.js";
 import patientRoutes from "./Patients.js";
 import audioStorageRoutes from "./AudioStorage.js";
-import trialRoutes from "./Trials.js";
 import adminRoutes from "./AdminEndpoints.js";
-import analyticsRoutes from "./Analytics.js";
+import trialRoutes from "./Trials.js";
+import ravltRoutes from "./RAVLT.js";
 
 const router = express.Router();
 
@@ -29,12 +29,12 @@ router.get("/", (req, res) => {
 });
 
 // Mount the various route modules
-router.use("/testhelper", testGenerationRoutes);
+router.use("/testHelper", testGenerationRoutes);
 router.use("/patients", patientRoutes);
 router.use("/audioStorage", audioStorageRoutes);
 router.use("/trials", trialRoutes);
 router.use("/admin", adminRoutes);
-router.use("/analytics", analyticsRoutes);
+router.use("/ravlt", ravltRoutes);
 /**
  * @route ALL *
  * @description Catch-all route for undefined endpoints

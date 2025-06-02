@@ -110,7 +110,7 @@ const RAVLT = ({
                 // Upload recordings to Azure Blob Storage
                 await uploadRecordings(trialID);
                 // Add trial to database
-                await post("/api/trials/updateRAVLTTrial", {
+                await post("/api/ravlt/updateTrial", {
                     trialID: trialID,
                     patientID: patientID,
                     date: new Date().toISOString(),
@@ -132,7 +132,7 @@ const RAVLT = ({
                 console.log("totalRecallScore: " + 0);
                 console.log("similarityIndex: " + 0);
                 console.log("primacyRecencyIndex: " + 0);
-                await post("/api/trials/addRAVLTResults", {
+                await post("/api/ravlt/addResults", {
                     patientID: patientID,
                     trialID: trialID,
                     transcriptionID: "None",
