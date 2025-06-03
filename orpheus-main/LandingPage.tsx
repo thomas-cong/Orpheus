@@ -1,6 +1,6 @@
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 const LandingPage = () => {
     return (
         <>
