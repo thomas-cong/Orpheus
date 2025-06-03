@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { get } from "../../global-files/utilities";
 
+// Helper function to determine if a trial is complete (has a valid transcriptionID)
+const isTrialComplete = (trial: any): boolean => {
+    return trial.status === "complete";
+};
+
 const TrialList = (props: {
     patientID: string;
     setFocusedContainerName: (containerName: string) => void;
@@ -41,23 +46,31 @@ const TrialList = (props: {
         return trials.map((trial: any) => (
             <div
                 key={trial.trialID}
-                className={`flex flex-col w-full px-4 py-2 ${props.focusedTrialID === trial.trialID ? 'bg-gray-600 border-blue-500' : 'bg-gray-800 border-gray-700'} border-2 shadow-md mb-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer`}
+                className={`flex flex-col w-full px-4 py-2 ${props.focusedTrialID === trial.trialID ? 'bg-gray-600 border-blue-500' : 'bg-gray-800 border-gray-700'} border-2 shadow-md mb-2 rounded-lg ${isTrialComplete(trial) ? 'hover:bg-gray-700 transition-colors cursor-pointer' : 'opacity-80 cursor-not-allowed'}`} 
                 onClick={() => {
-                    // Set the focused container name when clicked
-                    props.setFocusedContainerName(
-                        props.patientID + "-" + trial.trialID
-                    );
-                    props.setFocusedPatientID(props.patientID);
-                    props.setFocusedTrialID(trial.trialID);
-                    console.log(props.patientID + "-" + trial.trialID);
-                    props.setFocused(true);
+                    // Only set focus if trial is complete
+                    if (isTrialComplete(trial)) {
+                        // Set the focused container name when clicked
+                        props.setFocusedContainerName(
+                            props.patientID + "-" + trial.trialID
+                        );
+                        props.setFocusedPatientID(props.patientID);
+                        props.setFocusedTrialID(trial.trialID);
+                        console.log(props.patientID + "-" + trial.trialID);
+                        props.setFocused(true);
+                    }
                 }}
             >
                 {/* Some Display Content */}
                 <div className="flex flex-row items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-blue-300">
-                        {trial.test}
-                    </h3>
+                    <div className="flex items-center">
+                        <h3 className="text-lg font-bold text-blue-300">
+                            {trial.test}
+                        </h3>
+                        <div className={`ml-2 px-2 py-0.5 text-xs rounded-full ${isTrialComplete(trial) ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
+                            {isTrialComplete(trial) ? 'Complete' : 'Incomplete'}
+                        </div>
+                    </div>
                     <span className="text-gray-400 text-xs">
                         {trial.trialID}
                     </span>
