@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RAVLTResultsViewer from "./RAVLTResultsViewer";
-import { post } from "../../global-files/utilities";
+import { post, get } from "../../global-files/utilities";
 
 const OperationPanel = ({
     patientID,
@@ -14,9 +14,25 @@ const OperationPanel = ({
     const [showResults, setShowResults] = useState(false);
     const [computing, setComputing] = useState(false);
     const [computeStatus, setComputeStatus] = useState<string>("");
+    const [trialStatus, setTrialStatus] = useState<string>("");
+    const [isTrialComplete, setIsTrialComplete] = useState(false);
 
+    // Fetch trial status whenever trialID changes
     useEffect(() => {
         setShowResults(false);
+        
+        if (trialID) {
+            get(`/api/trials/getTrialByTrialID`, { trialID })
+                .then((res) => {
+                    if (res.trial) {
+                        setTrialStatus(res.trial.status || "");
+                        setIsTrialComplete(res.trial.status === "complete");
+                    }
+                })
+                .catch((err) => {
+                    console.error("Error fetching trial:", err);
+                });
+        }
     }, [patientID, trialID]);
 
     const computeResults = async () => {
@@ -74,8 +90,9 @@ const OperationPanel = ({
                         
                         <button
                             onClick={computeResults}
-                            disabled={computing}
-                            className={`${computing ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-2 px-4 rounded transition duration-300`}
+                            disabled={computing || !isTrialComplete}
+                            className={`${computing || !isTrialComplete ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-2 px-4 rounded transition duration-300`}
+                            title={!isTrialComplete ? 'Only complete trials can be computed' : ''}
                         >
                             {computing ? 'Computing...' : 'Compute RAVLT Results'}
                         </button>
