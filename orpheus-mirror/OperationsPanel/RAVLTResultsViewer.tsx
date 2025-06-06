@@ -20,24 +20,29 @@ const RAVLTResultsViewer = ({
             console.log("Fetching results for trial ID:", trialID);
             try {
                 // Get trial details to verify it exists
-                const trialResp = await get("/api/trials/getTrialByTrialID", {
+                const trialResp = await get("/api/ravlt/getTrialByTrialID", {
                     trialID: trialID,
                 });
-                
+
                 if (!trialResp.trial) {
                     console.log("Trial not found");
                     setError("Trial not found");
                     return;
                 }
-                
+
                 // Fetch RAVLT results using the new endpoint
-                const resultsResp = await get("/api/ravlt/getResultsByTrialID", {
-                    trialID: trialID,
-                });
-                
+                const resultsResp = await get(
+                    "/api/ravlt/getResultsByTrialID",
+                    {
+                        trialID: trialID,
+                    }
+                );
+
                 if (!resultsResp) {
                     console.log("No results found for this trial");
-                    setResultText("No RAVLT results found for this trial. Try computing results first.");
+                    setResultText(
+                        "No RAVLT results found for this trial. Try computing results first."
+                    );
                 } else {
                     console.log("Results found:", resultsResp);
                     setResultText(JSON.stringify(resultsResp, null, 2));

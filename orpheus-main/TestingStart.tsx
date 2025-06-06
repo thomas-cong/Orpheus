@@ -16,7 +16,7 @@ const TestingStart = () => {
     const [trialID, setTrialID] = useState("");
     const [trialFound, setTrialFound] = useState(false);
     const checkTrialExistence = (trialID: string, trialType: string) => {
-        get(`/api/trials/get${trialType}TrialByTrialID`, {
+        get(`/api/${trialType.toLowerCase()}/getTrialByTrialID`, {
             trialID: trialID,
         }).then((result) => {
             if (result.msg === "Trial not found") {

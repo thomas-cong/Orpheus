@@ -160,5 +160,21 @@ router.get("/getResultsByTrialID", (req, res) => {
             res.status(500).send({ msg: "Error getting RAVLT results" });
         });
 });
+router.get("/getTrialByTrialID", (req, res) => {
+    if (!req.query.trialID) {
+        return res.status(400).send({ msg: "Missing trial ID" });
+    }
+    RAVLTTrial.findOne({ trialID: req.query.trialID })
+        .then((trial) => {
+            if (trial.trialID) {
+                res.json({ trial: trial });
+            } else {
+                res.json({ msg: "Trial not found" });
+            }
+        })
+        .catch((error) => {
+            res.json({ msg: "Trial not found" });
+        });
+});
 
 export default router;
