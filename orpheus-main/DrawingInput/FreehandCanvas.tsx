@@ -17,7 +17,6 @@ const FreehandCanvas = () => {
     const [currentStrokeData, setCurrentStrokeData] = useState<
         Array<[number, number]>
     >([]);
-
     // Initialize canvas when component mounts
     useEffect(() => {
         const canvas = canvasRef.current;

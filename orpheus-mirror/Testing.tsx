@@ -13,7 +13,6 @@ const Testing = () => {
         "/api/ravlt/updateTrial",
         "/api/ravlt/addResults",
         "/api/trials/getTrialsByPatientID",
-        "/api/trials/getTrialByTrialID",
         "/api/admin/generateTestingTrial",
         "/api/audioStorage/getContainer",
         "/api/audioStorage/createContainer",

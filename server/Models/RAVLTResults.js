@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const RAVLTSchema = new mongoose.Schema({
+const RAVLTResultsSchema = new mongoose.Schema({
     patientID: String,
     trialID: String,
     transcriptionID: String,
@@ -11,4 +11,4 @@ const RAVLTSchema = new mongoose.Schema({
     similarityIndex: Number,
     primacyRecencyIndex: Number,
 });
-export default mongoose.model("RAVLTResults", RAVLTSchema);
+export default mongoose.model("RAVLTResults", RAVLTResultsSchema);

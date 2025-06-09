@@ -1,6 +1,7 @@
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import React from "react";
 import { Link } from "react-router-dom";
+import FreehandCanvas from "./DrawingInput/FreehandCanvas";
 const LandingPage = () => {
     return (
         <>
