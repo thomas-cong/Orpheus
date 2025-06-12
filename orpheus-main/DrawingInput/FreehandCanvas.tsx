@@ -1,9 +1,21 @@
 // FreehandCanvas.tsx - A React component that provides a canvas for freehand drawing
 import React, { useRef, useEffect, useState } from "react";
 
-const FreehandCanvas = () => {
+// Define the ref type that will be exposed to parent components
+export interface FreehandCanvasRef {
+    getImageData?: () => string | null;
+}
+interface FreehandCanvasProps {
+    onImageCapture?: (imageData: string) => void;
+    // Add a prop for the ref instead of using forwardRef
+    canvasRef?: React.RefObject<FreehandCanvasRef | null>;
+}
+const FreehandCanvas: React.FC<FreehandCanvasProps> = ({
+    onImageCapture,
+    canvasRef,
+}) => {
     // Reference to the canvas DOM element
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasElementRef = useRef<HTMLCanvasElement>(null);
     // State to track if user is currently drawing
     const [isDrawing, setIsDrawing] = useState(false);
     // State to store the last position of the cursor
@@ -19,13 +31,11 @@ const FreehandCanvas = () => {
     >([]);
     // Initialize canvas when component mounts
     useEffect(() => {
-        const canvas = canvasRef.current;
+        const canvas = canvasElementRef.current;
         if (!canvas) return;
-
         // Set canvas dimensions to match its displayed size
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
-
         // Get the drawing context and set initial drawing properties
         const context = canvas.getContext("2d");
         if (!context) return;
@@ -34,57 +44,58 @@ const FreehandCanvas = () => {
         context.lineWidth = 2; // Sets line thickness to 2px
         context.strokeStyle = "#000"; // Sets line color to black
     }, []);
-    useEffect(() => {
-        console.log(positionData);
-    }, [positionData]);
 
+    // Expose methods to parent component through the canvasRef prop
+    useEffect(() => {
+        if (canvasRef && canvasRef.current) {
+            canvasRef.current.getImageData = () => {
+                const canvas = canvasElementRef.current;
+                if (!canvas) {
+                    return null;
+                }
+                // Get the image data and log success
+                const imageData = canvas.toDataURL("image/png");
+                return imageData;
+            };
+        }
+    }, [canvasRef]);
     // Handler for when mouse button is pressed down
     const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        const rect = canvasRef.current?.getBoundingClientRect();
+        const rect = canvasElementRef.current?.getBoundingClientRect();
         if (!rect) return;
-
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
         // Calculate and store the position where drawing begins
         setLastPos({
             x: x, // Adjust for canvas position
             y: y,
         });
-
         // Start a new stroke with the initial point
         setCurrentStrokeData([[x, y]]);
         setIsDrawing(true); // Start drawing mode
     };
-
     // Handler for mouse movement
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
         // Only draw if mouse button is pressed
         if (!isDrawing) return;
-
-        const canvas = canvasRef.current;
+        const canvas = canvasElementRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-
         // Get canvas position
         const rect = canvas.getBoundingClientRect();
-
         // Calculate current cursor position
         const currentPos = {
             x: e.clientX - rect.left,
             y: e.clientY - rect.top,
         };
-
         // Draw a line from the last position to the current position
         ctx.beginPath(); // Start a new path
         ctx.moveTo(lastPos.x, lastPos.y); // Move to last position
         ctx.lineTo(currentPos.x, currentPos.y); // Draw line to current position
         ctx.stroke(); // Render the line
-
         // Update last position for next movement
         setLastPos(currentPos);
-
         // Add the current point to the current stroke data
         if (currentPos.x !== lastPos.x || currentPos.y !== lastPos.y) {
             setCurrentStrokeData((prev) => [
@@ -93,11 +104,9 @@ const FreehandCanvas = () => {
             ]);
         }
     };
-
     // Handler for when mouse button is released
     const handleMouseUp = () => {
         setIsDrawing(false); // Stop drawing mode
-
         // Only add the stroke if it has points
         if (currentStrokeData.length > 0) {
             // Add the completed stroke to position data and reset current stroke
@@ -105,20 +114,21 @@ const FreehandCanvas = () => {
             setCurrentStrokeData([]);
         }
     };
-
     return (
-        <canvas
-            ref={canvasRef} // Connect the ref to the canvas element
-            style={{
-                width: "100%", // Make canvas responsive
-                height: "400px", // Fixed height
-                border: "1px solid #ccc", // Light gray border
-            }}
-            onMouseDown={handleMouseDown} // Start drawing when mouse pressed
-            onMouseMove={handleMouseMove} // Draw while mouse moves
-            onMouseUp={handleMouseUp} // Stop drawing when mouse released
-            onMouseLeave={handleMouseUp} // Also stop drawing if mouse leaves canvas
-        />
+        <div>
+            <canvas
+                ref={canvasElementRef} // Connect the ref to the canvas element
+                style={{
+                    width: "100%", // Make canvas responsive
+                    height: "400px", // Fixed height
+                    border: "1px solid #ccc", // Light gray border
+                }}
+                onMouseDown={handleMouseDown} // Start drawing when mouse pressed
+                onMouseMove={handleMouseMove} // Draw while mouse moves
+                onMouseUp={handleMouseUp} // Stop drawing when mouse released
+                onMouseLeave={handleMouseUp} // Also stop drawing if mouse leaves canvas
+            />
+        </div>
     );
 };
 

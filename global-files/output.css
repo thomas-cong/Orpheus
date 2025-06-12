@@ -383,6 +383,9 @@
   .h-96 {
     height: calc(var(--spacing) * 96);
   }
+  .h-\[3\%\] {
+    height: 3%;
+  }
   .h-\[90vh\] {
     height: 90vh;
   }
@@ -418,6 +421,9 @@
   }
   .w-90\/100 {
     width: calc(90/100 * 100%);
+  }
+  .w-\[6\%\] {
+    width: 6%;
   }
   .w-\[8\%\] {
     width: 8%;
@@ -610,6 +616,9 @@
   }
   .border-gray-700 {
     border-color: var(--color-gray-700);
+  }
+  .border-orange {
+    border-color: var(--color-orange);
   }
   .border-red-500 {
     border-color: var(--color-red-500);
@@ -1041,7 +1050,7 @@
   transition: color 0.3s ease;
 }
 .link-underline::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 2px;

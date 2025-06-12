@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import FreehandCanvas from "../DrawingInput/FreehandCanvas";
-import SubmissionButton from "./SubmissionButton";
 
 const RO = () => {
     const [condition, setCondition] = useState(0);
@@ -9,12 +8,6 @@ const RO = () => {
         <>
             <h1>RO</h1>
             <FreehandCanvas />
-            {condition < 3 && (
-                <SubmissionButton
-                    setCondition={setCondition}
-                    condition={condition}
-                />
-            )}
         </>
     );
 };
