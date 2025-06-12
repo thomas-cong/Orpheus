@@ -9,7 +9,6 @@ import UtilityBar from "./UtilityBar/UtilityBar";
 import { get } from "../global-files/utilities";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Copy from "./ReyOsterrieth/Copy";
 
 const TestingStart = () => {
     const [test, setTest] = useState("");
@@ -116,7 +115,6 @@ const TestingStart = () => {
                     </button>
                 </div>
             )}
-            <Copy />
         </PatientProvider>
     );
 };
