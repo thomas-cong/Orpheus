@@ -1,24 +1,15 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import { resolve } from "path";
+import { mergeConfig } from "vite";
+import baseConfig from "../vite.config";
 
-// https://vite.dev/config/
-export default defineConfig({
-    root: resolve(__dirname, "."),
-    build: {
-        outDir: resolve(__dirname, "dist"),
-        emptyOutDir: true,
-    },
-    plugins: [react(), tailwindcss()],
-    server: {
-        port: 5174,
-        proxy: {
-            "/api": {
-                target: "http://localhost:3000",
-                changeOrigin: true,
-                secure: false,
-            },
+// Extend the base configuration with mirror-specific settings
+export default mergeConfig(
+    baseConfig,
+    defineConfig({
+        // Override the dev server port to avoid conflicts with the main app
+        server: {
+            port: 5174,
         },
-    },
-});
+        // Add any mirror-specific configurations here
+    })
+);
