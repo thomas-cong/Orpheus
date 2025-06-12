@@ -2,6 +2,7 @@ import RAVLT from "./RAVLT/RAVLT";
 import "../global-files/index.css";
 import DemographicInput from "./PatientInfo/DemographicInput";
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { PatientProvider } from "./context/PatientContext";
 import React from "react";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
@@ -15,12 +16,19 @@ const TestingStart = () => {
     const [demographicsCollected, setDemographicsCollected] = useState(false);
     const [trialID, setTrialID] = useState("");
     const [trialFound, setTrialFound] = useState(false);
+    const params = useParams<{ trialParam?: string }>();
+    const navigate = useNavigate();
+
     const checkTrialExistence = (trialID: string, trialType: string) => {
         get(`/api/${trialType.toLowerCase()}/getTrialByTrialID`, {
             trialID: trialID,
         }).then((result) => {
             if (result.msg === "Trial not found") {
                 toast.error(`${trialType} Trial not found`);
+                if (params.trialParam) {
+                    navigate("/testing");
+                }
+                setTrialFound(false);
                 return false;
             } else {
                 if (result.trial.status == "incomplete") {
@@ -28,21 +36,53 @@ const TestingStart = () => {
                     setTrialFound(true);
                     setTest(trialType);
                     return true;
-                } else {
-                    toast.error(`${trialType} Trial not found`);
+                } else if (result.trial.status == "complete") {
+                    toast.error(`${trialType} Trial already completed`);
+                    if (params.trialParam) {
+                        navigate("/testing");
+                    }
+                    setTrialFound(false);
                     return false;
                 }
             }
+        }).catch((error) => {
+            toast.error("Trial not found");
+            if (params.trialParam) {
+                navigate("/testing");
+            }
+            setTrialFound(false);
+            return false;
         });
     };
+
     const onSubmitTrialId = async () => {
-        const testTypes = ["RAVLT"];
-        if (trialID) {
-            testTypes.forEach((testType) => {
-                checkTrialExistence(trialID, testType);
-            });
+        try {
+            const trialType = trialID.split("-")[0];
+            checkTrialExistence(trialID, trialType);
+        } catch (error) {
+            const trialType = "invalid";
+            const trialID = "invalid";
+            checkTrialExistence(trialID, trialType);
+        }
+
+        if (trialFound) {
+            const trialType = trialID.split("-")[0];
+            navigate(`/testing/${trialType}-${trialID}`);
         }
     };
+
+    // When accessed via /testing/<trialType>-<trialId>, automatically validate and start trial
+    useEffect(() => {
+        if (params.trialParam) {
+            const trialType = params.trialParam.split("-")[0];
+            const id = params.trialParam;
+            if (trialType && id) {
+                setTrialID(id);
+                checkTrialExistence(id, trialType);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params.trialParam]);
 
     useEffect(() => {
         console.log(
@@ -54,6 +94,7 @@ const TestingStart = () => {
             demographicsCollected
         );
     }, [trialFound, test, demographicsCollected]);
+
     return (
         <PatientProvider>
             <ShaderGradientCanvas

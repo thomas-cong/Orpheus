@@ -18,6 +18,8 @@ const router = createBrowserRouter(
         <>
             <Route path="/" element={<LandingPage />} />
             <Route path="/testing" element={<TestingStart />} />
+            {/* Dynamic route to enter a specific trial directly, e.g. /testing/RAVLT-123 */}
+            <Route path="/testing/:trialParam" element={<TestingStart />} />
         </>
     )
 );
