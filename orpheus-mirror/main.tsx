@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import PatientPortal from "./PatientPortal.tsx";
 import Testing from "./Testing.tsx";
 import React from "react";
+import Playground from "./Playground.tsx";
 import {
     createBrowserRouter,
     createRoutesFromElements,
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
         <Route path="/" element={<App />}>
             <Route path="portal" element={<PatientPortal />} />
             <Route path="testing" element={<Testing />} />
+            <Route path="playground" element={<Playground />} />
         </Route>
     )
 );

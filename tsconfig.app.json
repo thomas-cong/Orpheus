@@ -22,5 +22,5 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true
     },
-    "include": ["orpheusorpheus-mirror/mirrorirror/src"]
+    "include": ["orpheus-mirror/**/*"]
 }

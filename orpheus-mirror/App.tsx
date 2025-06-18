@@ -29,6 +29,12 @@ const App = () => {
                             >
                                 Testing Dashboard
                             </Link>
+                            <Link
+                                to="/playground"
+                                className="block w-full py-3 px-4 bg-orange-500 hover:bg-orange-400 text-white text-center font-medium rounded-md transition duration-200"
+                            >
+                                Playground
+                            </Link>
                         </div>
                     </div>
                 </div>

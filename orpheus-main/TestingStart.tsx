@@ -22,37 +22,39 @@ const TestingStart = () => {
     const checkTrialExistence = (trialID: string, trialType: string) => {
         get(`/api/${trialType.toLowerCase()}/getTrialByTrialID`, {
             trialID: trialID,
-        }).then((result) => {
-            if (result.msg === "Trial not found") {
-                toast.error(`${trialType} Trial not found`);
-                if (params.trialParam) {
-                    navigate("/testing");
-                }
-                setTrialFound(false);
-                return false;
-            } else {
-                if (result.trial.status == "incomplete") {
-                    toast.success(`${trialType} Trial found`);
-                    setTrialFound(true);
-                    setTest(trialType);
-                    return true;
-                } else if (result.trial.status == "complete") {
-                    toast.error(`${trialType} Trial already completed`);
+        })
+            .then((result) => {
+                if (result.msg === "Trial not found") {
+                    toast.error(`${trialType} Trial not found`);
                     if (params.trialParam) {
                         navigate("/testing");
                     }
                     setTrialFound(false);
                     return false;
+                } else {
+                    if (result.trial.status == "incomplete") {
+                        toast.success(`${trialType} Trial found`);
+                        setTrialFound(true);
+                        setTest(trialType);
+                        return true;
+                    } else if (result.trial.status == "complete") {
+                        toast.error(`${trialType} Trial already completed`);
+                        if (params.trialParam) {
+                            navigate("/testing");
+                        }
+                        setTrialFound(false);
+                        return false;
+                    }
                 }
-            }
-        }).catch((error) => {
-            toast.error("Trial not found");
-            if (params.trialParam) {
-                navigate("/testing");
-            }
-            setTrialFound(false);
-            return false;
-        });
+            })
+            .catch((error) => {
+                toast.error("Trial not found");
+                if (params.trialParam) {
+                    navigate("/testing");
+                }
+                setTrialFound(false);
+                return false;
+            });
     };
 
     const onSubmitTrialId = async () => {
@@ -81,7 +83,6 @@ const TestingStart = () => {
                 checkTrialExistence(id, trialType);
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.trialParam]);
 
     useEffect(() => {
