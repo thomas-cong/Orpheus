@@ -1,7 +1,8 @@
 import React from "react";
 import HelpHover from "./HelpHover";
+import TestInformation from "./TestInformation";
 
-const UtilityBar = () => {
+const UtilityBar = (props: { testType: string }) => {
     return (
         <div
             className="
@@ -10,6 +11,7 @@ const UtilityBar = () => {
          rounded-lg m-4 drop-shadow-lg"
         >
             <HelpHover />
+            <TestInformation testType={props.testType} />
         </div>
     );
 };

@@ -138,7 +138,7 @@ const TestingStart = () => {
                             </>
                         )}
                     </div>
-                    <UtilityBar />
+                    <UtilityBar testType={test} />
                 </div>
             )}
             {!trialFound && (
