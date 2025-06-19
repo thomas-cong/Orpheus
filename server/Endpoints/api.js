@@ -6,7 +6,7 @@ import audioStorageRoutes from "./AudioStorage.js";
 import adminRoutes from "./AdminEndpoints.js";
 import trialRoutes from "./Trials.js";
 import ravltRoutes from "./RAVLT.js";
-import roRoutes from "./ReyOsterrieth.js";
+import roRoutes from "./RO.js";
 
 const router = express.Router();
 
