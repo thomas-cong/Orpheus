@@ -6,7 +6,6 @@ const Copy = () => {
 
     return (
         <div>
-            <h1>Copy</h1>
             <CameraComponent onCapture={setReceivedImage} />
         </div>
     );

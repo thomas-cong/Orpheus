@@ -41,7 +41,7 @@ const TestInformation = (props: { testType: string }) => {
                 onMouseEnter={() => setShowInfo(true)}
                 onMouseLeave={() => setShowInfo(false)}
             >
-                Assessment Info
+                A
             </div>
             {showInfo && (
                 <div className="absolute right-1/2 bottom-1/2 transform translate-y-1/2 mr-2 p-4 bg-seasalt text-darkblue w-[300%] rounded-lg shadow-lg z-10 text-sm">

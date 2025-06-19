@@ -6,6 +6,7 @@ import audioStorageRoutes from "./AudioStorage.js";
 import adminRoutes from "./AdminEndpoints.js";
 import trialRoutes from "./Trials.js";
 import ravltRoutes from "./RAVLT.js";
+import roRoutes from "./ReyOsterrieth.js";
 
 const router = express.Router();
 
@@ -35,6 +36,7 @@ router.use("/audioStorage", audioStorageRoutes);
 router.use("/trials", trialRoutes);
 router.use("/admin", adminRoutes);
 router.use("/ravlt", ravltRoutes);
+router.use("/ro", roRoutes);
 /**
  * @route ALL *
  * @description Catch-all route for undefined endpoints

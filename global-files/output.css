@@ -12,6 +12,8 @@
     --color-red-700: oklch(0.505 0.213 27.518);
     --color-red-800: oklch(0.444 0.177 26.899);
     --color-red-900: oklch(0.396 0.141 25.723);
+    --color-orange-400: oklch(0.75 0.183 55.934);
+    --color-orange-500: oklch(0.705 0.213 47.604);
     --color-green-200: oklch(0.925 0.084 155.995);
     --color-green-300: oklch(0.871 0.15 154.449);
     --color-green-400: oklch(0.792 0.209 151.711);
@@ -366,11 +368,11 @@
   .h-96 {
     height: calc(var(--spacing) * 96);
   }
-  .h-\[3\%\] {
-    height: 3%;
-  }
   .h-\[90vh\] {
     height: 90vh;
+  }
+  .h-\[500px\] {
+    height: 500px;
   }
   .max-h-60 {
     max-height: calc(var(--spacing) * 60);
@@ -393,9 +395,6 @@
   .w-90\/100 {
     width: calc(90/100 * 100%);
   }
-  .w-\[6\%\] {
-    width: 6%;
-  }
   .w-\[8\%\] {
     width: 8%;
   }
@@ -407,6 +406,9 @@
   }
   .w-\[300\%\] {
     width: 300%;
+  }
+  .w-\[500px\] {
+    width: 500px;
   }
   .w-full {
     width: 100%;
@@ -422,6 +424,9 @@
   }
   .max-w-xl {
     max-width: var(--container-xl);
+  }
+  .min-w-full {
+    min-width: 100%;
   }
   .flex-1 {
     flex: 1;
@@ -457,6 +462,9 @@
   .flex-row {
     flex-direction: row;
   }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
   .items-center {
     align-items: center;
   }
@@ -471,6 +479,9 @@
   }
   .justify-start {
     justify-content: flex-start;
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
   }
   .gap-6 {
     gap: calc(var(--spacing) * 6);
@@ -574,6 +585,9 @@
   .bg-blue-600 {
     background-color: var(--color-blue-600);
   }
+  .bg-cerulean {
+    background-color: var(--color-cerulean);
+  }
   .bg-darkblue {
     background-color: var(--color-darkblue);
   }
@@ -603,6 +617,9 @@
   }
   .bg-orange {
     background-color: var(--color-orange);
+  }
+  .bg-orange-500 {
+    background-color: var(--color-orange-500);
   }
   .bg-purple-600 {
     background-color: var(--color-purple-600);
@@ -660,6 +677,9 @@
   }
   .text-center {
     text-align: center;
+  }
+  .text-left {
+    text-align: left;
   }
   .font-funnel-sans {
     font-family: var(--font-funnel-sans);
@@ -893,6 +913,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-green-700);
+      }
+    }
+  }
+  .hover\:bg-orange-400 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-orange-400);
       }
     }
   }

@@ -10,6 +10,7 @@ import UtilityBar from "./UtilityBar/UtilityBar";
 import { get } from "../global-files/utilities";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import RO from "./ReyOsterrieth/RO";
 
 const TestingStart = () => {
     const [test, setTest] = useState("");
@@ -129,6 +130,17 @@ const TestingStart = () => {
                         {test === "RAVLT" && demographicsCollected && (
                             <>
                                 <RAVLT
+                                    setTest={setTest}
+                                    setDemographicsCollected={
+                                        setDemographicsCollected
+                                    }
+                                    trialID={trialID}
+                                />
+                            </>
+                        )}
+                        {test === "RO" && demographicsCollected && (
+                            <>
+                                <RO
                                     setTest={setTest}
                                     setDemographicsCollected={
                                         setDemographicsCollected

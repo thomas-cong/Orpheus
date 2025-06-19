@@ -107,7 +107,28 @@ router.post("/calculateResults", async (req, res) => {
             res.status(500).send({ msg: "Error updating RAVLT results" });
         });
 });
+router.post("/updateTrial", (req, res) => {
+    if (!req.body.trialID || !req.body.patientID) {
+        return res.status(400).send({ msg: "Missing required fields" });
+    }
+    const { trialID, patientID, date, status } = req.body;
 
+    // Create update object with required fields
+    const updateData = { patientID };
+
+    // Add optional fields if they exist
+    if (date) updateData.date = date;
+    if (status) updateData.status = status;
+
+    RAVLTTrial.findOneAndUpdate({ trialID: trialID }, updateData)
+        .then(() => {
+            res.send({ msg: "RAVLT trial updated" });
+        })
+        .catch((error) => {
+            console.error("Error updating RAVLT trial:", error);
+            res.status(500).send({ msg: "Error updating RAVLT trial" });
+        });
+});
 /**
  * @route POST /ravlt/addResults
  * @description Add RAVLT results to the database

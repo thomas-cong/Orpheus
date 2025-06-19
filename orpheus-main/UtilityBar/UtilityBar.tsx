@@ -7,7 +7,7 @@ const UtilityBar = (props: { testType: string }) => {
         <div
             className="
         font-funnel-sans 
-        flex items-center justify-center bg-seasalt w-[8%] h-[90vh]
+        flex flex-col items-center justify-center bg-seasalt w-[8%] h-[90vh]
          rounded-lg m-4 drop-shadow-lg"
         >
             <HelpHover />
