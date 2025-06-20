@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
 import CameraComponent from "../ImageCapture/CameraComponent";
+import { useState } from "react";
 
 const Copy = () => {
     const [receivedImage, setReceivedImage] = useState<string | null>(null);

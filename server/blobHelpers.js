@@ -2,7 +2,6 @@ import { BlobServiceClient } from "@azure/storage-blob";
 import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import { ContainerSASPermissions } from "@azure/storage-blob";
 import { generateBlobSASQueryParameters } from "@azure/storage-blob";
-import { sanitizeContainerName } from "../helperfunctions.js";
 /**
  * Helper to get a container client and check if it exists
  * @param {BlobServiceClient} blobServiceClient - Azure Blob Service client

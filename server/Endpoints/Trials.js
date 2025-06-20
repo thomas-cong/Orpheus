@@ -12,27 +12,26 @@ const router = express.Router();
  * @param {string} req.query.patientID - ID of the patient
  * @returns {Object} - JSON object containing the trials
  */
-router.get("/getTrialsByPatientID", (req, res) => {
+router.get("/getTrialsByPatientID", async (req, res) => {
     if (!req.query.patientID) {
         return res.status(400).send({ msg: "Missing patient ID" });
     }
-    let trial_list = [];
-    RAVLTTrial.find({ patientID: req.query.patientID })
-        .then((trials) => {
-            trial_list = trial_list.concat(trials);
-        })
-        .catch((error) => {
-            console.error("Error getting trials:", error);
-            res.status(500).json({ error: "Failed to get trials" });
-        });
-    ROTrial.find({ patientID: req.query.patientID })
-        .then((trials) => {
-            trial_list = trial_list.concat(trials);
-        })
-        .catch((error) => {
-            console.error("Error getting trials:", error);
-            res.status(500).json({ error: "Failed to get trials" });
-        });
-    res.json({ trials: trial_list });
+
+    try {
+        // Use Promise.all to run both queries concurrently
+        const [ravltTrials, roTrials] = await Promise.all([
+            RAVLTTrial.find({ patientID: req.query.patientID }),
+            ROTrial.find({ patientID: req.query.patientID }),
+        ]);
+
+        // Combine both trial types into one array
+        const trial_list = [...ravltTrials, ...roTrials];
+
+        // Send the response after all queries are complete
+        res.json({ trials: trial_list });
+    } catch (error) {
+        console.error("Error getting trials:", error);
+        res.status(500).json({ error: "Failed to get trials" });
+    }
 });
 export default router;
