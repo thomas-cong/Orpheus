@@ -65,7 +65,6 @@ router.post("/updateTrial", (req, res) => {
             res.status(500).send({ msg: "Error updating RO trial" });
         });
 });
-/**
 
 router.get("/getResultsByTrialID", (req, res) => {
     const trialID = req.query.trialID;

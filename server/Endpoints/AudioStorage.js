@@ -9,6 +9,11 @@ import RAVLTResults from "../Models/RAVLTResults.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import multer from "multer";
+import {
+    getContainer,
+    deleteContainer,
+    createContainer,
+} from "../blobHelpers.js";
 const upload = multer();
 
 // Load environment variables
@@ -26,40 +31,6 @@ const sharedKeyCredential = new StorageSharedKeyCredential(
 );
 
 /**
- * Helper to get a container client and check if it exists
- * @param {string} containerName - Name of the container
- * @returns {Object} - Container client and existence flag
- */
-async function getContainer(containerName) {
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-    const exists = await containerClient.exists();
-    return { containerClient, exists };
-}
-
-/**
- * Helper to delete a container
- * @param {BlobServiceClient} blobServiceClient - Azure Blob Service client
- * @param {string} containerName - Name of the container to delete
- */
-async function deleteContainer(blobServiceClient, containerName) {
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-    await containerClient.delete();
-}
-
-/**
- * Helper to create a container
- * @param {BlobServiceClient} blobServiceClient - Azure Blob Service client
- * @param {string} containerName - Name of the container to create
- * @returns {ContainerClient} - The created container client
- */
-async function createContainer(blobServiceClient, containerName) {
-    const containerClient = await blobServiceClient.createContainer(
-        containerName
-    );
-    return containerClient;
-}
-
-/**
  * @route GET /api/audioStorage/getContainer
  * @description Get a reference to an Azure Blob Storage container
  * @access Public
@@ -73,7 +44,7 @@ router.get("/getContainer", (req, res) => {
     }
     const cleanedName = sanitizeContainerName(req.query.containerName);
 
-    getContainer(cleanedName)
+    getContainer(blobServiceClient, cleanedName)
         .then(({ containerClient, exists }) => {
             if (exists) {
                 res.send({
@@ -279,17 +250,13 @@ router.post("/updateTranscriptionResults", async (req, res) => {
 
         // Validate trialID is provided
         if (!trialID) {
-            return res
-                .status(400)
-                .json({ msg: "Trial ID is required" });
+            return res.status(400).json({ msg: "Trial ID is required" });
         }
 
         // Get transcriptionID from the database using trialID
         const trial = await RAVLTTrial.findOne({ trialID: trialID });
         if (trial.status !== "complete") {
-            return res
-                .status(400)
-                .json({ msg: "Trial is not completed" });
+            return res.status(400).json({ msg: "Trial is not completed" });
         }
         if (!trial || !trial.transcriptionID) {
             return res
@@ -514,7 +481,7 @@ router.get("/getContainerFileURLs", async (req, res) => {
     }
     const cleanedName = sanitizeContainerName(req.query.containerName);
 
-    getContainer(cleanedName)
+    getContainer(blobServiceClient, cleanedName)
         .then(async ({ containerClient, exists }) => {
             if (exists) {
                 const urls = [];
