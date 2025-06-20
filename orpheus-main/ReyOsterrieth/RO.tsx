@@ -13,8 +13,9 @@ const RO = ({
     setDemographicsCollected: (collected: boolean) => void;
     trialID: string;
 }) => {
-    const [condition, setCondition] = useState(0);
-    // either 0: Copy, 1: Immediate, 2: Delayed
+    const [condition, setCondition] = useState<number | null>(null);
+    // either 0: Copy, 1: Immediate, 2: Delayed, or null; not showing the test
+    const [showProgression, setShowProgression] = useState(true);
     const [testStage, setTestStage] = useState(0);
     const [instructionData, setInstructionData] = useState({
         title: "",
@@ -35,11 +36,25 @@ const RO = ({
                         "Please copy the figure shown as accurately as possible. Take your time and try to be precise.",
                 };
             case 2:
+                setCondition(0);
+                setShowProgression(false);
+            case 3:
+                return {
+                    title: "Immediate Recall",
+                    instructions:
+                        "Without looking at the original figure, please draw the figure from memory as accurately as possible.",
+                };
+            case 4:
+                setCondition(1);
+                setShowProgression(false);
+            case 5:
                 return {
                     title: "Delayed Recall",
                     instructions:
                         "Without looking at the original figure, please draw the figure from memory as accurately as possible.",
                 };
+            case 6:
+                setShowProgression(false);
             default:
                 return {
                     title: "Rey Osterrieth Complex Figure Test",
@@ -56,19 +71,21 @@ const RO = ({
 
     return (
         <>
-            <div className="flex flex-col items-center justify-start">
-                <InstructionsDisplay
-                    title={instructionData.title}
-                    instructions={instructionData.instructions}
-                />
-                <TestProgressionButton
-                    onClick={() => {
-                        setTestStage(testStage + 1);
-                    }}
-                    text="Next"
-                />
-            </div>
-            <Copy />
+            {showProgression && (
+                <div className="flex flex-col items-center justify-start">
+                    <InstructionsDisplay
+                        title={instructionData.title}
+                        instructions={instructionData.instructions}
+                    />
+                    <TestProgressionButton
+                        onClick={() => {
+                            setTestStage(testStage + 1);
+                        }}
+                        text="Next"
+                    />
+                </div>
+            )}
+            {condition === 0 && <Copy />}
         </>
     );
 };
