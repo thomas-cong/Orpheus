@@ -1,14 +1,25 @@
 import CameraComponent from "../ImageCapture/CameraComponent";
 import { useState } from "react";
 
-const Copy = () => {
+interface CopyProps {
+    trialID: string;
+    onCapture: (imageData: string) => void;
+}
+
+const Copy = ({ trialID, onCapture }: CopyProps) => {
     const [receivedImage, setReceivedImage] = useState<string | null>(null);
     const [readyToCapture, setReadyToCapture] = useState(false);
 
     return (
         <div>
             {readyToCapture ? (
-                <CameraComponent onCapture={setReceivedImage} />
+                <CameraComponent
+                        onCapture={(img) => {
+                            setReceivedImage(img);
+                            onCapture(img);
+                        }}
+                        trialID={trialID}
+                    />
             ) : (
                 <div className="flex flex-col items-center">
                     <div className="w-[500px] h-[500px] bg-seasalt rounded-lg shadow-lg">

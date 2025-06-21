@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import testGenerationRoutes from "./TestGeneration.js";
 import patientRoutes from "./Patients.js";
 import audioStorageRoutes from "./AudioStorage.js";
+import imageStorageRoutes from "./ImageStorage.js";
 import adminRoutes from "./AdminEndpoints.js";
 import trialRoutes from "./Trials.js";
 import ravltRoutes from "./RAVLT.js";
@@ -33,6 +34,7 @@ router.get("/", (req, res) => {
 router.use("/testHelper", testGenerationRoutes);
 router.use("/patients", patientRoutes);
 router.use("/audioStorage", audioStorageRoutes);
+router.use("/imageStorage", imageStorageRoutes);
 router.use("/trials", trialRoutes);
 router.use("/admin", adminRoutes);
 router.use("/ravlt", ravltRoutes);

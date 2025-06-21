@@ -2,12 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 
 const CameraComponent = (props: {
     onCapture?: (imageData: string) => void;
+    trialID: string;
 }) => {
     const [isActive, setIsActive] = useState(false);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
+
 
     useEffect(() => {
         // Clean up function to stop the camera when component unmounts
