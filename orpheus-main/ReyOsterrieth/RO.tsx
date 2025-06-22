@@ -5,6 +5,19 @@ import InstructionsDisplay from "../InstructionsDisplay/InstructionDisplay";
 import { usePatient } from "../context/PatientContext";
 import { post } from "../../global-files/utilities";
 
+/**
+ * Implements the Rey Osterrieth Complex Figure Test. The test is
+ * administered in 6 stages: introduction, immediate copy, immediate
+ * recall, delayed recall, and an end-of-test stage. The test records
+ * images of the patient's drawings and uploads them to Azure Blob
+ * Storage. After the test is finished, the test status is updated in
+ * the database.
+ * @param {function} setTest - sets the name of the test being taken
+ * @param {function} setDemographicsCollected - sets whether demographics
+ * have been collected
+ * @param {string} trialID - the ID of the trial
+ * @return {JSX.Element} - a JSX element representing the test
+ */
 const RO = ({
     setTest,
     setDemographicsCollected,
@@ -34,6 +47,11 @@ const RO = ({
         setCapturedImages((prev) => [...prev, img]);
     };
 
+    /**
+     * Given a stage number, returns the title and instructions as an object to be rendered for the Rey Osterrieth Complex Figure Test.
+     * @param {number} stage - the stage of the test, from 0 (introduction) to 6 (end of test)
+     * @return {{title: string, instructions: string}} - an object with title and instructions as strings
+     */
     const getInstructionData = (stage: number) => {
         switch (stage) {
             case 0:
@@ -91,7 +109,10 @@ const RO = ({
             for (const imgData of capturedImages) {
                 // Convert base64 data URL to Blob
                 const byteString = atob(imgData.split(",")[1]);
-                const mimeString = imgData.split(",")[0].split(":")[1].split(";")[0];
+                const mimeString = imgData
+                    .split(",")[0]
+                    .split(":")[1]
+                    .split(";")[0];
                 const ab = new ArrayBuffer(byteString.length);
                 const ia = new Uint8Array(ab);
                 for (let i = 0; i < byteString.length; i++) {
@@ -149,7 +170,9 @@ const RO = ({
                     />
                 </div>
             )}
-            {condition === 0 && <Copy trialID={trialID} onCapture={handleImageCapture} />}
+            {condition === 0 && (
+                <Copy trialID={trialID} onCapture={handleImageCapture} />
+            )}
         </>
     );
 };
