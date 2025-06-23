@@ -16,9 +16,9 @@ const TestInformation = (props: { testType: string }) => {
                 });
                 setShowInfo(true);
                 break;
-            case "ROCF":
+            case "RO":
                 setInfo({
-                    title: "ROCF",
+                    title: "RO",
                     description:
                         "You are currently taking the Rey Ostierreth Complex Figure Test. This helps evaluate visual-spatial ability and memory.",
                 });

@@ -4,6 +4,7 @@ import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import InstructionsDisplay from "../InstructionsDisplay/InstructionDisplay";
 import { usePatient } from "../context/PatientContext";
 import { post } from "../../global-files/utilities";
+import ImmediateRecall from "./ImmediateRecall";
 
 /**
  * Implements the Rey Osterrieth Complex Figure Test. The test is
@@ -44,6 +45,7 @@ const RO = ({
         instructions: "",
     });
     const handleImageCapture = (img: string) => {
+        setTestStage(testStage + 1);
         setCapturedImages((prev) => [...prev, img]);
     };
 
@@ -86,6 +88,12 @@ const RO = ({
                 };
             case 6:
                 setShowProgression(false);
+            case 7:
+                return {
+                    title: "End of Test",
+                    instructions:
+                        "Thank you for taking the Rey Osterrieth Complex Figure Test. Your results have been uploaded.",
+                };
             default:
                 return {
                     title: "Rey Osterrieth Complex Figure Test",
@@ -143,11 +151,11 @@ const RO = ({
             setHasUploaded(true);
         };
 
-        if (!showProgression && !hasUploaded) {
+        if (testStage === 7 && !hasUploaded) {
             uploadImages();
             console.log("Uploaded images");
         }
-    }, [showProgression, capturedImages, hasUploaded]);
+    }, [testStage, capturedImages, hasUploaded]);
 
     useEffect(() => {
         const instructionData = getInstructionData(testStage);
@@ -172,6 +180,12 @@ const RO = ({
             )}
             {condition === 0 && (
                 <Copy trialID={trialID} onCapture={handleImageCapture} />
+            )}
+            {condition === 1 && (
+                <ImmediateRecall
+                    trialID={trialID}
+                    onCapture={handleImageCapture}
+                />
             )}
         </>
     );

@@ -3,7 +3,7 @@ import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import RAVLTCycle from "./RAVLTCycle";
 import RAVLTEndPage from "./RAVLTEndPage";
-import DelayTimer from "./DelayTimer";
+import DelayTimer from "../TestProgression/DelayTimer";
 import { useState, useEffect } from "react";
 import { usePatient } from "../context/PatientContext";
 import { get, post } from "../../global-files/utilities";
@@ -193,7 +193,10 @@ const RAVLT = ({
             )}
             {trialCycle === 7 && RAVLTCycleComponentInterference}
             {trialCycle === 8 && (
-                <DelayTimer onTimerComplete={() => setTrialCycle(9)} />
+                <DelayTimer
+                    duration={1200}
+                    onTimerComplete={() => setTrialCycle(9)}
+                />
             )}
             {trialCycle === 9 && (
                 <>

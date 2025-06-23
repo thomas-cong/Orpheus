@@ -2,7 +2,10 @@ import express from "express";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import dotenv from "dotenv";
-import { ContainerSASPermissions, generateBlobSASQueryParameters } from "@azure/storage-blob";
+import {
+    ContainerSASPermissions,
+    generateBlobSASQueryParameters,
+} from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import multer from "multer";
 import {
@@ -103,9 +106,8 @@ router.post("/uploadBlob", upload.single("file"), async (req, res) => {
     try {
         const { containerName, blobName } = req.body;
         const fileBuffer = req.file.buffer;
-        const containerClient = blobServiceClient.getContainerClient(
-            containerName
-        );
+        const containerClient =
+            blobServiceClient.getContainerClient(containerName);
         await containerClient.uploadBlockBlob(
             blobName,
             fileBuffer,

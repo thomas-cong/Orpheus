@@ -20,6 +20,14 @@ const CameraComponent = (props: {
         };
     }, []);
 
+    /**
+     * Tries to start the camera and display the feed.
+     *
+     * @async
+     *
+     * @throws Will alert the user if unable to access the camera, and log an
+     * error to the console.
+     */
     const startCamera = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({

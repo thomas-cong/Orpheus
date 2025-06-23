@@ -1,7 +1,6 @@
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import React from "react";
 import { Link } from "react-router-dom";
-import CameraComponent from "./ImageCapture/CameraComponent";
 const LandingPage = () => {
     return (
         <>
