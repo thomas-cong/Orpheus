@@ -1,3 +1,4 @@
+import React from "react";
 import CameraComponent from "../ImageCapture/CameraComponent";
 import { useState } from "react";
 
@@ -14,12 +15,12 @@ const Copy = ({ trialID, onCapture }: CopyProps) => {
         <div>
             {readyToCapture ? (
                 <CameraComponent
-                        onCapture={(img) => {
-                            setReceivedImage(img);
-                            onCapture(img);
-                        }}
-                        trialID={trialID}
-                    />
+                    onCapture={(img) => {
+                        setReceivedImage(img);
+                        onCapture(img);
+                    }}
+                    trialID={trialID}
+                />
             ) : (
                 <div className="flex flex-col items-center">
                     <div className="w-[500px] h-[500px] bg-seasalt rounded-lg shadow-lg">

@@ -5,6 +5,7 @@ import InstructionsDisplay from "../InstructionsDisplay/InstructionDisplay";
 import { usePatient } from "../context/PatientContext";
 import { post } from "../../global-files/utilities";
 import ImmediateRecall from "./ImmediateRecall";
+import DelayedRecall from "./DelayedRecall";
 
 /**
  * Implements the Rey Osterrieth Complex Figure Test. The test is
@@ -183,6 +184,12 @@ const RO = ({
             )}
             {condition === 1 && (
                 <ImmediateRecall
+                    trialID={trialID}
+                    onCapture={handleImageCapture}
+                />
+            )}
+            {condition === 2 && (
+                <DelayedRecall
                     trialID={trialID}
                     onCapture={handleImageCapture}
                 />

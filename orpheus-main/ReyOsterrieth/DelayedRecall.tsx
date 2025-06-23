@@ -1,7 +1,6 @@
 import React from "react";
 import CameraComponent from "../ImageCapture/CameraComponent";
 import { useState } from "react";
-import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
 import DelayTimer from "../TestProgression/DelayTimer";
 
 interface DelayedRecallProps {
