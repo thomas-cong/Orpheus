@@ -101,7 +101,7 @@ const CameraComponent = (props: {
 
     return (
         <div className="default-background p-4 rounded-lg w-[500px] h-[500px] shadow-lg">
-            <h2 className="text-blue-300 text-xl mb-4">Camera</h2>
+            <h2 className="display-text text-xl mb-4">Camera</h2>
 
             <div className="relative">
                 {!capturedImage ? (
@@ -120,7 +120,9 @@ const CameraComponent = (props: {
                         />
                         {!isActive && (
                             <div className="default-background rounded-md w-full h-64 flex items-center justify-center">
-                                <p className="text-gray-400">Camera inactive</p>
+                                <p className="text-gray-400 border border-gray-400 p-2 rounded-md text-center text-xl ">
+                                    Camera inactive
+                                </p>
                             </div>
                         )}
                     </>
