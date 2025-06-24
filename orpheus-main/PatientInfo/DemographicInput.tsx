@@ -86,11 +86,14 @@ const DemographicInput = ({
         setDemographicsCollected(true);
     };
     return (
-        <div className="max-w-xl aspect-[3/2] flex flex-col items-center">
-            <div className="flex w-full justify-between mb-4 mt-4">
-                <div className="flex flex-col w-45/100">
+        <div className="max-w-2xl flex flex-col items-start bg-white rounded-2xl shadow-2xl p-14 gap-4 relative">
+            <h2 className="display-text text-2xl mb-4 absolute top-10 left-14">
+                Patient Demographics
+            </h2>
+            <div className="flex w-full justify-between mt-10 gap-4">
+                <div className="flex flex-col w-1/2 gap-2">
                     <input
-                        className={`w-full focus:outline-none focus:ring-2 focus:ring-orange ${
+                        className={`input h-12 text-lg ${
                             firstNameError ? "border-red-500 border-2" : ""
                         }`}
                         type="text"
@@ -109,14 +112,14 @@ const DemographicInput = ({
                         value={firstName}
                     />
                     {firstNameError && (
-                        <span className="text-red-500 text-xs mt-1">
+                        <span className="text-red-500 text-sm mt-1">
                             {firstNameError}
                         </span>
                     )}
                 </div>
-                <div className="flex flex-col w-45/100">
+                <div className="flex flex-col w-1/2 gap-2">
                     <input
-                        className={`w-full focus:outline-none focus:ring-2 focus:ring-orange ${
+                        className={`input h-12 text-lg ${
                             lastNameError ? "border-red-500 border-2" : ""
                         }`}
                         type="text"
@@ -135,45 +138,47 @@ const DemographicInput = ({
                         value={lastName}
                     />
                     {lastNameError && (
-                        <span className="text-red-500 text-xs mt-1">
+                        <span className="text-red-500 text-sm mt-1">
                             {lastNameError}
                         </span>
                     )}
                 </div>
             </div>
-            <input
-                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
-                type="date"
-                placeholder="Date of Birth"
-                onChange={(e) => setDOB(e.target.value)}
-            />
-            <select
-                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
-                onChange={(e) => setEducationLevel(e.target.value)}
-            >
-                <option value="">Select Education Level</option>
-                <option value="Primary">Primary/Middle School</option>
-                <option value="HS">High School</option>
-                <option value="College">College</option>
-                <option value="Grad">Graduate School</option>
-                <option value="Other">Other</option>
-            </select>
-            <select
-                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
-                onChange={(e) => setEthnicity(e.target.value)}
-            >
-                <option value="">Select Ethnicity</option>
-                <option value="African-American">African-American</option>
-                <option value="Hispanic">Hispanic</option>
-                <option value="East Asian">East Asian</option>
-                <option value="South Asian">South Asian</option>
-                <option value="Caucasian">Caucasian</option>
-                <option value="Other">Other</option>
-            </select>
+            <div className="flex flex-col w-full gap-4">
+                <input
+                    className="input h-12 text-lg"
+                    type="date"
+                    placeholder="Date of Birth"
+                    onChange={(e) => setDOB(e.target.value)}
+                />
+                <select
+                    className="input h-12 text-lg"
+                    onChange={(e) => setEducationLevel(e.target.value)}
+                >
+                    <option value="">Select Education Level</option>
+                    <option value="Primary">Primary/Middle School</option>
+                    <option value="HS">High School</option>
+                    <option value="College">College</option>
+                    <option value="Grad">Graduate School</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select
+                    className="input h-12 text-lg"
+                    onChange={(e) => setEthnicity(e.target.value)}
+                >
+                    <option value="">Select Ethnicity</option>
+                    <option value="African-American">African-American</option>
+                    <option value="Hispanic">Hispanic</option>
+                    <option value="East Asian">East Asian</option>
+                    <option value="South Asian">South Asian</option>
+                    <option value="Caucasian">Caucasian</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
             <button
-                className={`${
-                    isFormValid ? "bg-orange" : "bg-gray-400"
-                } text-seasalt h-15/100 w-50/100 rounded-lg p-2 text-center mt-4 focus:outline-none focus:ring-2 focus:ring-orange`}
+                className={`button mt-8 py-4 px-8 text-lg ${
+                    isFormValid ? "bg-orange-500" : "bg-gray-400"
+                }`}
                 onClick={submit}
                 disabled={!isFormValid}
             >

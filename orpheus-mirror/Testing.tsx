@@ -129,7 +129,7 @@ const Testing = () => {
                                                     (suggestion, index) => (
                                                         <div
                                                             key={index}
-                                                            className="px-3 py-2 hover:bg-gray-600 cursor-pointer text-sm"
+                                                            className="button"
                                                             onClick={() => {
                                                                 setEndpointUrl(
                                                                     suggestion
@@ -198,7 +198,7 @@ const Testing = () => {
 
                     <div className="mt-4 flex justify-end">
                         <button
-                            className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-md transition duration-200 disabled:opacity-50"
+                            className="button"
                             onClick={callApiEndpoint}
                             disabled={isLoading}
                         >

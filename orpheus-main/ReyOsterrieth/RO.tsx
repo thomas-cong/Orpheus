@@ -7,11 +7,8 @@ import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import DelayTimer from "../TestProgression/DelayTimer";
 import { usePatient } from "../context/PatientContext";
 import { post } from "../../global-files/utilities";
-import Copy from "./Copy";
-import ImmediateRecall from "./UploadImage";
-import DelayedRecall from "./DelayedRecall";
-import ROEndPage from "./ROEndPage";
 import UploadImage from "./UploadImage";
+import ROEndPage from "./ROEndPage";
 
 
 

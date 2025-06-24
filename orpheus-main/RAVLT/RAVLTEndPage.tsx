@@ -42,16 +42,10 @@ const RAVLTEndPage: React.FC<RAVLTEndPageProps> = ({
                 (RAVLT). Your responses have been recorded successfully.
             </p>
             <div className="flex space-x-4">
-                <button
-                    onClick={() => setTest("")}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
+                <button onClick={() => setTest("")} className="button">
                     Return to Test Selection
                 </button>
-                <button
-                    onClick={handleLogout}
-                    className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                >
+                <button onClick={handleLogout} className="button">
                     Log Out
                 </button>
             </div>

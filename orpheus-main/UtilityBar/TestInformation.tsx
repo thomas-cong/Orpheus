@@ -36,7 +36,7 @@ const TestInformation = (props: { testType: string }) => {
     return (
         <div className="relative w-[100%] flex justify-center items-center">
             <div
-                className="font-funnel-sans text-2xl cursor-pointer hover:text-orange transition-colors duration-300"
+                className="button"
                 onClick={() => setShowInfo(!showInfo)}
                 onMouseEnter={() => setShowInfo(true)}
                 onMouseLeave={() => setShowInfo(false)}
@@ -44,7 +44,7 @@ const TestInformation = (props: { testType: string }) => {
                 A
             </div>
             {showInfo && (
-                <div className="absolute right-1/2 bottom-1/2 transform translate-y-1/2 mr-2 p-4 bg-seasalt text-darkblue w-[300%] rounded-lg shadow-lg z-10 text-sm">
+                <div className="absolute right-1/2 bottom-1/2 transform translate-y-1/2 mr-2 p-4 default-background text-darkblue w-[300%] rounded-lg shadow-lg z-10 text-sm">
                     <p className="text-darkblue font-bold mb-2">{info.title}</p>
                     <p>{info.description}</p>
                 </div>

@@ -10,7 +10,6 @@ const CameraComponent = (props: {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
 
-
     useEffect(() => {
         // Clean up function to stop the camera when component unmounts
         return () => {
@@ -101,8 +100,8 @@ const CameraComponent = (props: {
     };
 
     return (
-        <div className="bg-seasalt p-4 rounded-lg w-[500px] h-[500px] shadow-lg">
-            <h2 className="text-blue-300 text-xl mb-4">Camera</h2>
+        <div className="default-background p-4 rounded-lg w-[500px] h-[500px] shadow-lg">
+            <h2 className="display-text text-xl mb-4">Camera</h2>
 
             <div className="relative">
                 {!capturedImage ? (
@@ -120,8 +119,10 @@ const CameraComponent = (props: {
                             }}
                         />
                         {!isActive && (
-                            <div className="bg-seasalt rounded-md w-full h-64 flex items-center justify-center">
-                                <p className="text-gray-400">Camera inactive</p>
+                            <div className="default-background rounded-md w-full h-64 flex items-center justify-center">
+                                <p className="text-gray-400 border border-gray-400 p-2 rounded-md text-center text-xl ">
+                                    Camera inactive
+                                </p>
                             </div>
                         )}
                     </>
@@ -140,34 +141,22 @@ const CameraComponent = (props: {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-                <button
-                    onClick={toggleCamera}
-                    className="px-4 py-2 bg-darkblue text-white rounded-md"
-                >
+                <button className="button" onClick={toggleCamera}>
                     {isActive ? "Stop Camera" : "Start Camera"}
                 </button>
 
                 {isActive && !capturedImage && (
-                    <button
-                        onClick={captureImage}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md"
-                    >
+                    <button className="button" onClick={captureImage}>
                         Take Photo
                     </button>
                 )}
 
                 {capturedImage && (
                     <>
-                        <button
-                            onClick={retakePhoto}
-                            className="px-4 py-2 bg-cerulean text-white rounded-md"
-                        >
+                        <button className="button" onClick={retakePhoto}>
                             Retake
                         </button>
-                        <button
-                            onClick={submitImage}
-                            className="px-4 py-2 bg-green-600 text-white rounded-md"
-                        >
+                        <button className="button" onClick={submitImage}>
                             Submit
                         </button>
                     </>

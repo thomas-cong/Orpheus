@@ -1,6 +1,48 @@
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+const TrialIdInput = () => {
+    const [trialID, setTrialID] = useState("");
+    const navigate = useNavigate();
+    const [error, setError] = useState("");
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!trialID) {
+            setError("Please enter a trial ID.");
+            return;
+        }
+        const trialType = trialID.split("-")[0];
+        if (!trialType) {
+            setError("Invalid trial ID format.");
+            return;
+        }
+        setError("");
+        navigate(`/testing/${trialID}`);
+    };
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="flex flex-col items-center gap-2"
+        >
+            <input
+                className="input p-2 min-w-[220px] bg-white w-[60vw]"
+                type="text"
+                placeholder="Enter trial ID"
+                value={trialID}
+                onChange={(e) => setTrialID(e.target.value)}
+            />
+            <button className="button" type="submit">
+                Go to Test
+            </button>
+            {error && (
+                <span className="text-red-500 text-xs mt-1">{error}</span>
+            )}
+        </form>
+    );
+};
+
 const LandingPage = () => {
     return (
         <>
@@ -26,13 +68,10 @@ const LandingPage = () => {
                         Orpheus
                     </p>
                 </div>
-                <div className="mt-2 flex justify-center w-full">
-                    <Link
-                        to="/testing"
-                        className="text-white font-normal text-xl p-2 cursor-pointer font-funnel-sans link-underline text-center"
-                    >
-                        Start Testing
-                    </Link>
+                <div className="mt-2 flex flex-col items-center justify-center w-full gap-4">
+                    <div className="flex flex-col items-center justify-center gap-2 mt-6">
+                        <TrialIdInput />
+                    </div>
                 </div>
             </div>
         </>

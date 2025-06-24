@@ -148,10 +148,11 @@ const RAVLT = ({
         }
     }, [trialCycle]);
     return (
-        <div className="font-funnel-sans max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] flex items-center justify-center">
+        <div className="font-body max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] flex items-center justify-center">
             {trialCycle === 0 && (
                 <div className="flex flex-col items-center">
                     <InstructionDisplay
+                        title="RAVLT"
                         instructions="You will hear a list of words. 
                         Listen carefully and try to remember them. 
                         When you hear the chime, say as many as you can remember. 
@@ -167,7 +168,10 @@ const RAVLT = ({
 
             {trialCycle === 1 && (
                 <div className="flex flex-col items-center m-10 fadeIn">
-                    <InstructionDisplay instructions="Press the button below to generate the words. Only press this when you are ready." />
+                    <InstructionDisplay
+                        title="RAVLT"
+                        instructions="Press the button below to generate the words. Only press this when you are ready."
+                    />
                     <GenerateWordsButton
                         numWords={5}
                         words={wordArray}
@@ -182,7 +186,10 @@ const RAVLT = ({
             {trialCycle === 5 && RAVLTCycleComponent}
             {trialCycle === 6 && (
                 <>
-                    <InstructionDisplay instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember." />
+                    <InstructionDisplay
+                        title="RAVLT"
+                        instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember."
+                    />
                     <GenerateWordsButton
                         numWords={5}
                         words={interferenceArray}
@@ -200,7 +207,10 @@ const RAVLT = ({
             )}
             {trialCycle === 9 && (
                 <>
-                    <InstructionDisplay instructions="Now, please try to recall as many words as possible from the first list of words that you learned." />
+                    <InstructionDisplay
+                        title="RAVLT"
+                        instructions="Now, please try to recall as many words as possible from the first list of words that you learned."
+                    />
                     <TestProgressionButton
                         onClick={() => setTrialCycle(10)}
                         text="Start"

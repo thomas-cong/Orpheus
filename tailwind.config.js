@@ -2,7 +2,9 @@ module.exports = {
     content: [
         "./src/**/*.{js,jsx,ts,tsx,html}",
         "./index.html",
-        "./orpheus-mirror/src/**/*.{js,jsx,ts,tsx,html}",
+        "./orpheus-mirror/**/*.{js,jsx,ts,tsx,html}",
+        "./orpheus-main/**/*.{js,jsx,ts,tsx,html}",
+        "./global-files/**/*.{js,jsx,ts,tsx,html,css}",
     ],
     theme: {
         extend: {
@@ -11,7 +13,7 @@ module.exports = {
                 display: ["Funnel Display", "sans-serif"],
             },
             colors: {
-                violet: {
+                customViolet: {
                     100: "#10002b",
                     200: "#240046",
                     300: "#3C096C",
@@ -21,7 +23,7 @@ module.exports = {
                     800: "#C77DFF",
                     900: "#E0AAFF",
                 },
-                orange: {
+                customOrange: {
                     100: "#FF4800",
                     200: "#FF5400",
                     300: "#FF6000",
@@ -32,7 +34,7 @@ module.exports = {
                     800: "#FF9E00",
                     900: "#FFAA00",
                 },
-                navy: {
+                customNavy: {
                     100: "#000281",
                     200: "#031D9B",
                     300: "#0539B6",
