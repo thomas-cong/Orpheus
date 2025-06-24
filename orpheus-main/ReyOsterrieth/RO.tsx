@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Copy from "./Copy";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import InstructionsDisplay from "../InstructionsDisplay/InstructionDisplay";
 import { usePatient } from "../context/PatientContext";
 import { post } from "../../global-files/utilities";
+import Copy from "./Copy";
 import ImmediateRecall from "./ImmediateRecall";
 import DelayedRecall from "./DelayedRecall";
 
