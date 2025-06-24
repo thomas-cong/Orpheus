@@ -22,7 +22,7 @@ const GenerateWordsButton = (props: {
         props.onClick();
     };
     return (
-        <button className="bg-darkblue text-white" onClick={onClicked}>
+        <button className="button" onClick={onClicked}>
             Generate Words
         </button>
     );

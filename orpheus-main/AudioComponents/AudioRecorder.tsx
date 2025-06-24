@@ -68,9 +68,13 @@ const AudioRecorder = ({ recordings, setRecordings }: AudioRecorderProps) => {
     return (
         <div>
             {isRecording ? (
-                <button onClick={stopRecording}>Stop Recording</button>
+                <button className="button" onClick={stopRecording}>
+                    Stop Recording
+                </button>
             ) : (
-                <button onClick={startRecording}>Start Recording</button>
+                <button className="button" onClick={startRecording}>
+                    Start Recording
+                </button>
             )}
             {recordedURL && <audio src={recordedURL} controls />}
         </div>

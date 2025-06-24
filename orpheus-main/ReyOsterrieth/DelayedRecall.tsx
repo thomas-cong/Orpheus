@@ -27,10 +27,13 @@ const DelayedRecall = ({ trialID, onCapture }: DelayedRecallProps) => {
                 <div className="flex flex-col items-center">
                     {showingFigure ? (
                         <>
-                            <div className="w-[500px] h-[500px] bg-seasalt rounded-lg shadow-lg">
+                            <div className="w-[500px] h-[500px] default-background rounded-lg shadow-lg">
                                 Imagine Rey Osterrieth Figure
                             </div>
-                            <button onClick={() => setShowingFigure(false)}>
+                            <button
+                                className="button"
+                                onClick={() => setShowingFigure(false)}
+                            >
                                 Next
                             </button>
                         </>

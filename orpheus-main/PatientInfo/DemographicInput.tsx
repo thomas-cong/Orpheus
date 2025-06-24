@@ -90,7 +90,7 @@ const DemographicInput = ({
             <div className="flex w-full justify-between mb-4 mt-4">
                 <div className="flex flex-col w-45/100">
                     <input
-                        className={`w-full focus:outline-none focus:ring-2 focus:ring-orange ${
+                        className={`input ${
                             firstNameError ? "border-red-500 border-2" : ""
                         }`}
                         type="text"
@@ -116,7 +116,7 @@ const DemographicInput = ({
                 </div>
                 <div className="flex flex-col w-45/100">
                     <input
-                        className={`w-full focus:outline-none focus:ring-2 focus:ring-orange ${
+                        className={`input ${
                             lastNameError ? "border-red-500 border-2" : ""
                         }`}
                         type="text"
@@ -142,13 +142,13 @@ const DemographicInput = ({
                 </div>
             </div>
             <input
-                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
+                className="input"
                 type="date"
                 placeholder="Date of Birth"
                 onChange={(e) => setDOB(e.target.value)}
             />
             <select
-                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
+                className="input"
                 onChange={(e) => setEducationLevel(e.target.value)}
             >
                 <option value="">Select Education Level</option>
@@ -159,7 +159,7 @@ const DemographicInput = ({
                 <option value="Other">Other</option>
             </select>
             <select
-                className="w-90/100 focus:outline-none focus:ring-2 focus:ring-orange"
+                className="input"
                 onChange={(e) => setEthnicity(e.target.value)}
             >
                 <option value="">Select Ethnicity</option>
@@ -171,9 +171,9 @@ const DemographicInput = ({
                 <option value="Other">Other</option>
             </select>
             <button
-                className={`${
-                    isFormValid ? "bg-orange" : "bg-gray-400"
-                } text-seasalt h-15/100 w-50/100 rounded-lg p-2 text-center mt-4 focus:outline-none focus:ring-2 focus:ring-orange`}
+                className={`button ${
+                    isFormValid ? "bg-orange-500" : "bg-gray-400"
+                }`}
                 onClick={submit}
                 disabled={!isFormValid}
             >

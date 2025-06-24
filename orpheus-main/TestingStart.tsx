@@ -117,7 +117,7 @@ const TestingStart = () => {
             </ShaderGradientCanvas>
             {trialFound && (
                 <div className="font-funnel-sans min-h-screen flex items-center justify-start pl-4">
-                    <div className="h-[90vh] w-[92%] flex flex-col items-center justify-center bg-seasalt rounded-lg drop-shadow-lg">
+                    <div className="h-[90vh] w-[92%] flex flex-col items-center justify-center default-background rounded-lg drop-shadow-lg">
                         <>
                             {!demographicsCollected && (
                                 <DemographicInput
@@ -161,10 +161,7 @@ const TestingStart = () => {
                         value={trialID}
                         onChange={(e) => setTrialID(e.target.value)}
                     />
-                    <button
-                        className="bg-darkblue hover:bg-cerulean text-white font-bold py-2 px-4 rounded"
-                        onClick={onSubmitTrialId}
-                    >
+                    <button className="button" onClick={onSubmitTrialId}>
                         Submit
                     </button>
                 </div>

@@ -1,6 +1,87 @@
 @import url("https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import "tailwindcss";
+:root {
+    --custom-violet-100: #10002b;
+    --custom-violet-200: #240046;
+    --custom-violet-300: #3c096c;
+    --custom-violet-400: #5a189a;
+    --custom-violet-500: #7b2cbf;
+    --custom-violet-600: #9d4edd;
+    --custom-violet-800: #c77dff;
+    --custom-violet-900: #e0aaff;
+    --custom-orange-100: #ff4800;
+    --custom-orange-200: #ff5400;
+    --custom-orange-300: #ff6000;
+    --custom-orange-400: #ff6d00;
+    --custom-orange-500: #ff7900;
+    --custom-orange-600: #ff8500;
+    --custom-orange-700: #ff9100;
+    --custom-orange-800: #ff9e00;
+    --custom-orange-900: #ffaa00;
+    --custom-navy-100: #000281;
+    --custom-navy-200: #031d9b;
+    --custom-navy-300: #0539b6;
+    --custom-navy-400: #0b5ed0;
+    --custom-navy-500: #1775d3;
+    --custom-navy-600: #1e8ad8;
+    --custom-navy-800: #24a1dd;
+    --custom-navy-900: #2baedd;
+}
+@layer components {
+    .default-background {
+        background-color: white;
+        font-family: "Funnel Sans", sans-serif;
+        @apply rounded-md;
+        @apply opacity-75;
+    }
+    .display-text {
+        font-family: "Funnel Display", sans-serif;
+        color: var(--custom-navy-200);
+        font-weight: 600;
+    }
+    .input {
+        font-family: "Funnel Sans", sans-serif;
+        @apply focus:outline-none focus:ring-2 focus:ring-orange-500;
+        @apply rounded-lg;
+    }
+    .input::placeholder {
+        @apply text-gray-500;
+    }
+    .button {
+        position: relative;
+        overflow: hidden;
+        font-family: "Funnel Sans", sans-serif;
+        font-weight: 600;
+        @apply rounded-lg;
+        padding: 0.5rem 1rem;
+        color: white;
+        background-color: var(--custom-navy-200);
+        transition-property: color, background-color, border-color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 250ms;
+    }
 
-@theme {
+    .button::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 2px solid var(--custom-navy-600);
+        border-radius: 0.5rem;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1),
+            transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    }
+
+    .button:hover::after {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .button:hover {
+        background-color: var(--custom-navy-600);
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
 }

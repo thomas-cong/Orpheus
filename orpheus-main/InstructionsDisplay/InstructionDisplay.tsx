@@ -10,7 +10,7 @@ const InstructionDisplay = ({
     instructions,
 }: InstructionDisplayProps) => {
     return (
-        <div className="bg-seasalt rounded-lg p-4 mb-6 shadow-md">
+        <div className="default-background rounded-lg p-4 mb-6 shadow-md">
             {title && (
                 <h3 className="text-darkblue font-semibold text-lg mb-2">
                     {title}

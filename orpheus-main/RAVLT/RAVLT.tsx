@@ -148,7 +148,7 @@ const RAVLT = ({
         }
     }, [trialCycle]);
     return (
-        <div className="font-funnel-sans max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] flex items-center justify-center">
+        <div className="font-body max-w-xl aspect-[3/2] mx-auto drop-shadow-[20px_20px_8px_rgba(0,0,0,0.2)] flex items-center justify-center">
             {trialCycle === 0 && (
                 <div className="flex flex-col items-center">
                     <InstructionDisplay

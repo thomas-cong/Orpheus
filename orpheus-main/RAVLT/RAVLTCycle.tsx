@@ -18,11 +18,7 @@ const RAVLTCycle = (
     const { patientID } = usePatient();
     const finishingFunction = () => {
         console.log(
-            "Patient " +
-                patientID +
-                " recording " +
-                recordingID +
-                " completed"
+            "Patient " + patientID + " recording " + recordingID + " completed"
         );
         setRecordingID(recordingID + 1);
         setTrialCycle(trialCycle + 1);
@@ -31,7 +27,8 @@ const RAVLTCycle = (
     };
     return (
         <div className="flex flex-col items-center">
-            {(trialStatus === "Listening" || trialStatus === "Listening p2") && (
+            {(trialStatus === "Listening" ||
+                trialStatus === "Listening p2") && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     {trialStatus === "Listening" && (
                         <InstructionDisplay instructions="Press the button below to hear the words. You will hear a countdown, then the words will play. Remember, after pressing this button you will not be able to hear them again." />
@@ -53,8 +50,11 @@ const RAVLTCycle = (
             {trialStatus === "Recording" && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
-                    <AudioRecorder recordings={recordings} setRecordings={setRecordings} />
-                    <button onClick={finishingFunction}>
+                    <AudioRecorder
+                        recordings={recordings}
+                        setRecordings={setRecordings}
+                    />
+                    <button className="button" onClick={finishingFunction}>
                         Finished Recording
                     </button>
                 </div>

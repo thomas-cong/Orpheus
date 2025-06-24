@@ -45,10 +45,7 @@ const DelayTimer: React.FC<DelayTimerProps> = ({
                 {formatTime(secondsLeft)}
             </div>
             {timerComplete && (
-                <button
-                    onClick={onTimerComplete}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
+                <button onClick={onTimerComplete} className="button">
                     Continue
                 </button>
             )}

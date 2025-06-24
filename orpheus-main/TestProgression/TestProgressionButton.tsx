@@ -5,10 +5,7 @@ const TestProgressionButton = (props: {
     text: string;
 }) => {
     return (
-        <button
-            className="bg-darkblue text-white h-10 w-15 animate-(--button-pulse-size) rounded-lg p-2"
-            onClick={props.onClick}
-        >
+        <button className="button" onClick={props.onClick}>
             {props.text}
         </button>
     );

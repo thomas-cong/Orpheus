@@ -23,10 +23,13 @@ const Copy = ({ trialID, onCapture }: CopyProps) => {
                 />
             ) : (
                 <div className="flex flex-col items-center">
-                    <div className="w-[500px] h-[500px] bg-seasalt rounded-lg shadow-lg">
+                    <div className="w-[500px] h-[500px] default-background rounded-lg shadow-lg">
                         Imagine Rey Osterrieth Figure
                     </div>
-                    <button onClick={() => setReadyToCapture(true)}>
+                    <button
+                        className="button"
+                        onClick={() => setReadyToCapture(true)}
+                    >
                         Upload Image
                     </button>
                 </div>
