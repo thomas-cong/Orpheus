@@ -1,6 +1,7 @@
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import ArrowCircleUpTwoToneIcon from "@mui/icons-material/ArrowCircleUpTwoTone";
 const TrialIdInput = () => {
     const [trialID, setTrialID] = useState("");
     const navigate = useNavigate();
@@ -26,19 +27,28 @@ const TrialIdInput = () => {
             onSubmit={handleSubmit}
             className="flex flex-col items-center gap-2"
         >
-            <input
-                className="input p-2 min-w-[220px] bg-white w-[60vw]"
-                type="text"
-                placeholder="Enter trial ID"
-                value={trialID}
-                onChange={(e) => setTrialID(e.target.value)}
-            />
-            <button className="button" type="submit">
-                Go to Test
-            </button>
-            {error && (
-                <span className="text-red-500 text-xs mt-1">{error}</span>
-            )}
+            <div className="flex items-center w-[60vw] min-w-[220px] bg-white rounded-lg px-2">
+                <input
+                    className="flex-1 p-2 bg-transparent outline-none"
+                    type="text"
+                    placeholder="Enter trial ID"
+                    value={trialID}
+                    onChange={(e) => setTrialID(e.target.value)}
+                />
+                <ArrowCircleUpTwoToneIcon
+                    sx={{
+                        color: "var(--custom-navy-200)",
+                        fontSize: "2rem",
+                        opacity: 1,
+                        pointerEvents: "auto",
+                    }}
+                    className="hover:cursor-pointer ml-2"
+                    onClick={handleSubmit}
+                />
+            </div>
+            <div className="min-h-[1.5em] text-xs mt-1 flex items-center justify-center">
+                {error ? <span className="text-red-500">{error}</span> : null}
+            </div>
         </form>
     );
 };

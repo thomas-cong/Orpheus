@@ -327,6 +327,9 @@
   .mb-8 {
     margin-bottom: calc(var(--spacing) * 8);
   }
+  .mb-\[-2px\] {
+    margin-bottom: -2px;
+  }
   .ml-1 {
     margin-left: calc(var(--spacing) * 1);
   }
@@ -383,6 +386,9 @@
   }
   .max-h-80 {
     max-height: calc(var(--spacing) * 80);
+  }
+  .min-h-\[1\.5em\] {
+    min-height: 1.5em;
   }
   .min-h-screen {
     min-height: 100vh;
@@ -601,9 +607,6 @@
   .bg-blue-600 {
     background-color: var(--color-blue-600);
   }
-  .bg-gray-400 {
-    background-color: var(--color-gray-400);
-  }
   .bg-gray-500 {
     background-color: var(--color-gray-500);
   }
@@ -636,6 +639,9 @@
   }
   .bg-red-900\/50 {
     background-color: color-mix(in oklab, var(--color-red-900) 50%, transparent);
+  }
+  .bg-transparent {
+    background-color: transparent;
   }
   .bg-violet-600 {
     background-color: var(--color-violet-600);
@@ -676,9 +682,6 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
-  .px-8 {
-    padding-inline: calc(var(--spacing) * 8);
-  }
   .py-0\.5 {
     padding-block: calc(var(--spacing) * 0.5);
   }
@@ -693,9 +696,6 @@
   }
   .py-3 {
     padding-block: calc(var(--spacing) * 3);
-  }
-  .py-4 {
-    padding-block: calc(var(--spacing) * 4);
   }
   .pt-6 {
     padding-top: calc(var(--spacing) * 6);
@@ -886,6 +886,17 @@
   .duration-300 {
     --tw-duration: 300ms;
     transition-duration: 300ms;
+  }
+  .outline-none {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
+  .hover\:cursor-pointer {
+    &:hover {
+      @media (hover: hover) {
+        cursor: pointer;
+      }
+    }
   }
   .hover\:bg-blue-400 {
     &:hover {
@@ -1079,7 +1090,7 @@
   .button:hover {
     background-color: var(--custom-navy-200);
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 3px 2px var(--custom-navy-300);
   }
 }
 @property --tw-translate-x {

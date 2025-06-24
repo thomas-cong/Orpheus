@@ -34,7 +34,7 @@ const DelayTimer: React.FC<DelayTimerProps> = ({
     };
 
     return (
-        <div className="flex flex-col items-center justify-center p-8 space-y-6">
+        <div className="flex flex-col items-center justify-center p-8 space-y-6 default-background">
             <h2 className="text-2xl font-semibold text-gray-800">
                 Delay Period
             </h2>

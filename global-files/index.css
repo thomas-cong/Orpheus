@@ -90,6 +90,7 @@
     .button:hover {
         background-color: var(--custom-navy-200);
         cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        /* Multi-layered navy glow */
+        box-shadow: 0 0 3px 2px var(--custom-navy-300);
     }
 }

@@ -118,7 +118,7 @@ const TestingStart = () => {
             </ShaderGradientCanvas>
             {trialFound && (
                 <div className="font-funnel-sans min-h-screen flex items-center justify-start pl-4">
-                    <div className="h-[90vh] w-[92%] flex flex-col items-center justify-center default-background rounded-lg drop-shadow-lg">
+                    <div className="h-[90vh] w-[92%] flex flex-col items-center justify-center  rounded-lg drop-shadow-lg">
                         <>
                             {!demographicsCollected && (
                                 <DemographicInput

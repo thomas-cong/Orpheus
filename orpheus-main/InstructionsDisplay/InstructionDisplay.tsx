@@ -11,8 +11,8 @@ const InstructionDisplay = ({
 }: InstructionDisplayProps) => {
     return (
         <div className="default-background">
-            {title && <h3 className="display-text">{title}</h3>}
-            <div className="body-text">{instructions}</div>
+            {title && <h3 className="display-text p-2 mb-[-2px]">{title}</h3>}
+            <div className="body-text p-2">{instructions}</div>
         </div>
     );
 };

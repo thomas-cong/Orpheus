@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { get, post } from "../../global-files/utilities";
 import { usePatient } from "../context/PatientContext";
+import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import React from "react";
 
 const DemographicInput = ({
@@ -175,15 +176,16 @@ const DemographicInput = ({
                     <option value="Other">Other</option>
                 </select>
             </div>
-            <button
-                className={`button mt-8 py-4 px-8 text-lg ${
-                    isFormValid ? "bg-orange-500" : "bg-gray-400"
-                }`}
-                onClick={submit}
-                disabled={!isFormValid}
-            >
-                Submit
-            </button>
+            <CheckCircleTwoToneIcon
+                sx={{
+                    color: isFormValid ? "var(--custom-navy-200)" : "gray",
+                    fontSize: "2rem",
+                    opacity: isFormValid ? 1 : 0.5,
+                    pointerEvents: isFormValid ? "auto" : "none",
+                }}
+                className="hover:cursor-pointer"
+                onClick={isFormValid ? submit : undefined}
+            />
         </div>
     );
 };
