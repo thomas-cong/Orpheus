@@ -16,6 +16,7 @@
     "dependencies": {
         "@azure/identity": "^4.8.0",
         "@azure/storage-blob": "^12.27.0",
+        "@fluentui/react-icons": "^2.0.304",
         "@react-spring/three": "^10.0.1",
         "@react-three/fiber": "^9.1.2",
         "@shadergradient/react": "^2.0.25",
