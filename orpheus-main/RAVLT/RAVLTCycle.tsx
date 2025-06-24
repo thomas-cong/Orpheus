@@ -31,11 +31,17 @@ const RAVLTCycle = (
                 trialStatus === "Listening p2") && (
                 <div className="flex flex-col items-center m-10 fadeIn">
                     {trialStatus === "Listening" && (
-                        <InstructionDisplay instructions="Press the button below to hear the words. You will hear a countdown, then the words will play. Remember, after pressing this button you will not be able to hear them again." />
+                        <InstructionDisplay
+                            title="RAVLT"
+                            instructions="Press the button below to hear the words. You will hear a countdown, then the words will play. Remember, after pressing this button you will not be able to hear them again."
+                        />
                     )}
                     {trialStatus === "Listening p2" && (
                         <div className="fadeIn">
-                            <InstructionDisplay instructions="Listen to the words, and try to remember as many as possible." />
+                            <InstructionDisplay
+                                title="RAVLT Listening"
+                                instructions="Listen to the words, and try to remember as many as possible."
+                            />
                         </div>
                     )}
                     <TTSAudioComponent

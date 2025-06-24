@@ -11,6 +11,7 @@ import { get } from "../global-files/utilities";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RO from "./ReyOsterrieth/RO";
+import InstructionDisplay from "./InstructionsDisplay/InstructionDisplay";
 
 const TestingStart = () => {
     const [test, setTest] = useState("");
@@ -154,16 +155,28 @@ const TestingStart = () => {
                 </div>
             )}
             {!trialFound && (
-                <div className="font-funnel-sans min-h-screen flex items-center justify-center">
-                    <input
-                        type="text"
-                        placeholder="Enter trial ID"
-                        value={trialID}
-                        onChange={(e) => setTrialID(e.target.value)}
-                    />
-                    <button className="button" onClick={onSubmitTrialId}>
-                        Submit
-                    </button>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="default-background flex flex-col items-center justify-center gap-4 p-8 rounded-xl shadow-lg w-full max-w-md">
+                        <InstructionDisplay
+                            title="Welcome to Orpheus"
+                            instructions="Lost? It's ok. It just means you haven't started a trial yet. Please enter an ID."
+                        />
+                        <div className="flex items-center justify-center gap-2">
+                            <input
+                                className="input p-2"
+                                type="text"
+                                placeholder="Enter trial ID"
+                                value={trialID}
+                                onChange={(e) => setTrialID(e.target.value)}
+                            />
+                            <button
+                                className="button"
+                                onClick={onSubmitTrialId}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </PatientProvider>

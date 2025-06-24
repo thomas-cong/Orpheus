@@ -39,6 +39,14 @@
         font-family: "Funnel Display", sans-serif;
         color: var(--custom-navy-200);
         font-weight: 600;
+        @apply text-start;
+    }
+    .body-text {
+        font-family: "Funnel Sans", sans-serif;
+        color: black;
+        font-weight: 400;
+        @apply text-start;
+        @apply p-2;
     }
     .input {
         font-family: "Funnel Sans", sans-serif;
@@ -56,7 +64,7 @@
         @apply rounded-lg;
         padding: 0.5rem 1rem;
         color: white;
-        background-color: var(--custom-navy-200);
+        background-color: var(--custom-navy-600);
         transition-property: color, background-color, border-color;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 250ms;
@@ -66,7 +74,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        border: 2px solid var(--custom-navy-600);
+        border: 2px solid var(--custom-navy-200);
         border-radius: 0.5rem;
         opacity: 0;
         transform: scale(0.9);
@@ -80,7 +88,7 @@
         transform: scale(1);
     }
     .button:hover {
-        background-color: var(--custom-navy-600);
+        background-color: var(--custom-navy-200);
         cursor: pointer;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
