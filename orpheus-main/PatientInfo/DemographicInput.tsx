@@ -3,6 +3,8 @@ import { get, post } from "../../global-files/utilities";
 import { usePatient } from "../context/PatientContext";
 import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import React from "react";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const DemographicInput = ({
     setDemographicsCollected,
@@ -27,6 +29,8 @@ const DemographicInput = ({
     const [firstNameError, setFirstNameError] = useState("");
     const [lastNameError, setLastNameError] = useState("");
     const [isFormValid, setIsFormValid] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     // Validation function for names - only letters allowed
     const validateName = (name: string): boolean => {
@@ -86,6 +90,16 @@ const DemographicInput = ({
         setEthnicity(ethnicity);
         setDemographicsCollected(true);
     };
+    const handleSnackbarClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
     return (
         <div className="max-w-2xl flex flex-col items-start bg-white rounded-2xl shadow-2xl p-14 gap-4 relative">
             <h2 className="display-text text-2xl mb-4 absolute top-10 left-14">
@@ -94,8 +108,10 @@ const DemographicInput = ({
             <div className="flex w-full justify-between mt-10 gap-4">
                 <div className="flex flex-col w-1/2 gap-2">
                     <input
-                        className={`input h-12 text-lg ${
-                            firstNameError ? "border-red-500 border-2" : ""
+                        className={`input h-12 text-lg border-2 ${
+                            firstNameError
+                                ? "border-red-500"
+                                : "border-transparent"
                         }`}
                         type="text"
                         placeholder="First Name"
@@ -103,25 +119,24 @@ const DemographicInput = ({
                             const value = e.target.value;
                             setFirstName(value);
                             if (value && !validateName(value)) {
-                                setFirstNameError(
-                                    "First name should only contain letters"
-                                );
+                                const message =
+                                    "First name should only contain letters";
+                                setFirstNameError(message);
+                                setSnackbarMessage(message);
+                                setSnackbarOpen(true);
                             } else {
                                 setFirstNameError("");
                             }
                         }}
                         value={firstName}
                     />
-                    {firstNameError && (
-                        <span className="text-red-500 text-sm mt-1">
-                            {firstNameError}
-                        </span>
-                    )}
                 </div>
                 <div className="flex flex-col w-1/2 gap-2">
                     <input
-                        className={`input h-12 text-lg ${
-                            lastNameError ? "border-red-500 border-2" : ""
+                        className={`input h-12 text-lg border-2 ${
+                            lastNameError
+                                ? "border-red-500"
+                                : "border-transparent"
                         }`}
                         type="text"
                         placeholder="Last Name"
@@ -129,20 +144,17 @@ const DemographicInput = ({
                             const value = e.target.value;
                             setLastName(value);
                             if (value && !validateName(value)) {
-                                setLastNameError(
-                                    "Last name should only contain letters"
-                                );
+                                const message =
+                                    "Last name should only contain letters";
+                                setLastNameError(message);
+                                setSnackbarMessage(message);
+                                setSnackbarOpen(true);
                             } else {
                                 setLastNameError("");
                             }
                         }}
                         value={lastName}
                     />
-                    {lastNameError && (
-                        <span className="text-red-500 text-sm mt-1">
-                            {lastNameError}
-                        </span>
-                    )}
                 </div>
             </div>
             <div className="flex flex-col w-full gap-4">
@@ -186,6 +198,27 @@ const DemographicInput = ({
                 className="hover:cursor-pointer"
                 onClick={isFormValid ? submit : undefined}
             />
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity="error"
+                    sx={{
+                        width: "100%",
+                        color: "var(--custom-orange-100)",
+                        backgroundColor: "white",
+                        fontWeight: "semibold",
+                        fontSize: "1rem",
+                        fontFamily: "Funnel Sans",
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

@@ -35,10 +35,8 @@ const DelayTimer: React.FC<DelayTimerProps> = ({
 
     return (
         <div className="flex flex-col items-center justify-center p-8 space-y-6 default-background">
-            <h2 className="text-2xl font-semibold text-gray-800">
-                Delay Period
-            </h2>
-            <p className="text-lg text-gray-600 text-center max-w-2xl">
+            <h2 className="display-text">Delay Period</h2>
+            <p className="body-text text-center max-w-2xl">
                 Please wait for {formatTime(duration)} before proceeding.
             </p>
             <div className="text-4xl font-bold text-blue-600">
@@ -52,5 +50,4 @@ const DelayTimer: React.FC<DelayTimerProps> = ({
         </div>
     );
 };
-
 export default DelayTimer;
