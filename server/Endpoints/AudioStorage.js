@@ -247,6 +247,8 @@ router.post("/updateTranscriptionResults", async (req, res) => {
     try {
         // Get trialID from query params
         const trialID = req.body.trialID;
+        console.log("Trial ID: " + trialID);
+        console.log("Test: " + req.body.test);
 
         // Validate trialID is provided
         if (!trialID) {
@@ -342,7 +344,7 @@ router.post("/updateTranscriptionResults", async (req, res) => {
                         { new: true }
                     )
                         .then((updatedTrial) => {
-                            console.log("Updated trial:", updatedTrial);
+                            console.log("Updated trial");
                         })
                         .catch((error) => {
                             console.error("Error updating trial:", error);

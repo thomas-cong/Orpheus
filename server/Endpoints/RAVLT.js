@@ -6,6 +6,7 @@ import {
     getEmbedding,
     cosineSimilarity,
 } from "../helperfunctions.js";
+import pairwiseSimilarityCalculations from "../AnalysisAlgorithms/PairwiseSimilarityCalculations.js";
 
 const router = express.Router();
 
@@ -83,35 +84,45 @@ router.post("/calculateResults", async (req, res) => {
         transcribedWords.includes(w)
     ).length;
 
-    // Generate embeddings for all words in parallel
-    const testWordEmbeddings = await Promise.all(testWords.map(getEmbedding));
+    // Calculate pairwise similarity
+    const similarityMap = pairwiseSimilarityCalculations(
+        transcribedWords,
+        testWords
+    );
+    const similarityIndex = Object.values(similarityMap).reduce(
+        (sum, item) => sum + item.similarity,
+        0
+    );
+    console.log(testWords);
+    // Compute embeddings for all words in testWords and transcribedWords
+    const testWordEmbeddings = await Promise.all(
+        testWords.map((word) => getEmbedding(word))
+    );
     const transcribedWordEmbeddings = await Promise.all(
-        transcribedWords.map(getEmbedding)
+        transcribedWords.map((word) => getEmbedding(word))
     );
 
-    // Filter out any null embeddings that might result from errors or empty strings
-    const validTestWordEmbeddings = testWordEmbeddings.filter((e) => e);
-    const validTranscribedWordEmbeddings = transcribedWordEmbeddings.filter(
+    // Filter out any null embeddings
+    const validTestEmbeddings = testWordEmbeddings.filter((e) => e);
+    const validTranscribedEmbeddings = transcribedWordEmbeddings.filter(
         (e) => e
     );
 
-    let similarityIndex = 0;
+    let semanticSimilarityIndex = 0;
     if (
-        validTestWordEmbeddings.length > 0 &&
-        validTranscribedWordEmbeddings.length > 0
+        validTestEmbeddings.length > 0 &&
+        validTranscribedEmbeddings.length > 0
     ) {
-        for (const testEmbedding of validTestWordEmbeddings) {
-            let maxSimilarity = 0;
-            for (const transcribedEmbedding of validTranscribedWordEmbeddings) {
-                const similarity = cosineSimilarity(
+        for (const testEmbedding of validTestEmbeddings) {
+            let maxSim = 0;
+            for (const transcribedEmbedding of validTranscribedEmbeddings) {
+                const sim = cosineSimilarity(
                     testEmbedding,
                     transcribedEmbedding
                 );
-                if (similarity > maxSimilarity) {
-                    maxSimilarity = similarity;
-                }
+                if (sim > maxSim) maxSim = sim;
             }
-            similarityIndex += maxSimilarity;
+            semanticSimilarityIndex += maxSim;
         }
     }
 
@@ -121,12 +132,14 @@ router.post("/calculateResults", async (req, res) => {
             { trialID: trialID },
             {
                 totalRecallScore: totalRecallScore,
+                semanticSimilarityIndex: semanticSimilarityIndex,
                 similarityIndex: similarityIndex,
             }
         );
         res.send({
             msg: "RAVLT results updated",
             totalRecallScore: totalRecallScore,
+            semanticSimilarityIndex: semanticSimilarityIndex,
             similarityIndex: similarityIndex,
         });
     } catch (error) {
@@ -181,7 +194,6 @@ router.post("/addResults", (req, res) => {
         !req.body.testWords ||
         !req.body.interferenceWords ||
         req.body.totalRecallScore == null ||
-        req.body.similarityIndex == null ||
         req.body.semanticSimilarityIndex == null
     ) {
         return res.status(400).send({ msg: "Missing required fields" });

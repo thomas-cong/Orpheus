@@ -141,7 +141,7 @@ const RAVLT = ({
                     interferenceWords: interferenceArray,
                     totalRecallScore: 0,
                     similarityIndex: 0,
-                    primacyRecencyIndex: 0,
+                    semanticSimilarityIndex: 0,
                 });
             };
             handleRAVLTEnd();
