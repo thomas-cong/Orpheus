@@ -14,7 +14,7 @@ const TestInformation = (props: { testType: string }) => {
                     description:
                         "You are currently taking the Rey Auditory Verbal Learning Test. It's designed to help evaluate memory and recall- early signs of potential brain injury",
                 });
-                setShowInfo(true);
+                
                 break;
             case "RO":
                 setInfo({
@@ -22,7 +22,7 @@ const TestInformation = (props: { testType: string }) => {
                     description:
                         "You are currently taking the Rey Ostierreth Complex Figure Test. This helps evaluate visual-spatial ability and memory.",
                 });
-                setShowInfo(true);
+                
                 break;
             default:
                 setInfo({

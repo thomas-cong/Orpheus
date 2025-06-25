@@ -1,5 +1,12 @@
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import {
+    useState,
+    useEffect,
+    useRef,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import React from "react";
+import AudioWaveform from "./AudioWaveform";
 
 interface AudioRecorderProps {
     recordings: Blob[];
@@ -78,7 +85,10 @@ const AudioRecorder = forwardRef<AudioRecorderRef, AudioRecorderProps>(
                 clearInterval(timerIntervalRef.current);
             }
             setIsRecording(false);
-            if (mediaRecorder.current && mediaRecorder.current.state !== "inactive") {
+            if (
+                mediaRecorder.current &&
+                mediaRecorder.current.state !== "inactive"
+            ) {
                 mediaRecorder.current.stop();
             }
             if (mediaStream.current) {
@@ -100,7 +110,10 @@ const AudioRecorder = forwardRef<AudioRecorderRef, AudioRecorderProps>(
                         Recording... {timer}s
                     </div>
                 )}
-                {recordedURL && <audio src={recordedURL} controls />}
+                {isRecording && mediaStream.current && (
+                    <AudioWaveform stream={mediaStream.current} />
+                )}
+                {recordedURL && <audio src={recordedURL} controls /> }
             </div>
         );
     }

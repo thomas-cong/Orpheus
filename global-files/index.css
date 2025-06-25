@@ -28,12 +28,27 @@
     --custom-navy-800: #24a1dd;
     --custom-navy-900: #2baedd;
 }
+/* React Toastify custom styles */
+.Toastify__toast--success {
+    background-color: white !important;
+    color: var(--custom-navy-500) !important;
+}
+.Toastify__progress-bar--success {
+    background: var(--custom-navy-900) !important;
+}
+.Toastify__toast--error {
+    background-color: var(--custom-orange-500) !important;
+    color: white !important;
+}
+.Toastify__progress-bar--error {
+    background: var(--custom-orange-900) !important;
+}
+
 @layer components {
     .default-background {
         background-color: white;
         font-family: "Funnel Sans", sans-serif;
         @apply rounded-md;
-        @apply opacity-75;
     }
     .display-text {
         font-family: "Funnel Display", sans-serif;
