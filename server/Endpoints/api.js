@@ -8,6 +8,7 @@ import adminRoutes from "./AdminEndpoints.js";
 import trialRoutes from "./Trials.js";
 import ravltRoutes from "./RAVLT.js";
 import roRoutes from "./RO.js";
+import analysisRoutes from "./AnalysisEndpoints.js";
 
 const router = express.Router();
 
@@ -39,6 +40,7 @@ router.use("/trials", trialRoutes);
 router.use("/admin", adminRoutes);
 router.use("/ravlt", ravltRoutes);
 router.use("/ro", roRoutes);
+router.use("/analysis", analysisRoutes);
 /**
  * @route ALL *
  * @description Catch-all route for undefined endpoints

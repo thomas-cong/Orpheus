@@ -201,7 +201,7 @@ const RAVLT = ({
             {trialCycle === 7 && RAVLTCycleComponentInterference}
             {trialCycle === 8 && (
                 <DelayTimer
-                    duration={1200}
+                    duration={20}
                     onTimerComplete={() => setTrialCycle(9)}
                 />
             )}

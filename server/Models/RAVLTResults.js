@@ -9,6 +9,6 @@ const RAVLTResultsSchema = new mongoose.Schema({
     interferenceWords: Array,
     totalRecallScore: Number,
     similarityIndex: Number,
-    primacyRecencyIndex: Number,
+    semanticSimilarityIndex: Number,
 });
 export default mongoose.model("RAVLTResults", RAVLTResultsSchema);

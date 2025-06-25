@@ -1,8 +1,11 @@
 import express from "express";
 import RAVLTTrial from "../Models/RAVLTTrial.js";
 import RAVLTResults from "../Models/RAVLTResults.js";
-import pairwiseSimilarityCalculations from "../AnalysisAlgorithms/PairwiseSimilarityCalculations.js";
-import { generateAlphanumericSequence } from "../helperfunctions.js";
+import {
+    generateAlphanumericSequence,
+    getEmbedding,
+    cosineSimilarity,
+} from "../helperfunctions.js";
 
 const router = express.Router();
 
@@ -74,38 +77,62 @@ router.post("/calculateResults", async (req, res) => {
     }
     const transcribedWords = results.transcribedWords.map((w) => w.word);
     const testWords = results.testWords;
-    // const interferenceWords = results.interferenceWords;
 
     // Compute total recall score (number of words correctly recalled)
     const totalRecallScore = testWords.filter((w) =>
         transcribedWords.includes(w)
     ).length;
 
-    const pairwiseSimilarities = pairwiseSimilarityCalculations(
-        testWords,
-        transcribedWords
+    // Generate embeddings for all words in parallel
+    const testWordEmbeddings = await Promise.all(testWords.map(getEmbedding));
+    const transcribedWordEmbeddings = await Promise.all(
+        transcribedWords.map(getEmbedding)
     );
+
+    // Filter out any null embeddings that might result from errors or empty strings
+    const validTestWordEmbeddings = testWordEmbeddings.filter((e) => e);
+    const validTranscribedWordEmbeddings = transcribedWordEmbeddings.filter(
+        (e) => e
+    );
+
     let similarityIndex = 0;
-    for (const word in pairwiseSimilarities) {
-        similarityIndex += pairwiseSimilarities[word].similarity;
+    if (
+        validTestWordEmbeddings.length > 0 &&
+        validTranscribedWordEmbeddings.length > 0
+    ) {
+        for (const testEmbedding of validTestWordEmbeddings) {
+            let maxSimilarity = 0;
+            for (const transcribedEmbedding of validTranscribedWordEmbeddings) {
+                const similarity = cosineSimilarity(
+                    testEmbedding,
+                    transcribedEmbedding
+                );
+                if (similarity > maxSimilarity) {
+                    maxSimilarity = similarity;
+                }
+            }
+            similarityIndex += maxSimilarity;
+        }
     }
 
-    // Update total recall score in database
-    RAVLTResults.findOneAndUpdate(
-        { trialID: trialID },
-        { totalRecallScore: totalRecallScore, similarityIndex: similarityIndex }
-    )
-        .then(() => {
-            res.send({
-                msg: "RAVLT results updated",
+    // Update total recall score and the new semantic similarity index in the database
+    try {
+        await RAVLTResults.findOneAndUpdate(
+            { trialID: trialID },
+            {
                 totalRecallScore: totalRecallScore,
                 similarityIndex: similarityIndex,
-            });
-        })
-        .catch((error) => {
-            console.error("Error updating RAVLT results:", error);
-            res.status(500).send({ msg: "Error updating RAVLT results" });
+            }
+        );
+        res.send({
+            msg: "RAVLT results updated",
+            totalRecallScore: totalRecallScore,
+            similarityIndex: similarityIndex,
         });
+    } catch (error) {
+        console.error("Error updating RAVLT results:", error);
+        res.status(500).send({ msg: "Error updating RAVLT results" });
+    }
 });
 router.post("/updateTrial", (req, res) => {
     if (!req.body.trialID || !req.body.patientID) {
@@ -155,7 +182,7 @@ router.post("/addResults", (req, res) => {
         !req.body.interferenceWords ||
         req.body.totalRecallScore == null ||
         req.body.similarityIndex == null ||
-        req.body.primacyRecencyIndex == null
+        req.body.semanticSimilarityIndex == null
     ) {
         return res.status(400).send({ msg: "Missing required fields" });
     }
