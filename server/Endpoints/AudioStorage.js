@@ -1,4 +1,7 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
 import { BlobServiceClient } from "@azure/storage-blob";
 import { StorageSharedKeyCredential } from "@azure/storage-blob";
 import { ContainerSASPermissions } from "@azure/storage-blob";
@@ -6,7 +9,6 @@ import { generateBlobSASQueryParameters } from "@azure/storage-blob";
 import { sanitizeContainerName } from "../helperfunctions.js";
 import RAVLTTrial from "../Models/RAVLTTrial.js";
 import RAVLTResults from "../Models/RAVLTResults.js";
-import dotenv from "dotenv";
 import fetch from "node-fetch";
 import multer from "multer";
 import {
@@ -16,18 +18,15 @@ import {
 } from "../blobHelpers.js";
 const upload = multer();
 
-// Load environment variables
-dotenv.config();
-
 const router = express.Router();
 
 // Initialize Azure Blob Service client
 const blobServiceClient = BlobServiceClient.fromConnectionString(
-    process.env.STORAGE_CONNECTION_STRING
+    process.env.AUDIO_STORAGE_CONNECTION_STRING
 );
 const sharedKeyCredential = new StorageSharedKeyCredential(
-    process.env.STORAGE_ACCOUNT_NAME,
-    process.env.STORAGE_KEY
+    process.env.AUDIO_STORAGE_ACCOUNT_NAME,
+    process.env.AUDIO_STORAGE_KEY
 );
 
 /**

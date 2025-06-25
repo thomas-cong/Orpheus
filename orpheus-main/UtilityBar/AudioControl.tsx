@@ -16,8 +16,21 @@ const AudioControl: React.FC = () => {
         if (mediaEls.length) {
             setVolume(mediaEls[0].volume * 100);
             setMuted(mediaEls[0].muted);
+        } else {
+            const w = window as any;
+            if (w.__waveSurfers && w.__waveSurfers.length) {
+                setVolume(w.__waveSurfers[0].getVolume() * 100);
+                setMuted(w.__waveSurfers[0].getVolume() === 0);
+            }
         }
     }, []);
+
+    // Global variable for TTS or other components
+    useEffect(() => {
+        const gVol = muted ? 0 : volume / 100;
+        (window as any).__globalVolume = gVol;
+        window.dispatchEvent(new CustomEvent("global-volume-change", { detail: { volume: gVol, muted } }));
+    }, [volume, muted]);
 
     // Apply changes to all media elements
     useEffect(() => {
@@ -28,6 +41,20 @@ const AudioControl: React.FC = () => {
             el.volume = volume / 100;
             el.muted = muted;
         });
+        // WaveSurfer instances
+        const w = window as any;
+        if (w.__waveSurfers) {
+            (w.__waveSurfers as any[]).forEach((ws) => {
+                try {
+                    if (typeof ws.setMute === "function") {
+                        ws.setMute(muted);
+                    }
+                    if (typeof ws.setVolume === "function") {
+                        ws.setVolume(muted ? 0 : volume / 100);
+                    }
+                } catch {}
+            });
+        }
     }, [volume, muted]);
 
     const handleSliderChange = (_: Event, newValue: number | number[]) => {

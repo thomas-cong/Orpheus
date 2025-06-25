@@ -1,7 +1,10 @@
+import dotenv from "dotenv";
+// Load environment variables
+dotenv.config();
 import express from "express";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { StorageSharedKeyCredential } from "@azure/storage-blob";
-import dotenv from "dotenv";
+
 import {
     ContainerSASPermissions,
     generateBlobSASQueryParameters,
@@ -13,9 +16,6 @@ import {
     deleteContainer,
     createContainer,
 } from "../blobHelpers.js";
-
-// Load environment variables
-dotenv.config();
 
 const router = express.Router();
 
@@ -29,11 +29,11 @@ const upload = multer({
 
 // Initialize Azure Blob Service client
 const blobServiceClient = BlobServiceClient.fromConnectionString(
-    process.env.STORAGE_CONNECTION_STRING
+    process.env.IMAGE_STORAGE_CONNECTION_STRING
 );
 const sharedKeyCredential = new StorageSharedKeyCredential(
-    process.env.STORAGE_ACCOUNT_NAME,
-    process.env.STORAGE_KEY
+    process.env.IMAGE_STORAGE_ACCOUNT_NAME,
+    process.env.IMAGE_STORAGE_KEY
 );
 
 /**

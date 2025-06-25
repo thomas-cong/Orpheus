@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CountdownDisplay from "./CountdownDisplay";
 import React from "react";
 
@@ -20,6 +20,17 @@ const TTSAudioComponent = ({
     const [started, setStarted] = useState(false);
     const [spokenWord, setSpokenWord] = useState<number | null>(null);
     const [currentCount, setCurrentCount] = useState<number | null>(null);
+    // Keep track of latest global volume for utterances
+    const volumeRef = useRef<number>((window as any).__globalVolume ?? 1);
+
+    // Subscribe to global volume change events
+    useEffect(() => {
+        const handler = (e: any) => {
+            volumeRef.current = e.detail.volume;
+        };
+        window.addEventListener("global-volume-change", handler as any);
+        return () => window.removeEventListener("global-volume-change", handler as any);
+    }, []);
     const finalArray: string[] = [];
     for (let i = countdown; i > 0; i--) {
         finalArray.push(i.toString());
@@ -36,6 +47,7 @@ const TTSAudioComponent = ({
         }
         const synth = window.speechSynthesis;
         const u = new SpeechSynthesisUtterance(finalArray[spokenWord]);
+        u.volume = volumeRef.current;
         synth.speak(u);
         if (spokenWord < finalArray.length - 1) {
             setTimeout(() => {

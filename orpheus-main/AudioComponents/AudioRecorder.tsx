@@ -6,7 +6,8 @@ import {
     useImperativeHandle,
 } from "react";
 import React from "react";
-import AudioWaveform from "./AudioWaveform";
+import AudioWaveform from "./AudioWaveformMic";
+import AudioWaveformPlayback from "./AudioWaveformPlayback";
 
 interface AudioRecorderProps {
     recordings: Blob[];
@@ -105,15 +106,10 @@ const AudioRecorder = forwardRef<AudioRecorderRef, AudioRecorderProps>(
 
         return (
             <div className="flex flex-col items-center gap-4">
-                {isRecording && (
-                    <div className="text-lg text-red-500 font-semibold">
-                        Recording... {timer}s
-                    </div>
-                )}
                 {isRecording && mediaStream.current && (
                     <AudioWaveform stream={mediaStream.current} />
                 )}
-                {recordedURL && <audio src={recordedURL} controls /> }
+                {recordedURL && <AudioWaveformPlayback url={recordedURL} /> }
             </div>
         );
     }

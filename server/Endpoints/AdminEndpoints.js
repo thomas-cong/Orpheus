@@ -1,7 +1,8 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import { BlobServiceClient } from "@azure/storage-blob";
 import { StorageSharedKeyCredential } from "@azure/storage-blob";
-import dotenv from "dotenv";
 import path from "path";
 import Patient from "../Models/Patient.js";
 import {
@@ -16,12 +17,12 @@ const router = express.Router();
 
 // Initialize Azure Blob Service client
 const blobServiceClient = BlobServiceClient.fromConnectionString(
-    process.env.STORAGE_CONNECTION_STRING
+    process.env.AUDIO_STORAGE_CONNECTION_STRING
 );
 // Set up key info into Blob Storage
 const sharedKeyCredential = new StorageSharedKeyCredential(
-    process.env.STORAGE_ACCOUNT_NAME,
-    process.env.STORAGE_KEY
+    process.env.AUDIO_STORAGE_ACCOUNT_NAME,
+    process.env.AUDIO_STORAGE_KEY
 );
 
 router.get("/", (req, res) => {

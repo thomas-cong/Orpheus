@@ -31,7 +31,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ stream }) => {
             canvasCtx.clearRect(0, 0, width, height);
 
             canvasCtx.lineWidth = 2;
-            canvasCtx.strokeStyle = "#001f3f"; // Custom navy
+            canvasCtx.strokeStyle = "#0539b6";
             canvasCtx.beginPath();
 
             const sliceWidth = (width * 1.0) / bufferLength;
