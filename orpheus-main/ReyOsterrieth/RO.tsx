@@ -1,7 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import InstructionsDisplay from "../InstructionsDisplay/InstructionDisplay";
 import TestProgressionButton from "../TestProgression/TestProgressionButton";
 import DelayTimer from "../TestProgression/DelayTimer";
@@ -9,9 +6,6 @@ import { usePatient } from "../context/PatientContext";
 import { post } from "../../global-files/utilities";
 import UploadImage from "./UploadImage";
 import ROEndPage from "./ROEndPage";
-
-
-
 
 /**
  * Implements the Rey Osterrieth Complex Figure Test. The test is
@@ -33,7 +27,11 @@ interface ROProps {
     trialID: string;
 }
 
-const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) => {
+const RO: React.FC<ROProps> = ({
+    setTest,
+    setDemographicsCollected,
+    trialID,
+}) => {
     const { patientID } = usePatient();
 
     // 0-9 stage flow
@@ -52,7 +50,8 @@ const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) =
     // upload to Azure & mark trial complete
     useEffect(() => {
         const doUpload = async () => {
-            if (hasUploaded || stage !== 9 || capturedImages.length === 0) return;
+            if (hasUploaded || stage !== 9 || capturedImages.length === 0)
+                return;
             const safe = sanitize(trialID);
             const containerName = safe;
 
@@ -64,7 +63,8 @@ const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) =
                 const mime = dataUrl.split(",")[0].split(":")[1].split(";")[0];
                 const ab = new ArrayBuffer(byteString.length);
                 const ia = new Uint8Array(ab);
-                for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                for (let i = 0; i < byteString.length; i++)
+                    ia[i] = byteString.charCodeAt(i);
                 const blob = new Blob([ab], { type: mime });
                 const fileName = `${safe}-${idx}.png`;
                 const file = new File([blob], fileName, { type: mime });
@@ -72,7 +72,10 @@ const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) =
                 form.append("containerName", containerName);
                 form.append("blobName", fileName);
                 form.append("file", file);
-                await fetch("/api/imageStorage/uploadBlob", { method: "POST", body: form });
+                await fetch("/api/imageStorage/uploadBlob", {
+                    method: "POST",
+                    body: form,
+                });
                 idx++;
             }
 
@@ -130,22 +133,31 @@ const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) =
             <div className="w-[500px] h-[500px] bg-seasalt rounded-lg shadow-lg flex items-center justify-center text-gray-600">
                 Complex Figure Placeholder
             </div>
-            <TestProgressionButton text="Next" onClick={() => setStage(stage + 1)} />
+            <TestProgressionButton
+                text="Next"
+                onClick={() => setStage(stage + 1)}
+            />
         </div>
     );
 
     const InstructionPage = (st: number) => {
         const { title, instructions } = instructionFor(st);
         return (
-            <div className="flex flex-col items-center">
-                <InstructionsDisplay title={title} instructions={instructions} />
-                <TestProgressionButton text="Next" onClick={() => setStage(stage + 1)} />
+            <div className="flex flex-col items-center gap-6 text-center">
+                <InstructionsDisplay
+                    title={title}
+                    instructions={instructions}
+                />
+                <TestProgressionButton
+                    text="Next"
+                    onClick={() => setStage(stage + 1)}
+                />
             </div>
         );
     };
 
     return (
-        <div className="font-funnel-sans max-w-xl mx-auto drop-shadow-xl flex items-center justify-center">
+        <div className="font-body w-full max-w-2xl min-h-[500px] p-8 mx-auto default-background rounded-xl shadow-md flex items-center justify-center">
             {stage === 0 && InstructionPage(0)}
             {stage === 1 && (
                 <div className="flex flex-col items-center gap-6">
@@ -153,7 +165,10 @@ const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) =
                         Complex Figure Placeholder
                     </div>
                     <InstructionsDisplay {...instructionFor(2)} />
-                    <TestProgressionButton text="Next" onClick={() => setStage(stage + 1)} />
+                    <TestProgressionButton
+                        text="Next"
+                        onClick={() => setStage(stage + 1)}
+                    />
                 </div>
             )}
             {stage === 2 && (
@@ -164,7 +179,10 @@ const RO: React.FC<ROProps> = ({ setTest, setDemographicsCollected, trialID }) =
                 <UploadImage trialID={trialID} onCapture={handleImageCapture} />
             )}
             {stage === 5 && (
-                <DelayTimer duration={10} onTimerComplete={() => setStage(stage + 1)} />
+                <DelayTimer
+                    duration={10}
+                    onTimerComplete={() => setStage(stage + 1)}
+                />
             )}
             {stage === 6 && InstructionPage(7)}
             {stage === 7 && (

@@ -1,83 +1,108 @@
-import { useState, useEffect } from "react";
-import { useRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import React from "react";
+
 interface AudioRecorderProps {
     recordings: Blob[];
     setRecordings: (recordings: Blob[]) => void;
+    onRecordingStop: () => void;
 }
 
-const AudioRecorder = ({ recordings, setRecordings }: AudioRecorderProps) => {
-    const [isRecording, setIsRecording] = useState(false);
-    const [recordedURL, setRecordedURL] = useState("");
-    const [timer, setTimer] = useState(0);
-    const mediaStream = useRef<MediaStream | null>(null);
-    const mediaRecorder = useRef<MediaRecorder | null>(null);
-    const chunks = useRef<Blob[]>([]);
-    const index = recordings.length;
-    useEffect(() => {
-        if (timer > 120) {
-            stopRecording();
-        }
-    }, [timer]);
-    const startRecording = async () => {
-        setIsRecording(true);
-        try {
-            setTimer(0);
-            const incrementTimer = setInterval(() => {
-                setTimer((prev) => prev + 1);
-            }, 1000);
-            incrementTimer;
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-            });
-            mediaStream.current = stream;
-            mediaRecorder.current = new MediaRecorder(stream);
-            mediaRecorder.current.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    chunks.current.push(event.data);
+export interface AudioRecorderRef {
+    startRecording: () => void;
+    stopRecording: () => void;
+}
+
+const AudioRecorder = forwardRef<AudioRecorderRef, AudioRecorderProps>(
+    ({ recordings, setRecordings, onRecordingStop }, ref) => {
+        const [isRecording, setIsRecording] = useState(false);
+        const [recordedURL, setRecordedURL] = useState("");
+        const [timer, setTimer] = useState(0);
+        const mediaStream = useRef<MediaStream | null>(null);
+        const mediaRecorder = useRef<MediaRecorder | null>(null);
+        const chunks = useRef<Blob[]>([]);
+        const index = recordings.length;
+        const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+        useEffect(() => {
+            if (timer > 120) {
+                stopRecording();
+            }
+            // Cleanup interval on unmount
+            return () => {
+                if (timerIntervalRef.current) {
+                    clearInterval(timerIntervalRef.current);
                 }
             };
-            mediaRecorder.current.onstop = async () => {
-                const audioBlob = new Blob(chunks.current, {
-                    type: "audio/wav",
-                });
-                const tempRecordings = [...recordings];
-                tempRecordings[index] = audioBlob;
-                setRecordings(tempRecordings);
-                const audioUrl = URL.createObjectURL(audioBlob);
-                setRecordedURL(audioUrl);
-                chunks.current = [];
-            };
-            mediaRecorder.current.start();
-        } catch (error) {
-            console.error("Error starting recording:", error);
-        }
-    };
+        }, [timer]);
 
-    const stopRecording = async () => {
-        setIsRecording(false);
-        if (mediaRecorder.current) {
-            mediaRecorder.current.stop();
-        }
-        if (mediaStream.current) {
-            mediaStream.current.getTracks().forEach((track) => {
-                track.stop();
-            });
-        }
-    };
-    return (
-        <div>
-            {isRecording ? (
-                <button className="button" onClick={stopRecording}>
-                    Stop Recording
-                </button>
-            ) : (
-                <button className="button" onClick={startRecording}>
-                    Start Recording
-                </button>
-            )}
-            {recordedURL && <audio src={recordedURL} controls />}
-        </div>
-    );
-};
+        const startRecording = async () => {
+            setIsRecording(true);
+            try {
+                setTimer(0);
+                setRecordedURL(""); // Clear previous recording
+                timerIntervalRef.current = setInterval(() => {
+                    setTimer((prev) => prev + 1);
+                }, 1000);
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                });
+                mediaStream.current = stream;
+                mediaRecorder.current = new MediaRecorder(stream);
+                mediaRecorder.current.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        chunks.current.push(event.data);
+                    }
+                };
+                mediaRecorder.current.onstop = async () => {
+                    const audioBlob = new Blob(chunks.current, {
+                        type: "audio/wav",
+                    });
+                    const tempRecordings = [...recordings];
+                    tempRecordings[index] = audioBlob;
+                    setRecordings(tempRecordings);
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    setRecordedURL(audioUrl);
+                    chunks.current = [];
+                    onRecordingStop(); // Notify parent that recording has stopped
+                };
+                mediaRecorder.current.start();
+            } catch (error) {
+                console.error("Error starting recording:", error);
+                setIsRecording(false);
+            }
+        };
+
+        const stopRecording = async () => {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
+            setIsRecording(false);
+            if (mediaRecorder.current && mediaRecorder.current.state !== "inactive") {
+                mediaRecorder.current.stop();
+            }
+            if (mediaStream.current) {
+                mediaStream.current.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            }
+        };
+
+        useImperativeHandle(ref, () => ({
+            startRecording,
+            stopRecording,
+        }));
+
+        return (
+            <div className="flex flex-col items-center gap-4">
+                {isRecording && (
+                    <div className="text-lg text-red-500 font-semibold">
+                        Recording... {timer}s
+                    </div>
+                )}
+                {recordedURL && <audio src={recordedURL} controls />}
+            </div>
+        );
+    }
+);
 export default AudioRecorder;

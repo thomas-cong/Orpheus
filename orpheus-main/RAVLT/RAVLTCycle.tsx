@@ -1,8 +1,8 @@
 import TTSAudioComponent from "../AudioComponents/TTSAudioComponent";
 import InstructionDisplay from "../InstructionsDisplay/InstructionDisplay";
-import AudioRecorder from "../AudioComponents/AudioRecorder";
+import AudioRecorder, { AudioRecorderRef } from "../AudioComponents/AudioRecorder";
 import { usePatient } from "../context/PatientContext";
-import React from "react";
+import React, { useState, useRef } from "react";
 
 const RAVLTCycle = (
     wordArray: string[],
@@ -16,6 +16,22 @@ const RAVLTCycle = (
     setRecordings: (recordings: Blob[]) => void
 ) => {
     const { patientID } = usePatient();
+    const [recordingStatus, setRecordingStatus] = useState<"idle" | "recording" | "stopped">("idle");
+    const audioRecorderRef = useRef<AudioRecorderRef>(null);
+
+    const handleStartRecording = () => {
+        audioRecorderRef.current?.startRecording();
+        setRecordingStatus("recording");
+    };
+
+    const handleStopRecording = () => {
+        audioRecorderRef.current?.stopRecording();
+    };
+
+    const handleRecordingStop = () => {
+        setRecordingStatus("stopped");
+    };
+
     const finishingFunction = () => {
         console.log(
             "Patient " + patientID + " recording " + recordingID + " completed"
@@ -23,13 +39,13 @@ const RAVLTCycle = (
         setRecordingID(recordingID + 1);
         setTrialCycle(trialCycle + 1);
         setTrialStatus("Listening");
-        console.log("filler function");
+        setRecordingStatus("idle"); // Reset for next cycle
     };
+
     return (
-        <div className="flex flex-col items-center">
-            {(trialStatus === "Listening" ||
-                trialStatus === "Listening p2") && (
-                <div className="flex flex-col items-center m-10 fadeIn">
+        <div className="flex flex-col items-center gap-6 text-center">
+            {(trialStatus === "Listening" || trialStatus === "Listening p2") && (
+                <div className="flex flex-col items-center gap-6 text-center fadeIn">
                     {trialStatus === "Listening" && (
                         <InstructionDisplay
                             title="RAVLT"
@@ -54,15 +70,31 @@ const RAVLTCycle = (
                 </div>
             )}
             {trialStatus === "Recording" && (
-                <div className="flex flex-col items-center m-10 fadeIn">
+                <div className="flex flex-col items-center gap-6 text-center fadeIn">
                     <InstructionDisplay instructions="Now, record a clip of you saying as many of the words as you can remember, in any order." />
                     <AudioRecorder
+                        ref={audioRecorderRef}
                         recordings={recordings}
                         setRecordings={setRecordings}
+                        onRecordingStop={handleRecordingStop}
                     />
-                    <button className="button" onClick={finishingFunction}>
-                        Finished Recording
-                    </button>
+                    <div className="flex gap-4">
+                        {recordingStatus === "idle" && (
+                            <button className="button" onClick={handleStartRecording}>
+                                Start Recording
+                            </button>
+                        )}
+                        {recordingStatus === "recording" && (
+                            <button className="button" onClick={handleStopRecording}>
+                                Stop Recording
+                            </button>
+                        )}
+                        {recordingStatus === "stopped" && (
+                            <button className="button" onClick={finishingFunction}>
+                                Finished Recording
+                            </button>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

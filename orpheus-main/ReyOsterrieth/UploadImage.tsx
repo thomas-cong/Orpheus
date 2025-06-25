@@ -13,7 +13,7 @@ const UploadImage = ({ trialID, onCapture }: UploadImageProps) => {
     const [receivedImage, setReceivedImage] = useState<string | null>(null);
 
     return (
-        <div>
+        <div className="flex flex-col items-center gap-6 text-center">
             {
                 <CameraComponent
                     onCapture={(img) => {

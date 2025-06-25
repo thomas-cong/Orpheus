@@ -100,7 +100,7 @@ const CameraComponent = (props: {
     };
 
     return (
-        <div className="default-background p-4 rounded-lg w-[500px] h-[500px] shadow-lg">
+        <div className="bg-white p-4 rounded-lg w-[500px] h-[500px] shadow-lg">
             <h2 className="display-text text-xl mb-4">Camera</h2>
 
             <div className="relative">
