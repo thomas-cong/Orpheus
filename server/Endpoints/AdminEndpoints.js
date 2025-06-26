@@ -11,7 +11,6 @@ import {
 } from "../helperfunctions.js";
 import { createContainer } from "../Endpoints/AudioStorage.js";
 // Load environment variables
-dotenv.config();
 
 const router = express.Router();
 
