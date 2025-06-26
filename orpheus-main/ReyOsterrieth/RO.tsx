@@ -90,6 +90,12 @@ const RO: React.FC<ROProps> = ({
                 date: new Date().toISOString(),
                 status: "complete",
             });
+            await post("/api/ro/addResults", {
+                trialID: trialID,
+                patientID: patientID,
+                imageBin: trialID,
+                similarityArray: [],
+            });
             setHasUploaded(true);
         };
         doUpload();

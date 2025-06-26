@@ -65,6 +65,36 @@ router.post("/updateTrial", (req, res) => {
             res.status(500).send({ msg: "Error updating RO trial" });
         });
 });
+/**
+ * @route POST /ravlt/addResults
+ * @description Add RAVLT results to the database
+ * @access Public
+ * @param {Object} req.body - The RAVLT results
+ * @param {string} req.body.patientID - ID of the patient
+ * @param {string} req.body.trialID - ID of the trial
+ * @param {string} req.body.imageBin - Array of similarity values
+ * @param {Array} req.body.similarityArray - Array of similarity values
+ * @returns {Object} - JSON object with success or error message
+ */
+router.post("/addResults", (req, res) => {
+    if (
+        !req.body.patientID ||
+        !req.body.trialID ||
+        !req.body.imageBin ||
+        !req.body.similarityArray
+    ) {
+        return res.status(400).send({ msg: "Missing required fields" });
+    }
+    const RO = new ROResults(req.body);
+    RO.save()
+        .then(() => {
+            res.send({ msg: "RO results added" });
+        })
+        .catch((error) => {
+            console.error("Error adding RO results:", error);
+            res.status(500).send({ msg: "Error adding RO results" });
+        });
+});
 
 router.get("/getResultsByTrialID", (req, res) => {
     const trialID = req.query.trialID;
