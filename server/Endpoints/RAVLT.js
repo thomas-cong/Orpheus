@@ -136,6 +136,7 @@ router.post("/calculateResults", async (req, res) => {
                 similarityIndex: similarityIndex,
             }
         );
+        console.log("Results updated");
         res.send({
             msg: "RAVLT results updated",
             totalRecallScore: totalRecallScore,

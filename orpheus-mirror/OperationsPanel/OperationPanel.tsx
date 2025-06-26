@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import RAVLTResultsViewer from "./RAVLTResultsViewer";
+import React, { useState, useEffect, useRef } from "react";
+import RAVLTResultsViewer, { RAVLTResultsViewerHandle } from "./RAVLTResultsViewer";
 import { post, get } from "../../global-files/utilities";
 
 const OperationPanel = ({
@@ -12,6 +12,7 @@ const OperationPanel = ({
     focused: boolean;
 }) => {
     const [showResults, setShowResults] = useState(false);
+    const resultsViewerRef = useRef<RAVLTResultsViewerHandle>(null);
     const [computing, setComputing] = useState(false);
     const [computeStatus, setComputeStatus] = useState<string>("");
     const [trialStatus, setTrialStatus] = useState<string>("");
@@ -37,27 +38,37 @@ const OperationPanel = ({
                 .catch((err) => {
                     console.error("Error fetching trial:", err);
                 });
+
         }
     }, [patientID, trialID]);
 
     const computeResults = async () => {
         if (!trialID) return;
-
         try {
             setComputing(true);
             setComputeStatus("Computing transcription results...");
             // First update transcription results
-            const transcriptionResponse = await post(
+            let transcriptionSuccessful = true;
+            try {
+                await post(
                 "/api/audioStorage/updateTranscriptionResults",
                 {
                     trialID: trialID,
                     test: trialType,
                 }
             );
+            } catch (err) {
+                console.error("Transcription update failed:", err);
+                transcriptionSuccessful = false;
+            }
 
-            setTimeout(() => {
-                setComputeStatus("Computing RAVLT scores...");
-            }, 2000);
+            if (!transcriptionSuccessful) {
+            setComputeStatus("Transcription not ready yet. Please try again later.");
+            setComputing(false);
+                return;
+            }
+
+            setComputeStatus("Computing RAVLT scores...");
 
             // // Then calculate the results
             const resultsResponse = await post(
@@ -68,18 +79,19 @@ const OperationPanel = ({
             );
 
             setComputeStatus("Computation complete!");
-            setTimeout(() => {
-                setComputeStatus("");
-                setComputing(false);
-                // Show results after computation
-                setShowResults(true);
-            }, 2000);
+            setComputing(false);
+            setShowResults(true);
+            // Refresh the results viewer if mounted
+            resultsViewerRef.current?.fetchResults();
+            // Clear status after short delay
+            setTimeout(() => setComputeStatus(""), 2000);
         } catch (error) {
             console.error("Error computing results:", error);
             setComputeStatus("Error computing results. Please try again.");
             setTimeout(() => {
                 setComputeStatus("");
                 setComputing(false);
+                setShowResults(true);
             }, 3000);
         }
     };
@@ -128,7 +140,7 @@ const OperationPanel = ({
             )}
 
             {showResults && (
-                <RAVLTResultsViewer patientID={patientID} trialID={trialID} />
+                <RAVLTResultsViewer ref={resultsViewerRef} patientID={patientID} trialID={trialID} />
             )}
         </div>
     );
