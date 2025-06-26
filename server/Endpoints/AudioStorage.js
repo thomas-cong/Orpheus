@@ -287,7 +287,7 @@ router.post("/updateTranscriptionResults", async (req, res) => {
 
         if (!filesData.values || filesData.values.length === 0) {
             return res
-                .status(404)
+                .status(500)
                 .json({ msg: "No transcription files found" });
         }
 
@@ -335,11 +335,15 @@ router.post("/updateTranscriptionResults", async (req, res) => {
                 case "RAVLT":
                     console.log("Transcribing RAVLT");
                     const transcribedWords = words;
+                    console.log(transcribedWords);
                     RAVLTResults.findOneAndUpdate(
                         {
                             trialID: req.body.trialID,
                         },
-                        { transcribedWords: transcribedWords },
+                        {
+                            transcriptionID: transcriptionID,
+                            transcribedWords: transcribedWords,
+                        },
                         { new: true }
                     )
                         .then((updatedTrial) => {
@@ -450,7 +454,7 @@ router.get("/RAVLT/getTranscriptionStatus", async (req, res) => {
             },
         });
         const data = await response.json();
-
+        console.log(data);
         // Find the transcription for this container
         const transcription = data.values?.find(
             (t) => t.id === transcriptionId
@@ -458,7 +462,7 @@ router.get("/RAVLT/getTranscriptionStatus", async (req, res) => {
 
         if (!transcription) {
             return res
-                .status(404)
+                .status(500)
                 .json({ msg: "No transcription found for this container" });
         }
 

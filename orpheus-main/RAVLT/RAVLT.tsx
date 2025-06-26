@@ -139,9 +139,9 @@ const RAVLT = ({
                     transcribedWords: [],
                     testWords: wordArray,
                     interferenceWords: interferenceArray,
-                    totalRecallScore: 0,
-                    similarityIndex: 0,
-                    semanticSimilarityIndex: 0,
+                    totalRecallScore: -1,
+                    similarityIndex: -1,
+                    semanticSimilarityIndex: -1,
                 });
             };
             handleRAVLTEnd();
@@ -173,7 +173,7 @@ const RAVLT = ({
                         instructions="Press the button below to generate the words. Only press this when you are ready."
                     />
                     <GenerateWordsButton
-                        numWords={5}
+                        numWords={1}
                         words={wordArray}
                         setWords={setWordArray}
                         onClick={() => setTrialCycle(2)}
@@ -191,7 +191,7 @@ const RAVLT = ({
                         instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember."
                     />
                     <GenerateWordsButton
-                        numWords={5}
+                        numWords={1}
                         words={interferenceArray}
                         setWords={setInterferenceArray}
                         onClick={() => setTrialCycle(7)}
