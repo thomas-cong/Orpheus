@@ -76,76 +76,79 @@ router.post("/calculateResults", async (req, res) => {
     if (!results || !results.transcribedWords) {
         return res.status(400).send({ msg: "Missing transcribed words" });
     }
-    const transcribedWords = results.transcribedWords.map((w) => w.word);
-    const testWords = results.testWords;
+    if (results.totalRecallScore < 0 || results.semanticSimilarityIndex < 0) {
+        const transcribedWords = results.transcribedWords.map((w) => w.word);
+        const testWords = results.testWords;
 
-    // Compute total recall score (number of words correctly recalled)
-    const totalRecallScore = testWords.filter((w) =>
-        transcribedWords.includes(w)
-    ).length;
+        // Compute total recall score (number of words correctly recalled)
+        const totalRecallScore = testWords.filter((w) =>
+            transcribedWords.includes(w)
+        ).length;
 
-    // Calculate pairwise similarity
-    const similarityMap = pairwiseSimilarityCalculations(
-        transcribedWords,
-        testWords
-    );
-    const similarityIndex = Object.values(similarityMap).reduce(
-        (sum, item) => sum + item.similarity,
-        0
-    );
-    console.log(testWords);
-    // Compute embeddings for all words in testWords and transcribedWords
-    const testWordEmbeddings = await Promise.all(
-        testWords.map((word) => getEmbedding(word))
-    );
-    const transcribedWordEmbeddings = await Promise.all(
-        transcribedWords.map((word) => getEmbedding(word))
-    );
+        // Calculate pairwise similarity
+        const similarityMap = pairwiseSimilarityCalculations(
+            transcribedWords,
+            testWords
+        );
+        const similarityIndex = Object.values(similarityMap).reduce(
+            (sum, item) => sum + item.similarity,
+            0
+        );
+        console.log(testWords);
+        // Compute embeddings for all words in testWords and transcribedWords
+        const testWordEmbeddings = await getEmbedding(testWords);
+        const transcribedWordEmbeddings = await getEmbedding(transcribedWords);
 
-    // Filter out any null embeddings
-    const validTestEmbeddings = testWordEmbeddings.filter((e) => e);
-    const validTranscribedEmbeddings = transcribedWordEmbeddings.filter(
-        (e) => e
-    );
+        // Filter out any null embeddings
+        const validTestEmbeddings = testWordEmbeddings.filter((e) => e);
+        const validTranscribedEmbeddings = transcribedWordEmbeddings.filter(
+            (e) => e
+        );
 
-    let semanticSimilarityIndex = 0;
-    if (
-        validTestEmbeddings.length > 0 &&
-        validTranscribedEmbeddings.length > 0
-    ) {
-        for (const testEmbedding of validTestEmbeddings) {
-            let maxSim = 0;
-            for (const transcribedEmbedding of validTranscribedEmbeddings) {
-                const sim = cosineSimilarity(
-                    testEmbedding,
-                    transcribedEmbedding
-                );
-                if (sim > maxSim) maxSim = sim;
+        let semanticSimilarityIndex = 0;
+        if (
+            validTestEmbeddings.length > 0 &&
+            validTranscribedEmbeddings.length > 0
+        ) {
+            for (const testEmbedding of validTestEmbeddings) {
+                let maxSim = 0;
+                for (const transcribedEmbedding of validTranscribedEmbeddings) {
+                    const sim = cosineSimilarity(
+                        testEmbedding,
+                        transcribedEmbedding
+                    );
+                    if (sim > maxSim) maxSim = sim;
+                }
+                semanticSimilarityIndex += maxSim;
             }
-            semanticSimilarityIndex += maxSim;
         }
-    }
-
-    // Update total recall score and the new semantic similarity index in the database
-    try {
-        await RAVLTResults.findOneAndUpdate(
-            { trialID: trialID },
-            {
+        try {
+            await RAVLTResults.findOneAndUpdate(
+                { trialID: trialID },
+                {
+                    totalRecallScore: totalRecallScore,
+                    semanticSimilarityIndex: semanticSimilarityIndex,
+                    similarityIndex: similarityIndex,
+                }
+            );
+            console.log("Results updated");
+            res.send({
+                msg: "RAVLT results updated",
                 totalRecallScore: totalRecallScore,
                 semanticSimilarityIndex: semanticSimilarityIndex,
                 similarityIndex: similarityIndex,
-            }
-        );
-        console.log("Results updated");
+            });
+        } catch (error) {
+            console.error("Error updating RAVLT results:", error);
+            res.status(500).send({ msg: "Error updating RAVLT results" });
+        }
+    } else {
         res.send({
-            msg: "RAVLT results updated",
-            totalRecallScore: totalRecallScore,
-            semanticSimilarityIndex: semanticSimilarityIndex,
-            similarityIndex: similarityIndex,
+            msg: "RAVLT results already calculated",
+            totalRecallScore: results.totalRecallScore,
+            semanticSimilarityIndex: results.semanticSimilarityIndex,
+            similarityIndex: results.similarityIndex,
         });
-    } catch (error) {
-        console.error("Error updating RAVLT results:", error);
-        res.status(500).send({ msg: "Error updating RAVLT results" });
     }
 });
 router.post("/updateTrial", (req, res) => {

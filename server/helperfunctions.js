@@ -66,30 +66,22 @@ function getOpenAIClient() {
  * @param {string} text The text to embed.
  * @returns {Promise<number[]|null>} The embedding vector or null if an error occurs.
  */
-async function getEmbedding(text, model = "text-embedding-3-small") {
-    if (typeof text !== "string") {
-        console.warn(
-            "getEmbedding called with non-string input:",
-            text,
-            typeof text
-        );
-        return null;
-    }
-    if (!text || text.trim() === "") {
-        return null;
+async function getEmbedding(textOrArray, model = "text-embedding-3-small") {
+    if (typeof textOrArray === "string") {
+        textOrArray = [textOrArray];
     }
     try {
         const client = getOpenAIClient();
         const payload = {
-            input: [text],
+            input: textOrArray,
             model: model,
         };
         console.log("OpenAI embeddings.create payload:", payload);
         const response = await client.embeddings.create(payload);
-        return response.data[0].embedding;
+        return response.data.map((item) => item.embedding);
     } catch (error) {
         console.error(
-            `Error getting embedding for text "${text}": ${error.message}`
+            `Error getting embedding for text "${textOrArray}": ${error.message}`
         );
         return null;
     }
