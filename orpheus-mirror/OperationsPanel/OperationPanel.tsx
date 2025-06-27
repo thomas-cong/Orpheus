@@ -1,5 +1,6 @@
 import React from "react";
 import RAVLTPanel from "./RAVLTPanel";
+import ROPanel from "./ROPanel";
 
 interface OperationPanelProps {
     patientID: string;
@@ -23,6 +24,14 @@ const OperationPanel: React.FC<OperationPanelProps> = ({
             case "RAVLT":
                 return (
                     <RAVLTPanel
+                        patientID={patientID}
+                        trialID={trialID}
+                        focused={focused}
+                    />
+                );
+            case "RO":
+                return (
+                    <ROPanel
                         patientID={patientID}
                         trialID={trialID}
                         focused={focused}

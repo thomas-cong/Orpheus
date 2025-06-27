@@ -144,7 +144,8 @@ const getFileSasUri = async (
         sasOptions,
         sharedKeyCredential
     ).toString();
-    return `${containerClient.url}?${sasToken}`;
+    const blobClient = containerClient.getBlobClient(blobName);
+    return `${blobClient.url}?${sasToken}`;
 };
 
 /**

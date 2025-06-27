@@ -76,24 +76,22 @@ router.post("/updateTrial", (req, res) => {
  * @param {Array} req.body.similarityArray - Array of similarity values
  * @returns {Object} - JSON object with success or error message
  */
-router.post("/addResults", (req, res) => {
-    if (
-        !req.body.patientID ||
-        !req.body.trialID ||
-        !req.body.imageBin ||
-        !req.body.similarityArray
-    ) {
+router.post("/addResults", async (req, res) => {
+    const { patientID, trialID, imageBin, similarityArray } = req.body;
+    if (!patientID || !trialID || !imageBin || !similarityArray) {
         return res.status(400).send({ msg: "Missing required fields" });
     }
-    const RO = new ROResults(req.body);
-    RO.save()
-        .then(() => {
-            res.send({ msg: "RO results added" });
-        })
-        .catch((error) => {
-            console.error("Error adding RO results:", error);
-            res.status(500).send({ msg: "Error adding RO results" });
-        });
+    try {
+        await ROResults.findOneAndUpdate(
+            { trialID },
+            { patientID, trialID, imageBin, similarityArray },
+            { upsert: true, new: true }
+        );
+        res.send({ msg: "RO results saved" });
+    } catch (error) {
+        console.error("Error saving RO results:", error);
+        res.status(500).send({ msg: "Error saving RO results" });
+    }
 });
 
 router.get("/getResultsByTrialID", (req, res) => {
