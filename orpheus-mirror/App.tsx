@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "../global-files/index.css";
 import { Outlet, Link, useLocation } from "react-router-dom";
+import { createTrial } from "./utilities";
 
 const App = () => {
     const location = useLocation();
@@ -53,19 +54,7 @@ const App = () => {
                                                     try {
                                                         setIsLoading(prev => ({ ...prev, ravlt: true }));
                                                         setError(null);
-                                                        
-                                                        const response = await fetch('/api/ravlt/createTrial', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'Content-Type': 'application/json'
-                                                            }
-                                                        });
-                                                        
-                                                        if (!response.ok) {
-                                                            throw new Error(`Failed to create RAVLT trial: ${response.statusText}`);
-                                                        }
-                                                        
-                                                        const data = await response.json();
+                                                        const data = await createTrial('RAVLT');
                                                         setTrialIds(prev => ({ ...prev, ravlt: data.trialID }));
                                                     } catch (err) {
                                                         setError(err instanceof Error ? err.message : 'Failed to create trial');
@@ -102,19 +91,7 @@ const App = () => {
                                                     try {
                                                         setIsLoading(prev => ({ ...prev, ro: true }));
                                                         setError(null);
-                                                        
-                                                        const response = await fetch('/api/ro/createTrial', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'Content-Type': 'application/json'
-                                                            }
-                                                        });
-                                                        
-                                                        if (!response.ok) {
-                                                            throw new Error(`Failed to create RO trial: ${response.statusText}`);
-                                                        }
-                                                        
-                                                        const data = await response.json();
+                                                        const data = await createTrial('RO');
                                                         setTrialIds(prev => ({ ...prev, ro: data.trialID }));
                                                     } catch (err) {
                                                         setError(err instanceof Error ? err.message : 'Failed to create trial');

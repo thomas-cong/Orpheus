@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import { get } from "../../global-files/utilities";
 
 export interface RAVLTResultsViewerHandle {
@@ -10,7 +16,10 @@ interface RAVLTResultsViewerProps {
     trialID: string;
 }
 
-const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsViewerProps>(({ patientID, trialID }, ref) => {
+const RAVLTResultsViewer = forwardRef<
+    RAVLTResultsViewerHandle,
+    RAVLTResultsViewerProps
+>(({ patientID, trialID }, ref) => {
     const [results, setResults] = useState<any | null>(null);
     const [audioURLs, setAudioURLs] = useState<Record<number, string>>({});
     const [rawJSON, setRawJSON] = useState("");
@@ -18,12 +27,20 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
     const [error, setError] = useState("");
 
     // Helper sub-components & constants
-    const ScoreBox = ({ label, value }: { label: string; value: any }) => (
-        <div className="bg-gray-800 rounded p-4 text-center border border-gray-700">
-            <p className="text-gray-400 text-sm">{label}</p>
-            <p className="text-2xl font-bold text-gray-100">{value ?? "-"}</p>
-        </div>
-    );
+    const ScoreBox = ({ label, value }: { label: string; value: any }) => {
+        const displayValue = value === -1 ? "Not Calculated" : value ?? "-";
+        const valueClassName =
+            value === -1
+                ? "text-lg font-bold text-gray-100"
+                : "text-2xl font-bold text-gray-100";
+
+        return (
+            <div className="bg-gray-800 rounded p-4 text-center border border-gray-700">
+                <p className="text-gray-400 text-sm">{label}</p>
+                <p className={valueClassName}>{displayValue}</p>
+            </div>
+        );
+    };
 
     const CycleAudio = ({ src }: { src: string }) => {
         const audioRef = React.useRef<HTMLAudioElement | null>(null);
@@ -39,7 +56,7 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
                 src={src}
                 crossOrigin="anonymous"
                 preload="metadata"
-                onLoadedMetadata={e => {
+                onLoadedMetadata={(e) => {
                     const dur = e.currentTarget.duration;
                     console.log(`audio duration: ${dur}s`);
                     // if you want to display it, store it in state here
@@ -87,7 +104,7 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
         console.log("Fetching results for trial ID:", trialID);
         try {
             // Get trial details to verify it exists
-            const trialResp = await get("/api/ravlt/getTrialByTrialID", {
+            const trialResp = await get("/api/trials/getTrialByTrialID", {
                 trialID: trialID,
             });
 
@@ -98,17 +115,16 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
             }
 
             // Fetch RAVLT results using the new endpoint
-            const resultsResp = await get(
-                "/api/ravlt/getResultsByTrialID",
-                {
-                    trialID: trialID,
-                }
-            );
+            const resultsResp = await get("/api/trials/getResultsByTrialID", {
+                trialID: trialID,
+            });
 
             if (!resultsResp) {
                 console.log("No results found for this trial");
                 setResults(null);
-                setRawJSON("No RAVLT results found for this trial. Try computing results first.");
+                setRawJSON(
+                    "No RAVLT results found for this trial. Try computing results first."
+                );
             } else {
                 console.log("Results found:", resultsResp);
                 setResults(resultsResp);
@@ -146,7 +162,7 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
             }
         } catch (e) {
             console.error(e);
-            setError(e as string || "Error fetching results");
+            setError((e as string) || "Error fetching results");
         } finally {
             setLoading(false);
         }
@@ -170,22 +186,17 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
         <div className="space-y-6">
             {/* Score Boxes */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <ScoreBox label="Total Recall" value={results.totalRecallScore} />
+                <ScoreBox
+                    label="Total Recall"
+                    value={results.totalRecallScore}
+                />
                 <ScoreBox
                     label="Similarity Index"
-                    value={
-                        typeof results.similarityIndex === "number"
-                            ? results.similarityIndex.toFixed(2)
-                            : results.similarityIndex
-                    }
+                    value={results.similarityIndex}
                 />
                 <ScoreBox
                     label="Semantic Similarity"
-                    value={
-                        typeof results.semanticSimilarityIndex === "number"
-                            ? results.semanticSimilarityIndex.toFixed(2)
-                            : results.semanticSimilarityIndex
-                    }
+                    value={results.semanticSimilarityIndex}
                 />
             </div>
 
@@ -193,49 +204,76 @@ const RAVLTResultsViewer = forwardRef<RAVLTResultsViewerHandle, RAVLTResultsView
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Left: Test / Interference words */}
                 <div className="md:w-1/2 flex flex-col items-center">
-                    <h3 className="text-xl font-semibold text-gray-200 mb-3">Test Words</h3>
+                    <h3 className="text-xl font-semibold text-gray-200 mb-3">
+                        Test Words
+                    </h3>
                     <WordList words={results.testWords} />
 
-                    <h3 className="text-xl font-semibold text-gray-200 mt-4 mb-3">Interference Words</h3>
+                    <h3 className="text-xl font-semibold text-gray-200 mt-4 mb-3">
+                        Interference Words
+                    </h3>
                     <WordList words={results.interferenceWords} />
                 </div>
 
                 {/* Right: Cycles */}
                 <div className="md:w-1/2 flex flex-col items-center">
-                    <h3 className="text-2xl font-semibold text-gray-200 mb-3">Cycles</h3>
+                    <h3 className="text-2xl font-semibold text-gray-200 mb-3">
+                        Cycles
+                    </h3>
                     <div className="space-y-3">
                         {cycleDefinitions.map((cycle) => {
                             const wordsInCycle =
-                                results.transcribedWords?.filter((w: any) => w.fileIndex === cycle.index) ?? [];
+                                results.transcribedWords?.filter(
+                                    (w: any) => w.fileIndex === cycle.index
+                                ) ?? [];
                             const testSet = new Set(
-                                (results.testWords as string[]).map((w: string) => w.toLowerCase())
+                                (results.testWords as string[]).map(
+                                    (w: string) => w.toLowerCase()
+                                )
                             );
                             const interferenceSet = new Set(
-                                (results.interferenceWords as string[]).map((w: string) => w.toLowerCase())
+                                (results.interferenceWords as string[]).map(
+                                    (w: string) => w.toLowerCase()
+                                )
                             );
                             return (
                                 <div key={cycle.index}>
-                                    <h4 className="text-sm text-gray-400 mb-1">{cycle.label}</h4>
+                                    <h4 className="text-sm text-gray-400 mb-1">
+                                        {cycle.label}
+                                    </h4>
                                     <div className="flex flex-wrap gap-2 mb-1">
-                                        {wordsInCycle.map((w: any, idx: number) => {
-                                            let colorClass = "bg-gray-700 text-gray-100";
-                                            const lw = w.word.toLowerCase();
-                                            if (testSet.has(lw)) colorClass = "bg-green-600 text-white";
-                                            else if (interferenceSet.has(lw)) colorClass = "bg-yellow-600 text-white";
-                                            return (
-                                                <span
-                                                    key={idx}
-                                                    className={`px-2 py-1 rounded text-sm ${colorClass}`}
-                                                >
-                                                    {w.word}
-                                                </span>
-                                            );
-                                        })}
+                                        {wordsInCycle.map(
+                                            (w: any, idx: number) => {
+                                                let colorClass =
+                                                    "bg-gray-700 text-gray-100";
+                                                const lw = w.word.toLowerCase();
+                                                if (testSet.has(lw))
+                                                    colorClass =
+                                                        "bg-green-600 text-white";
+                                                else if (
+                                                    interferenceSet.has(lw)
+                                                )
+                                                    colorClass =
+                                                        "bg-yellow-600 text-white";
+                                                return (
+                                                    <span
+                                                        key={idx}
+                                                        className={`px-2 py-1 rounded text-sm ${colorClass}`}
+                                                    >
+                                                        {w.word}
+                                                    </span>
+                                                );
+                                            }
+                                        )}
                                     </div>
                                     {audioURLs[cycle.index] ? (
-                                        <CycleAudio src={audioURLs[cycle.index]} />
+                                        <CycleAudio
+                                            src={audioURLs[cycle.index]}
+                                        />
                                     ) : (
-                                        <span className="text-gray-500 text-xs">No audio</span>
+                                        <span className="text-gray-500 text-xs">
+                                            No audio
+                                        </span>
                                     )}
                                 </div>
                             );

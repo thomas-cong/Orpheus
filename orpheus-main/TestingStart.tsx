@@ -22,7 +22,7 @@ const TestingStart = () => {
     const navigate = useNavigate();
 
     const checkTrialExistence = (trialID: string, trialType: string) => {
-        get(`/api/${trialType.toLowerCase()}/getTrialByTrialID`, {
+        get(`/api/trials/getTrialByTrialID`, {
             trialID: trialID,
         })
             .then((result) => {

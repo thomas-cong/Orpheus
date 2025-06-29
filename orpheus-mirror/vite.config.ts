@@ -10,6 +10,7 @@ export default defineConfig({
         outDir: resolve(__dirname, "dist"),
         emptyOutDir: true,
     },
+    cacheDir: resolve(__dirname, "node_modules/.vite-mirror"),
     plugins: [react(), tailwindcss()],
     server: {
         port: 5174,

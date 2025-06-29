@@ -43,7 +43,7 @@ function convertToJSON(res: Response): Promise<any> {
     return res
         .clone() // clone so that the original is still readable for debugging
         .json() // start converting to JSON object
-        .catch((error) => {
+        .catch(() => {
             // throw an error containing the text that couldn't be converted to JSON
             return res.text().then((text) => {
                 throw `API request's result could not be converted to a JSON object: \n${text}`;
@@ -94,5 +94,39 @@ export function post(
 
 // Remove the incorrect export default utilities; line
 // Instead, create a utilities object if you want to export it as default
-const utilities = { get, post, stringToNumber };
+// Trial Management API
+export const createTrial = (trialType: "RO" | "RAVLT") =>
+    post("/api/trials/createTrial", { trialType });
+
+export const updateTrial = (data: {
+    trialType: "RO" | "RAVLT";
+    trialID: string;
+    patientID: string;
+    date?: Date;
+    status?: string;
+}) => post("/api/trials/updateTrial", data);
+
+export const addResults = (data: {
+    trialType: "RO" | "RAVLT";
+    trialID: string;
+    patientID: string;
+    [key: string]: any;
+}) => post("/api/trials/addResults", data);
+
+export const getTrial = (trialID: string) =>
+    get("/api/trials/getTrialByTrialID", { trialID });
+
+export const getResults = (trialID: string) =>
+    get("/api/trials/getResultsByTrialID", { trialID });
+
+const utilities = {
+    get,
+    post,
+    stringToNumber,
+    createTrial,
+    updateTrial,
+    addResults,
+    getTrial,
+    getResults,
+};
 export default utilities;

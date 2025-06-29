@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import RAVLTResultsViewer, { RAVLTResultsViewerHandle } from "./RAVLTResultsViewer";
+import RAVLTResultsViewer, {
+    RAVLTResultsViewerHandle,
+} from "./RAVLTResultsViewer";
 import { post, get } from "../../global-files/utilities";
 
 interface RAVLTPanelProps {
@@ -8,7 +10,11 @@ interface RAVLTPanelProps {
     focused: boolean;
 }
 
-const RAVLTPanel: React.FC<RAVLTPanelProps> = ({ patientID, trialID, focused }) => {
+const RAVLTPanel: React.FC<RAVLTPanelProps> = ({
+    patientID,
+    trialID,
+    focused,
+}) => {
     const [showResults, setShowResults] = useState(false);
     const [computing, setComputing] = useState(false);
     const [computeStatus, setComputeStatus] = useState<string>("");
@@ -20,8 +26,7 @@ const RAVLTPanel: React.FC<RAVLTPanelProps> = ({ patientID, trialID, focused }) 
         setShowResults(false);
         if (!trialID) return;
 
-        const trialType = trialID.split("-")[0];
-        get(`/api/${trialType.toLowerCase()}/getTrialByTrialID`, { trialID })
+        get(`/api/trials/getTrialByTrialID`, { trialID })
             .then((res) => {
                 if (res.trial) {
                     setIsTrialComplete(res.trial.status === "complete");
@@ -29,7 +34,6 @@ const RAVLTPanel: React.FC<RAVLTPanelProps> = ({ patientID, trialID, focused }) 
             })
             .catch((err) => console.error("Error fetching trial:", err));
     }, [patientID, trialID]);
-
     const computeResults = async () => {
         if (!trialID) return;
         const trialType = trialID.split("-")[0].toLowerCase();
@@ -50,7 +54,9 @@ const RAVLTPanel: React.FC<RAVLTPanelProps> = ({ patientID, trialID, focused }) 
             }
 
             if (!transcriptionSuccessful) {
-                setComputeStatus("Transcription not ready yet. Please try again later.");
+                setComputeStatus(
+                    "Transcription not ready yet. Please try again later."
+                );
                 setComputing(false);
                 return;
             }
@@ -58,7 +64,7 @@ const RAVLTPanel: React.FC<RAVLTPanelProps> = ({ patientID, trialID, focused }) 
             setComputeStatus("Computing RAVLT scores...");
 
             // 2) Calculate RAVLT scores
-            await post(`/api/${trialType}/calculateResults`, { trialID });
+            await post(`/api/ravlt/calculateResults`, { trialID });
 
             setComputeStatus("Computation complete!");
             setComputing(false);
@@ -93,14 +99,28 @@ const RAVLTPanel: React.FC<RAVLTPanelProps> = ({ patientID, trialID, focused }) 
                         <button
                             onClick={computeResults}
                             disabled={computing || !isTrialComplete}
-                            className={`${computing || !isTrialComplete ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"} text-white font-semibold py-2 px-4 rounded transition duration-300`}
-                            title={!isTrialComplete ? "Only complete trials can be computed" : ""}
+                            className={`${
+                                computing || !isTrialComplete
+                                    ? "bg-gray-500 cursor-not-allowed"
+                                    : "bg-green-600 hover:bg-green-700"
+                            } text-white font-semibold py-2 px-4 rounded transition duration-300`}
+                            title={
+                                !isTrialComplete
+                                    ? "Only complete trials can be computed"
+                                    : ""
+                            }
                         >
-                            {computing ? "Computing..." : "Compute RAVLT Results"}
+                            {computing
+                                ? "Computing..."
+                                : "Compute RAVLT Results"}
                         </button>
                     </div>
 
-                    {computeStatus && <div className="text-sm text-blue-400 animate-pulse">{computeStatus}</div>}
+                    {computeStatus && (
+                        <div className="text-sm text-blue-400 animate-pulse">
+                            {computeStatus}
+                        </div>
+                    )}
                 </div>
             )}
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { get, post } from "../global-files/utilities";
 
@@ -9,9 +9,11 @@ const Testing = () => {
         "/api/patients/genPatientID",
         "/api/patients/getPatient",
         "/api/patients/addPatient",
-        "/api/ravlt/createTrial",
-        "/api/ravlt/updateTrial",
-        "/api/ravlt/addResults",
+        "/api/trials/createTrial",
+        "/api/trials/updateTrial",
+        "/api/trials/addResults",
+        "/api/trials/getTrialByTrialID",
+        "/api/trials/getResultsByTrialID",
         "/api/trials/getTrialsByPatientID",
         "/api/admin/generateTestingTrial",
         "/api/audioStorage/getContainer",
@@ -28,7 +30,7 @@ const Testing = () => {
     const [paramsInput, setParamsInput] = useState("{}");
     const [apiResponse, setApiResponse] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [filteredSuggestions, setFilteredSuggestions] =
         useState(COMMON_ENDPOINTS);
@@ -72,7 +74,7 @@ const Testing = () => {
 
             setApiResponse(response);
         } catch (err) {
-            setError(err.message || "An error occurred");
+            setError((err as Error).message || "An error occurred");
             console.error("API call error:", err);
         } finally {
             setIsLoading(false);

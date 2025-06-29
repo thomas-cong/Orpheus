@@ -13,4 +13,5 @@ export default defineConfig({
             },
         },
     },
+    cacheDir: "node_modules/.vite-main",
 });

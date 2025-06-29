@@ -84,13 +84,15 @@ const RO: React.FC<ROProps> = ({
                 idx++;
             }
 
-            await post("/api/ro/updateTrial", {
+            await post("/api/trials/updateTrial", {
+                trialType: "RO",
                 trialID,
                 patientID,
                 date: new Date().toISOString(),
                 status: "complete",
             });
-            await post("/api/ro/addResults", {
+            await post("/api/trials/addResults", {
+                trialType: "RO",
                 trialID: trialID,
                 patientID: patientID,
                 imageBin: trialID,

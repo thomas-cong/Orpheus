@@ -109,13 +109,7 @@ const RAVLT = ({
                 });
                 // Upload recordings to Azure Blob Storage
                 await uploadRecordings(trialID);
-                // Add trial to database
-                await post("/api/ravlt/updateTrial", {
-                    trialID: trialID,
-                    patientID: patientID,
-                    date: new Date().toISOString(),
-                    status: "complete",
-                });
+
                 // Transcribe recordings in Azure Blob Storage
                 await post("/api/audioStorage/transcribe", {
                     containerName: containerName,
@@ -123,25 +117,18 @@ const RAVLT = ({
                     displayName: "RAVLT Transcription " + trialID,
                     trialID: trialID,
                 });
-                console.log("patientID: " + patientID);
-                console.log("trialID: " + trialID);
-                console.log("transcriptionID: " + "None");
-                console.log("transcribedWords: " + []);
-                console.log("testWords: " + wordArray);
-                console.log("interferenceWords: " + interferenceArray);
-                console.log("totalRecallScore: " + 0);
-                console.log("similarityIndex: " + 0);
-                console.log("primacyRecencyIndex: " + 0);
-                await post("/api/ravlt/addResults", {
+                await post("/api/trials/updateTrial", {
+                    trialType: "RAVLT",
+                    trialID: trialID,
+                    patientID: patientID,
+                    status: "complete",
+                });
+                await post("/api/trials/addResults", {
+                    trialType: "RAVLT",
                     patientID: patientID,
                     trialID: trialID,
-                    transcriptionID: "None",
-                    transcribedWords: [],
                     testWords: wordArray,
                     interferenceWords: interferenceArray,
-                    totalRecallScore: -1,
-                    similarityIndex: -1,
-                    semanticSimilarityIndex: -1,
                 });
             };
             handleRAVLTEnd();
