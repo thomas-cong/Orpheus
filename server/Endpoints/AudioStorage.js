@@ -332,7 +332,7 @@ router.post("/updateTranscriptionResults", async (req, res) => {
         // console.log(words);
         if (req.body.test && req.body.trialID) {
             switch (req.body.test) {
-                case "RAVLT":
+                case "ravlt":
                     console.log("Transcribing RAVLT");
                     const transcribedWords = words;
                     console.log(transcribedWords);

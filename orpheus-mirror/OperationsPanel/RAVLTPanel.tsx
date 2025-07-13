@@ -47,6 +47,9 @@ const RAVLTPanel: React.FC<RAVLTPanelProps> = ({
                 await post("/api/audioStorage/updateTranscriptionResults", {
                     trialID,
                     test: trialType,
+                }).then((res) => {
+                    console.log("Transcription update successful");
+                    console.log(res);
                 });
             } catch (err) {
                 console.error("Transcription update failed:", err);

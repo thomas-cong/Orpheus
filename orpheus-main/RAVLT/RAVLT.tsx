@@ -160,7 +160,7 @@ const RAVLT = ({
                         instructions="Press the button below to generate the words. Only press this when you are ready."
                     />
                     <GenerateWordsButton
-                        numWords={1}
+                        numWords={10}
                         words={wordArray}
                         setWords={setWordArray}
                         onClick={() => setTrialCycle(2)}
@@ -178,10 +178,11 @@ const RAVLT = ({
                         instructions="Now, we will try a second list of words. This time, again, you should say back as many words as you can remember."
                     />
                     <GenerateWordsButton
-                        numWords={1}
+                        numWords={10}
                         words={interferenceArray}
                         setWords={setInterferenceArray}
                         onClick={() => setTrialCycle(7)}
+                        wordBlacklist={wordArray}
                     />
                 </div>
             )}

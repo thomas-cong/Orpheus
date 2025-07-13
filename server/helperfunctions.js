@@ -70,6 +70,14 @@ async function getEmbedding(textOrArray, model = "text-embedding-3-small") {
     if (typeof textOrArray === "string") {
         textOrArray = [textOrArray];
     }
+    // Validation: keep only entries with letters only (a-z, A-Z), and remove empty/non-letter entries
+    textOrArray = textOrArray
+        .map((w) => (typeof w === "string" ? w.trim() : ""))
+        .filter((w) => /^[a-zA-Z]+$/.test(w));
+    if (textOrArray.length === 0) {
+        console.error("No valid letter-only words to embed.");
+        return null;
+    }
     try {
         const client = getOpenAIClient();
         const payload = {
@@ -81,7 +89,7 @@ async function getEmbedding(textOrArray, model = "text-embedding-3-small") {
         return response.data.map((item) => item.embedding);
     } catch (error) {
         console.error(
-            `Error getting embedding for text "${textOrArray}": ${error.message}`
+            `Error getting embedding for text \"${textOrArray}\": ${error.message}`
         );
         return null;
     }

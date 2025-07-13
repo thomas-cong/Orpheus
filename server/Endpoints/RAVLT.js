@@ -40,10 +40,21 @@ router.post("/calculateResults", async (req, res) => {
             (sum, item) => sum + item.similarity,
             0
         );
-        console.log(testWords);
+        console.log("testWords: ", testWords);
+        console.log("transcribedWords: ", transcribedWords);
+        let testWordEmbeddings = [];
+        let transcribedWordEmbeddings = [];
         // Compute embeddings for all words in testWords and transcribedWords
-        const testWordEmbeddings = await getEmbedding(testWords);
-        const transcribedWordEmbeddings = await getEmbedding(transcribedWords);
+        if (testWords.length > 0 && transcribedWords.length > 0) {
+            testWordEmbeddings = await getEmbedding(testWords);
+            transcribedWordEmbeddings = await getEmbedding(transcribedWords);
+        } else {
+            console.log("No valid letter-only words to embed");
+            res.send({
+                msg: "No valid letter-only words to embed",
+            });
+            return;
+        }
 
         // Filter out any null embeddings
         const validTestEmbeddings = testWordEmbeddings.filter((e) => e);

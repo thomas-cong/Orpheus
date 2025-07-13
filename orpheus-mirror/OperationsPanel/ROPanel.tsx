@@ -43,13 +43,17 @@ const ROPanel: React.FC<ROPanelProps> = ({ patientID, trialID, focused }) => {
                     }
                 );
                 const urls: string[] = (resp.urls || [])
-                    .sort((a: any, b: any) => a.blobName.localeCompare(b.blobName))
+                    .sort((a: any, b: any) =>
+                        a.blobName.localeCompare(b.blobName)
+                    )
                     .map((u: any) => u.url);
                 setImageURLs(urls);
 
                 // Try to fetch existing results
                 try {
-                    const res = await get("/api/ro/getResultsByTrialID", { trialID });
+                    const res = await get("/api/trials/getResultsByTrialID", {
+                        trialID,
+                    });
                     if (res && Array.isArray(res.similarityArray)) {
                         // Ensure array length matches images
                         const incoming = res.similarityArray as number[];
@@ -92,14 +96,14 @@ const ROPanel: React.FC<ROPanelProps> = ({ patientID, trialID, focused }) => {
         setSaving(true);
         setStatusMsg("Saving results...");
         try {
-            await post("/api/ro/addResults", {
+            await post("/api/trials/addResults", {
                 patientID,
                 trialID,
                 imageBin: trialID,
                 similarityArray: scores,
             });
             setStatusMsg("Results saved successfully!");
-        setEditModal(false);
+            setEditModal(false);
         } catch (err) {
             console.error("Error saving results:", err);
             setStatusMsg("Error saving results");
@@ -119,7 +123,9 @@ const ROPanel: React.FC<ROPanelProps> = ({ patientID, trialID, focused }) => {
                             key={idx}
                             className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded-lg p-4 flex-1 min-w-[140px]"
                         >
-                            <span className="text-gray-400 text-sm mb-1">Score {idx + 1}</span>
+                            <span className="text-gray-400 text-sm mb-1">
+                                Score {idx + 1}
+                            </span>
                             <span className="text-2xl font-bold text-gray-100">
                                 {isNaN(val) ? "-" : val}
                             </span>
@@ -130,9 +136,13 @@ const ROPanel: React.FC<ROPanelProps> = ({ patientID, trialID, focused }) => {
 
             {/* --- Images Grid --- */}
             {loadingImages ? (
-                <div className="text-gray-300 animate-pulse">Loading images...</div>
+                <div className="text-gray-300 animate-pulse">
+                    Loading images...
+                </div>
             ) : imageURLs.length === 0 ? (
-                <div className="text-gray-400">No images uploaded for this trial.</div>
+                <div className="text-gray-400">
+                    No images uploaded for this trial.
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {imageURLs.map((url, idx) => (
@@ -145,13 +155,20 @@ const ROPanel: React.FC<ROPanelProps> = ({ patientID, trialID, focused }) => {
                                 setSelectedIdx(idx);
                                 setModalUrl(url);
                             }}
-                            style={{ outline: selectedIdx === idx ? "3px solid #3B82F6" : "none" }}
+                            style={{
+                                outline:
+                                    selectedIdx === idx
+                                        ? "3px solid #3B82F6"
+                                        : "none",
+                            }}
                         />
                     ))}
                 </div>
             )}
 
-            {statusMsg && <div className="text-sm text-blue-400">{statusMsg}</div>}
+            {statusMsg && (
+                <div className="text-sm text-blue-400">{statusMsg}</div>
+            )}
 
             {/* --- Update button bottom --- */}
             {focused && (
@@ -166,37 +183,70 @@ const ROPanel: React.FC<ROPanelProps> = ({ patientID, trialID, focused }) => {
             {/* --- Edit Scores Modal --- */}
             {editModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-                    <div className="bg-gray-900 p-6 rounded-lg w-full max-w-5xl space-y-6" onClick={(e)=>e.stopPropagation()}>
-                        <h2 className="text-xl text-white font-semibold mb-4 text-center">Update RO Results</h2>
+                    <div
+                        className="bg-gray-900 p-6 rounded-lg w-full max-w-5xl space-y-6"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h2 className="text-xl text-white font-semibold mb-4 text-center">
+                            Update RO Results
+                        </h2>
                         <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 justify-center">
-                            {imageURLs.map((url, idx)=>(
-                                <div key={idx} className="flex-1 flex flex-col items-center">
+                            {imageURLs.map((url, idx) => (
+                                <div
+                                    key={idx}
+                                    className="flex-1 flex flex-col items-center"
+                                >
                                     <img
                                         src={url}
                                         alt={`img-${idx}`}
                                         className="max-h-64 object-contain border border-gray-700 rounded mb-2 cursor-pointer hover:scale-105 transition-transform"
-                                        onClick={()=>setModalUrl(url)}
+                                        onClick={() => setModalUrl(url)}
                                     />
                                     <input
                                         type="number"
                                         step="0.01"
-                                        value={isNaN(scores[idx]) ? "" : scores[idx]}
-                                        onChange={(e)=>handleScoreChange(idx,e.target.value)}
+                                        value={
+                                            isNaN(scores[idx])
+                                                ? ""
+                                                : scores[idx]
+                                        }
+                                        onChange={(e) =>
+                                            handleScoreChange(
+                                                idx,
+                                                e.target.value
+                                            )
+                                        }
                                         className="w-full bg-gray-800 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
                             ))}
                         </div>
                         <div className="flex justify-end space-x-3">
-                            <button onClick={()=>setEditModal(false)} className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+                            <button
+                                onClick={() => setEditModal(false)}
+                                className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
                             <button
                                 onClick={saveResults}
                                 disabled={!allScoresValid || saving}
-                                className={`${!allScoresValid || saving ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"} text-white px-4 py-2 rounded`}
-                            >{saving ? "Saving..." : "Save"}</button>
+                                className={`${
+                                    !allScoresValid || saving
+                                        ? "bg-gray-500 cursor-not-allowed"
+                                        : "bg-green-600 hover:bg-green-700"
+                                } text-white px-4 py-2 rounded`}
+                            >
+                                {saving ? "Saving..." : "Save"}
+                            </button>
                         </div>
                     </div>
-                    <button className="absolute top-4 right-4 text-white text-3xl font-bold" onClick={()=>setEditModal(false)}>×</button>
+                    <button
+                        className="absolute top-4 right-4 text-white text-3xl font-bold"
+                        onClick={() => setEditModal(false)}
+                    >
+                        ×
+                    </button>
                 </div>
             )}
 

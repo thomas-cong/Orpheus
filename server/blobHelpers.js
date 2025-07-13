@@ -36,4 +36,41 @@ async function createContainer(blobServiceClient, containerName) {
     );
     return containerClient;
 }
-export { getContainer, deleteContainer, createContainer };
+/**
+ * Downloads a blob from Azure Blob Storage to a local file
+ * @param {string} connectionString - Azure Blob Storage connection string
+ * @param {string} containerName - Name of the container
+ * @param {string} blobName - Name of the blob
+ * @param {string} downloadFilePath - Local path to save the blob
+ */
+async function downloadBlobToFile(
+    connectionString,
+    containerName,
+    blobName,
+    downloadFilePath
+) {
+    const blobServiceClient =
+        BlobServiceClient.fromConnectionString(connectionString);
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    await blockBlobClient.downloadToFile(downloadFilePath);
+    return downloadFilePath;
+}
+
+/**
+ * Lists all blobs in a given container
+ * @param {string} connectionString - Azure Blob Storage connection string
+ * @param {string} containerName - Name of the container
+ * @returns {Promise<string[]>} - Array of blob names
+ */
+async function listBlobsInContainer(connectionString, containerName) {
+    const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blobNames = [];
+    for await (const blob of containerClient.listBlobsFlat()) {
+        blobNames.push(blob.name);
+    }
+    return blobNames;
+}
+
+export { getContainer, deleteContainer, createContainer, downloadBlobToFile, listBlobsInContainer };

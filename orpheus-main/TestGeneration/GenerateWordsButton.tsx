@@ -6,11 +6,13 @@ const GenerateWordsButton = (props: {
     words: string[];
     setWords: (words: string[]) => void;
     onClick: () => void;
+    wordBlacklist?: string[];
 }) => {
     const generateWords = async () => {
         try {
             const { words } = await get("/api/testHelper/generateWords", {
                 numWords: props.numWords,
+                wordBlacklist: props.wordBlacklist,
             });
             props.setWords(words);
         } catch (error) {
